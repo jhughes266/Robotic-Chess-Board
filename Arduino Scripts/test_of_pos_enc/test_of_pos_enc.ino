@@ -44,6 +44,6 @@ void loop() {
   dec_number = bit_0 * pow(2,0) + bit_1 * pow(2,1) + bit_2 * pow(2,2) + bit_3 * pow(2,3) + bit_4 * pow(2,4) + bit_5 * pow(2,5) + bit_6 * pow(2,6);
   if (dec_number > 0.5){
     Serial.println(dec_number);
-  //delay(100);
+  //delay(10);
   }
 }
