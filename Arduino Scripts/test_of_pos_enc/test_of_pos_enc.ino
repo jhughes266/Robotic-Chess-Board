@@ -16,6 +16,8 @@ int bit_5 = 0;
 int bit_6 = 0;
 
 float dec_number = 0;
+float max = 127;
+float min = -1;
 
 
 void setup() {
@@ -42,8 +44,8 @@ void loop() {
   bit_6 = digitalRead(bit_6_pin);
 
   dec_number = bit_0 * pow(2,0) + bit_1 * pow(2,1) + bit_2 * pow(2,2) + bit_3 * pow(2,3) + bit_4 * pow(2,4) + bit_5 * pow(2,5) + bit_6 * pow(2,6);
-  if (dec_number > 0.5){
+  if (dec_number > -1){
     Serial.println(dec_number);
-  //delay(10);
+  delay(010);
   }
 }
