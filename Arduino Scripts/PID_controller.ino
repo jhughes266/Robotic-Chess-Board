@@ -17,7 +17,7 @@ int x_bit_6 = 0;
 
 int x_motor_pwm_pin = 11;
 
-float dec_number = 0;
+float x_dec_number = 0;
 
 void move_to(int x_pos) {
   float x_cur = -1; // init the current x_val to -1
@@ -57,7 +57,7 @@ void setup() {
   pinMode(x_bit_6_pin, INPUT);
   pinMode(x_motor_pwm_pin, OUTPUT);
   // turn
-  dec_number = x_bit_0 * 1 + 
+  x_dec_number = x_bit_0 * 1 + 
                x_bit_1 * 2 + 
                x_bit_2 * 4 + 
                x_bit_3 * 8 + 
@@ -77,7 +77,7 @@ void loop() {
   x_bit_5 = digitalRead(x_bit_5_pin);
   x_bit_6 = digitalRead(x_bit_6_pin);
 
-  dec_number = x_bit_0 * pow(2,0) + 
+  x_dec_number = x_bit_0 * pow(2,0) + 
                x_bit_1 * pow(2,1) + 
                x_bit_2 * pow(2,2) + 
                x_bit_3 * pow(2,3) + 
@@ -87,7 +87,7 @@ void loop() {
 
   analogWrite(x_motor_pwm_pin, 255);
   //digitalWrite(x_motor_pwm_pin, HIGH);
-  if (dec_number > 0.5){
-    Serial.println(dec_number);
+  if (x_dec_number > 0.5){
+    Serial.println(x_dec_number);
   }
 }
