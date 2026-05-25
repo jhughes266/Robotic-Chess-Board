@@ -34,9 +34,12 @@ void move_to(int targ) {
   float cur; 
   float err = 0;
   float prev_err;
-  float err_int = 0;
+  float err_int 0;
   float err_der = 0;
   float controller_output;
+  float ideal_controller_output;
+  float controller_max = 255;
+  float controller_min = -255;
   // itteration tracker
   bool first_itteration = true;
   //time variable set up
@@ -77,13 +80,20 @@ void move_to(int targ) {
     // different calculations based on whether or not it is the first loop itteration
     if(first_itteration){
       first_itteration = false; // change the flag
+      controller_output = (Kp * err)
     }else{
-      err_int += err * dt; // error integral
       err_der = (err - prev_err) / dt; // error derivative
+      ideal_controller_output = (Kp * err) + (Ki * err_int) + (Kd * err_der);
+
+      //integral clamping prevents integral term from accumulating if the exceeding maximum or minimum of controller.
+      if (ideal_controller_output >= controller_max && err > 0){ //motor going full tilt in a positive dirrection and reducing the error (error is positive)
+      } else if (ideal_controller_output <= controller_min && err < 0) //motor going full tilt in a negative dirrection and reducing the error (error is negative)
+      else{
+        err_int += err * dt; //dont need to clamp
+      }
+      controller_output = (Kp * err) + (Ki * err_int) + (Kd * err_der);
     }
 
-    // controller output that is used as a pwm signal
-    controller_output = (Kp * err) + (Ki * err_int) + (Kd * err_der);
 
     // determing which way to spin the motor
     if (controller_output > 0){
@@ -92,12 +102,12 @@ void move_to(int targ) {
     } else if (controller_output < 0){
       digitalWrite(mot_pos_pin, LOW);
       digitalWrite(mot_neg_pin, HIGH);
-      controller_output *= -1; // pwm doesnt excpet negative. Negative only affects direction of motor spin so now that we have done that we can change to pwm
+      controller_output *= -1; // pwm doesnt excpet negative. Negative only affects direction of motor spin so now that we have done that we can change to positive
     }
 
     // 255 is 100% duty cycle control signal can not exceed 255
-    if(controller_output > 255){
-      contoller_output = 255;
+    if(controller_output > controller_max){
+      contoller_output = controller_max;
     }
 
     // Control the motor
