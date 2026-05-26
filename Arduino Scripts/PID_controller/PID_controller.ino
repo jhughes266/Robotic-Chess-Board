@@ -23,9 +23,15 @@ int bit_5;
 int bit_6;
 
 // PID constants
-float Kp = 1;
-float Ki = 1;
-float Kd = 1;
+float Kp = 50;
+float Ki = 10;
+float Kd = 0;
+
+// Misc
+float test_target_1 = 78;
+float test_target_2 = 50;
+float test_target_3 = 100;
+float test_target_4 = 20;
 
 
 
@@ -34,12 +40,13 @@ void move_to(int targ) {
   float cur; 
   float err = 0;
   float prev_err;
-  float err_int 0;
+  float err_int = 0;
   float err_der = 0;
   float controller_output;
   float ideal_controller_output;
-  float controller_max = 255;
-  float controller_min = -255;
+  float controller_max = 200;
+  float controller_min = -200;
+  int settle_count = 0;
   // itteration tracker
   bool first_itteration = true;
   //time variable set up
@@ -68,31 +75,45 @@ void move_to(int targ) {
     // error calculations
     prev_err = err;
     err = targ - cur;
+    
 
+    
     //system has settled stop driving the motor
-    if(prev_err == err && err == 0){
+
+    if(abs(err) <= 1){
+      settle_count += 1;
+    }else{
+      settle_count = 0;
+    }
+
+    
+    
+    if(settle_count == 10){
       digitalWrite(mot_neg_pin, LOW);
-      digitalWrite(mot_pos_pin, LOw);
-      analogWrite(motor_pwm_pin, 255);
+      digitalWrite(mot_pos_pin, LOW);
+      analogWrite(motor_pwm_pin, 0);
+      Serial.println("TARGET REACHED");
       break;
     }
     
     // different calculations based on whether or not it is the first loop itteration
     if(first_itteration){
       first_itteration = false; // change the flag
-      controller_output = (Kp * err)
+      controller_output = (Kp * err);
     }else{
       err_der = (err - prev_err) / dt; // error derivative
       ideal_controller_output = (Kp * err) + (Ki * err_int) + (Kd * err_der);
 
       //integral clamping prevents integral term from accumulating if the exceeding maximum or minimum of controller.
-      if (ideal_controller_output >= controller_max && err > 0){ //motor going full tilt in a positive dirrection and reducing the error (error is positive)
-      } else if (ideal_controller_output <= controller_min && err < 0) //motor going full tilt in a negative dirrection and reducing the error (error is negative)
+      if (ideal_controller_output >= controller_max && err > 0){} //motor going full tilt in a positive dirrection and reducing the error (error is positive)
+      else if (ideal_controller_output <= controller_min && err < 0){} //motor going full tilt in a negative dirrection and reducing the error (error is negative)
       else{
         err_int += err * dt; //dont need to clamp
       }
       controller_output = (Kp * err) + (Ki * err_int) + (Kd * err_der);
     }
+
+    
 
 
     // determing which way to spin the motor
@@ -107,11 +128,19 @@ void move_to(int targ) {
 
     // 255 is 100% duty cycle control signal can not exceed 255
     if(controller_output > controller_max){
-      contoller_output = controller_max;
+      controller_output = controller_max;
     }
 
+    Serial.print("Error: ");
+    Serial.print(err);
+    Serial.print(" Controller Output: ");
+    Serial.print(controller_output);
+    Serial.print(" Settle Count: ");
+    Serial.print(settle_count);
+    Serial.println();
     // Control the motor
     analogWrite(motor_pwm_pin, controller_output);
+    
   }
 }
 
@@ -132,6 +161,8 @@ void setup() {
 }
 
 void loop() {
-
-
+  move_to(test_target_1);
+  move_to(test_target_2);
+  move_to(test_target_3);
+  move_to(test_target_4);
 }
