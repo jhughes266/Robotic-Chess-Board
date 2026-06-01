@@ -10,8 +10,8 @@ class PositionalEncoder:
         Inits for the PositionalEncoder class.
         
         Args:
-        bitPinList: List where the key is the bit number and the value is the
-        pin which corresponds to that bit.
+            bitPinList: List where the key is the bit number and the value is
+            the pin which corresponds to that bit.
         """
         # Save as a private attribute. They have seperate names because the init
         # method changes the data type from integers to "Pin" class objects.

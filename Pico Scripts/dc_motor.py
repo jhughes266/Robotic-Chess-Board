@@ -1,8 +1,8 @@
 from machine import Pin
 
-class Motor:
+class DcMotor:
     """
-    This class encapsulates the motor it enables the motor speed and direction
+    This class encapsulates the DC motor it enables the motor speed and direction
     of spin to be controlled.
     """
     def __init__(self, speedControlPwmPinNumber, positivePinNumber, negativePinNumber):
@@ -10,26 +10,26 @@ class Motor:
         Sets up a "Motor" class object. Takes the pin number and inits "Pin"
         objects.
         Args:
-        speedControlPWMPinNumber: The number of the pin responsible for pwm
-        control of the motor.
-        positivePinNumber: When this number pin is on and the negative pin is
-        off the motor will go in the positive direction when activated.
-        negativePinNumber: When this number pin is on and the positive pin is
-        off the motor will go in the negative direction when activated.
+            speedControlPWMPinNumber: The number of the pin responsible for pwm
+            control of the motor.
+            positivePinNumber: When this number pin is on and the negative pin
+            is off the motor will go in the positive direction when activated.
+            negativePinNumber: When this number pin is on and the positive pin
+            is off the motor will go in the negative direction when activated.
         """
         self._speedControlPwmPin = PWM(Pin(speedControlPwmPinNumber))
         self._speedControlPwmPin.freq(1000) 
         self._positivePin = Pin(positivePinNumber, Pin.OUT)
         self._negativePin = Pin(negativePinNumber, Pin.OUT)
     
-    def spinPositive():
+    def _spinPositive():
         """
         Make the motor turn so the carriage will move in a positive dirrection
         """
         self._negative.value(0)
         self._positive.value(1)
     
-    def spinNegative():
+    def _spinNegative():
         """
         Make the motor turn so the carriage will move in a negative dirrection
         """
@@ -39,13 +39,23 @@ class Motor:
     def turnMotor(percentageSpeed):
         """
         Activating this will cause the motor to spin at the given percentage of
-        its maximum speed.
+        its maximum speed in the correct dirrection
         
         Args:
-        percentageSpeed: The percentage of the maximum speed you want the motor
-        spinning at takes values from 0-100 inclusive
+            percentageSpeed: The percentage of the maximum speed you want the
+            motor spinning at takes values from 0-100 inclusive
         """
-        self._speedControlPwmPin.duty_u16(65535 * (percentageSpeed / 100))
+        # Determine the direction to spin the motor
+        if percentageSpeed > 0:
+            self._spinPositive()
+        elif percentageSpeed < 0:
+            self._spinNegative()
+        else:
+            self.turnOff()
+            return
+        
+        #Output the PWM signal. Use the absolute value of the percentageSpeed
+        self._speedControlPwmPin.duty_u16(65535 * (abs(percentageSpeed) / 100))
     
     def turnOff():
         """
