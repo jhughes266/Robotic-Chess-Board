@@ -6,7 +6,7 @@ class PidXY:
     """
     This class controls the x,y position of carriage using a PID controller.
     """
-    def __init__(self, xPositionalEncoder, yPositionalEncoder, xDcMotor, yDcMotor, xMotorPidDict, yMotorPidDict):
+    def __init__(self, xPositionalEncoder, yPositionalEncoder, xDcMotor, yDcMotor, xMotorPidDict, yMotorPidDict, maxAllowableError):
         """
         Sets up the PidXY class. Stores two positional encoder objects as
         attributes for later use.
@@ -29,10 +29,10 @@ class PidXY:
         self._yDcMotor = yDcMotor
         self._xMotorPidDict = xMotorPidDict
         self._yMotorPidDict = yMotorPidDict
+        self._maxAllowableError = maxAllowableError
         self._controllerMax = 100
         self._controllerMin = -100
         self._atTargetCount = 0
-        self._maxAllowableError = 1
         self._atTargetThreshold = 10
     
     def moveTo(xTarget, yTarget):

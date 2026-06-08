@@ -17,7 +17,7 @@ class PositionalEncoder:
         # method changes the data type from integers to "Pin" class objects.
         self._bitPinPairList = bitPinNumberPairList
         
-        # Go through and convert all the values of the Listionary to Pin objects
+        # Go through and convert all the values of the List to Pin objects
         for bitNumber in range(len(self._bitPinPairList)):
             self._bitPinPairList[bitNumber] = Pin(self._bitPinPairList[bitNumber], Pin.IN)
     
