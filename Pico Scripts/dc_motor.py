@@ -1,4 +1,5 @@
 from machine import Pin
+from machine import PWM
 
 class DcMotor:
     """
@@ -22,21 +23,21 @@ class DcMotor:
         self._positivePin = Pin(positivePinNumber, Pin.OUT)
         self._negativePin = Pin(negativePinNumber, Pin.OUT)
     
-    def _spinPositive():
+    def _spinPositive(self):
         """
         Make the motor turn so the carriage will move in a positive dirrection
         """
-        self._negative.value(0)
-        self._positive.value(1)
+        self._negativePin.value(0)
+        self._positivePin.value(1)
     
-    def _spinNegative():
+    def _spinNegative(self):
         """
         Make the motor turn so the carriage will move in a negative dirrection
         """
-        self._positive.value(0)
-        self._negative.value(1)
+        self._positivePin.value(0)
+        self._negativePin.value(1)
     
-    def turnMotor(percentageSpeed):
+    def turnMotor(self, percentageSpeed):
         """
         Activating this will cause the motor to spin at the given percentage of
         its maximum speed in the correct dirrection
@@ -55,12 +56,12 @@ class DcMotor:
             return
         
         #Output the PWM signal. Use the absolute value of the percentageSpeed
-        self._speedControlPwmPin.duty_u16(65535 * (abs(percentageSpeed) / 100))
+        self._speedControlPwmPin.duty_u16(int(65535 * (abs(percentageSpeed) / 100)))
     
-    def turnOff():
+    def turnOff(self):
         """
         zeros everything causing the motor to halt
         """
-        self._negative.value(0)
-        self._positive.value(0)
-        self.turnMotor(0)
+        self._negativePin.value(0)
+        self._positivePin.value(0)
+        self._speedControlPwmPin.duty_u16(0)

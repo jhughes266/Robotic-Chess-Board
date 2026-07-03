@@ -1,16 +1,16 @@
-from dc_motoro import DcMotor
-from positional_encoder import PositionalEncoder
-from pid_xy import PidXY
+from dc_motor import DcMotor
+#from positional_encoder import PositionalEncoder
+#from pid_xy import PidXY
 from time import sleep
 
 # 1 Testing the DcMotor object
-testMotor = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
+testMotor = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
 testMotor.turnMotor(100)
-sleep(3.0)
+sleep(0.75)
 testMotor.turnMotor(-100)
-sleep(3.0)
+sleep(0.75)
 testMotor.turnOff()
-
+"""
 # 2 Testing the positional encoder
 xBitPinPairList = [0,1,2,3,4,5,6]
 xPositionalEncoder = PositionalEncoder(bitPinNumberPairList=xBitPinNumberPairList)
@@ -46,5 +46,5 @@ testPid = PidXY(xPositionalEncoder=xPositionalEncoder,
                    maxAllowableError=1)
 
 testPid.moveTo(xTarget=, yTarget=)
-
+"""
 
