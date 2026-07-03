@@ -21,7 +21,7 @@ class PositionalEncoder:
         for bitNumber in range(len(self._bitPinPairList)):
             self._bitPinPairList[bitNumber] = Pin(self._bitPinPairList[bitNumber], Pin.IN)
     
-    def getPosition(self)
+    def getPosition(self):
         """
         Gets the current position of read by the positional encoder. Also converts
         it into decimal
