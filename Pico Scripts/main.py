@@ -1,6 +1,6 @@
 from dc_motor import DcMotor
 from positional_encoder import PositionalEncoder
-#from pid_xy import PidXY
+from pid_xy import PidXY
 from time import sleep
 
 # 1 Testing the DcMotor object
@@ -31,8 +31,9 @@ yPositionalEncoder = PositionalEncoder(bitPinNumberPairList=yBitPinNumberPairLis
 testMotorX = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
 testMotorY = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
 
-delay = 20
+delay = 15
 
+"""
 print("X POSITIVE")
 testMotorX.turnMotor(100)
 for i in range(delay):
@@ -62,8 +63,9 @@ for i in range(delay):
     print("Ypos {}".format(ypos))
     sleep(0.05)
 
+
 print("Y NEGATIVE")
-testMotorY.turnMotor(-100)
+testMotorY.turnMotor(100)
 for i in range(delay):
     xpos = xPositionalEncoder.getPosition()
     ypos = yPositionalEncoder.getPosition()
@@ -74,34 +76,132 @@ for i in range(delay):
 testMotorY.turnOff()
 
 
+#testMotorY.turnMotor(-100)
+while True:
+    xpos = xPositionalEncoder.getPosition()
+    ypos = yPositionalEncoder.getPosition()
+    print("Xpos {}".format(xpos))
+    print("Ypos {}".format(ypos))
+    sleep(0.1)
+
+#testMotorY.turnOff()
+
     
+
 """
 # 3 Testing the pid
-xBitPinPairList = [0,1,2,3,4,5,6]
-xPositionalEncoder = PositionalEncoder(bitPinNumberPairList=xBitPinNumberPairList)
-yBitPinPairList = [7,8,9,10,11,12,13]
-yPositionalEncoder = PositionalEncoder(bitPinNumberPairList=yBitPinNumberPairList)
-xDcMotor = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
-yDcMotor = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
-xMotorPidDict = {
-    "Kp": 1,
-    "Ki": 1,
-    "Kd": 1
-    }
-yMotorPidDict = {
-    "Kp": 1,
-    "Ki": 1,
-    "Kd": 1
-    }
+def repos(sleepTime):
+    xBitPinNumberPairList = [0,1,2,3,4,5,6]
+    xPositionalEncoder = PositionalEncoder(bitPinNumberPairList=xBitPinNumberPairList)
+    yBitPinNumberPairList = [7,8,9,10,11,12,13]
+    yPositionalEncoder = PositionalEncoder(bitPinNumberPairList=yBitPinNumberPairList)
 
-testPid = PidXY(xPositionalEncoder=xPositionalEncoder,
-                   yPositionalEncoder=yPositionalEncoder,
-                   xDcMotor=xDcMotor,
-                   yDcMotor=yDcMotor,
-                   xMotorPidDict=xMotorPidDict,
-                   yMotorPidDict=yMotorPidDict,
-                   maxAllowableError=1)
+    testMotorX = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
+    testMotorY = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
 
-testPid.moveTo(xTarget=, yTarget=)
-"""
+    #testMotorX.turnMotor(-100)
+    #sleep(sleepTime)
+    #testMotorX.turnOff()
+
+    testMotorY.turnMotor(-100)
+    sleep(sleepTime)
+    testMotorY.turnOff()
+    
+reposition = False;
+
+if reposition:
+    repos(0.25)
+    
+else:
+    
+    xBitPinNumberPairList = [0,1,2,3,4,5,6]
+    xPositionalEncoder = PositionalEncoder(bitPinNumberPairList=xBitPinNumberPairList)
+    yBitPinNumberPairList = [7,8,9,10,11,12,13]
+    yPositionalEncoder = PositionalEncoder(bitPinNumberPairList=yBitPinNumberPairList)
+
+    xDcMotor = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
+    yDcMotor = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
+    
+    xDcMotor.turnOff()
+    yDcMotor.turnOff()
+    
+    xMotorPidDict = {
+        "Kp": 50,
+        "Ki": .1,
+        "Kd": 0
+        }
+    yMotorPidDict = {
+        "Kp": 50,
+        "Ki": .1,
+        "Kd": 0
+        }
+
+    testPid = PidXY(xPositionalEncoder=xPositionalEncoder,
+                       yPositionalEncoder=yPositionalEncoder,
+                       xDcMotor=xDcMotor,
+                       yDcMotor=yDcMotor,
+                       xMotorPidDict=xMotorPidDict,
+                       yMotorPidDict=yMotorPidDict,
+                       maxAllowableError=1)
+    """
+    for x in range(10,120,10):
+        for y in range(10,120,10):
+            testPid.moveTo(targetX=x, targetY=y)
+            print("Xpos" + str(xPositionalEncoder.getPosition()))
+            print("Ypos" + str(yPositionalEncoder.getPosition()))
+            print("AT Target")
+    
+    """
+    for i in range(1):
+        testPid.moveTo(targetX=10, targetY=10)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=10, targetY=110)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=110, targetY=110)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=110, targetY=10)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=10, targetY=10)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=55, targetY=110)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=110, targetY=10)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=55, targetY=55)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+        
+        testPid.moveTo(targetX=10, targetY=10)
+        print("Xpos" + str(xPositionalEncoder.getPosition()))
+        print("Ypos" + str(yPositionalEncoder.getPosition()))
+        print("AT Target")
+    
+    
+
+        
+        
+        
+
 

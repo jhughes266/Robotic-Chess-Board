@@ -33,16 +33,16 @@ class PidXY:
         self._controllerMax = 100
         self._controllerMin = -100
         self._atTargetCount = 0
-        self._atTargetThreshold = 10
+        self._atTargetThreshold = 1000
     
-    def moveTo(xTarget, yTarget):
+    def moveTo(self, targetX, targetY):
         """
         Uses a PID controler to move the carriage to the specified x and y
         position.
         
         Args:
-            xTarget: The x position the cariage will attempt to move to.
-            yTarget: The y position the cariage will attempt to move to.
+            targetX: The x position the cariage will attempt to move to.
+            targetY: The y position the cariage will attempt to move to.
         """
         # Init the error values to 0
         xError = 0
@@ -56,18 +56,19 @@ class PidXY:
         firstItterationFlag = True
         
         # Take the first time measurement
-        currentTime = time.tick_us()
+        currentTime = time.ticks_us()
         
         # Check if the carriage is at the target
-        while !self._atTarget(xError, yError):
-            
+        iter_count = 0
+        while not self._atTarget(xError, yError):
+            iter_count += 1
             # Use the positional encoders to make a measurement
             currentX = self._xPositionalEncoder.getPosition()
-            currentY = self._yPositionalEncoder.getPosition()
+            currentY = self._yPositionalEncoder.getPosition()  
             
             # Record the time the the positional encoders made thier measurement
             previousTime = currentTime
-            currentTime = time.tick_us()
+            currentTime = time.ticks_us()
             # Calculate the time delate and divide by 10^6 to be back to seconds
             dt = time.ticks_diff(currentTime, previousTime) / (10 ** 6)
             
@@ -78,8 +79,7 @@ class PidXY:
             # Get the current errors
             xError = targetX - currentX
             yError = targetY - currentY
-            
-            
+                      
             if firstItterationFlag:
                 # On the first itteration we cant use the integral or derivative
                 # terms because there is no previous time measurement
@@ -95,29 +95,32 @@ class PidXY:
                 yErrorDerivative = (yError - previousYError) / dt
                 
                 # The output of the controller prior to clamping
-                xIdealControllerOutput = (self._xMotorPidDict['Kp'] * xError) 
+                xIdealControllerOutput = ((self._xMotorPidDict['Kp'] * xError) 
                                          + (self._xMotorPidDict['Ki'] * xErrorIntegral)
-                                         + (self._xMotorPidDict['Kd'] * xErrorDerivative)
+                                         + (self._xMotorPidDict['Kd'] * xErrorDerivative))
                 
-                yIdealControllerOutput = (self._yMotorPidDict['Kp'] * yError) 
+                yIdealControllerOutput = ((self._yMotorPidDict['Kp'] * yError) 
                                          + (self._yMotorPidDict['Ki'] * yErrorIntegral)
-                                         + (self._yMotorPidDict['Kd'] * yErrorDerivative)
+                                         + (self._yMotorPidDict['Kd'] * yErrorDerivative))
                 
                 # Checking whether integral clamping is required or not
-                if !self._integralClamping(xIdealControllerOutput, xError):
+                if not self._integralClamping(xIdealControllerOutput, xError):
                     xErrorIntegral += xError * dt
                 
-                if !self._integralClamping(yIdealControllerOutput, yError):
+                if not self._integralClamping(yIdealControllerOutput, yError):
                     yErrorIntegral += yError * dt
                 
                 # Recaculating the controller output after clamping
-                xControllerOutput = (self._xMotorPidDict['Kp'] * xError) 
+                xControllerOutput = ((self._xMotorPidDict['Kp'] * xError) 
                                     + (self._xMotorPidDict['Ki'] * xErrorIntegral)
-                                    + (self._xMotorPidDict['Kd'] * xErrorDerivative)
+                                    + (self._xMotorPidDict['Kd'] * xErrorDerivative))
                 
-                yControllerOutput = (self._yMotorPidDict['Kp'] * yError) 
+                yControllerOutput = ((self._yMotorPidDict['Kp'] * yError) 
                                     + (self._yMotorPidDict['Ki'] * yErrorIntegral)
-                                    + (self._yMotorPidDict['Kd'] * yErrorDerivative)
+                                    + (self._yMotorPidDict['Kd'] * yErrorDerivative))
+                                    
+                
+                
                 
                 # Restricting the controller within the bounds of the maximum
                 # and minimum allowable values. 
@@ -127,11 +130,18 @@ class PidXY:
                 yControllerOutput = min(self._controllerMax, yControllerOutput)
                 yControllerOutput = max(self._controllerMin, yControllerOutput)
                 
+                if iter_count % 100 == 0:
+                    print("Y |Pos: " + str(currentY) +  " Error: " + str(yError) + " Controller Out: " + str(yControllerOutput))
+                    print("X |Pos: " + str(currentX) +  " Error: " + str(xError) + " Controller Out: " + str(xControllerOutput))
+
+                
                 # Turn the motors
                 self._xDcMotor.turnMotor(xControllerOutput)
                 self._yDcMotor.turnMotor(yControllerOutput)
+                
+                
     
-    def _integralClamping(idealControllerOutput, error):
+    def _integralClamping(self, idealControllerOutput, error):
         """
 
         Args:
@@ -151,11 +161,11 @@ class PidXY:
             # motor going full tilt in a negative dirrection and reducing the
             # error (error is negative)
             return True
-        else
+        else:
             # dont need to clamp
             return False
     
-    def _atTarget(xError, yError):
+    def _atTarget(self, xError, yError):
         """
         Determines whether or not the carriage has arrived at the target
         position.
@@ -180,6 +190,9 @@ class PidXY:
         # The target has been at the target location long enough that it has
         # been deemed to have settled there.
         if self._atTargetCount == self._atTargetThreshold:
+            # Turn the motors off
+            self._xDcMotor.turnOff()
+            self._yDcMotor.turnOff()
             return True
         
         # Still not at target location
