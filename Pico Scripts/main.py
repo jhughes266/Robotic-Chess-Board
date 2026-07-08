@@ -127,12 +127,12 @@ else:
     
     xMotorPidDict = {
         "Kp": 50,
-        "Ki": .1,
+        "Ki": 1,
         "Kd": 0
         }
     yMotorPidDict = {
         "Kp": 50,
-        "Ki": .1,
+        "Ki": 1,
         "Kd": 0
         }
 
@@ -143,16 +143,18 @@ else:
                        xMotorPidDict=xMotorPidDict,
                        yMotorPidDict=yMotorPidDict,
                        maxAllowableError=1)
-    """
-    for x in range(10,120,10):
-        for y in range(10,120,10):
+    
+    for x in range(12,116,8):
+        for y in range(12,116,8):
             testPid.moveTo(targetX=x, targetY=y)
             print("Xpos" + str(xPositionalEncoder.getPosition()))
             print("Ypos" + str(yPositionalEncoder.getPosition()))
             print("AT Target")
-    
+
+    #testPid.moveTo(targetX=55, targetY=55)
     """
-    for i in range(1):
+    for i in range(2):
+        
         testPid.moveTo(targetX=10, targetY=10)
         print("Xpos" + str(xPositionalEncoder.getPosition()))
         print("Ypos" + str(yPositionalEncoder.getPosition()))
@@ -197,7 +199,7 @@ else:
         print("Xpos" + str(xPositionalEncoder.getPosition()))
         print("Ypos" + str(yPositionalEncoder.getPosition()))
         print("AT Target")
-    
+        """
     
 
         

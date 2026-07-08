@@ -22,6 +22,9 @@ class PidXY:
             motor that performs y axis movement.
             xMotorPidDict: A dictionary containing the PID values for the x Motor
             yMotorPidDict: A dictionary containing the PID values for the y Motor
+            minControllerOutput: The minimum the controller can output. The
+            original output of the controller will be scalled between this value
+            and 100%
         """
         self._xPositionalEncoder = xPositionalEncoder
         self._yPositionalEncoder = yPositionalEncoder
@@ -33,7 +36,7 @@ class PidXY:
         self._controllerMax = 100
         self._controllerMin = -100
         self._atTargetCount = 0
-        self._atTargetThreshold = 1000
+        self._atTargetThreshold = 500
     
     def moveTo(self, targetX, targetY):
         """
@@ -130,9 +133,10 @@ class PidXY:
                 yControllerOutput = min(self._controllerMax, yControllerOutput)
                 yControllerOutput = max(self._controllerMin, yControllerOutput)
                 
+                # For testing
                 if iter_count % 100 == 0:
-                    print("Y |Pos: " + str(currentY) +  " Error: " + str(yError) + " Controller Out: " + str(yControllerOutput))
                     print("X |Pos: " + str(currentX) +  " Error: " + str(xError) + " Controller Out: " + str(xControllerOutput))
+                    print("Y |Pos: " + str(currentY) +  " Error: " + str(yError) + " Controller Out: " + str(yControllerOutput))
 
                 
                 # Turn the motors
@@ -182,14 +186,15 @@ class PidXY:
         # If the carriage is under the maximum allowable error its at the target
         # location
         if(abs(xError) <= self._maxAllowableError and abs(yError) <= self._maxAllowableError):
-            self._atTargetCount += 1
-            
+            self._atTargetCount += 1            
         else:
             self._atTargetCount = 0
         
         # The target has been at the target location long enough that it has
         # been deemed to have settled there.
         if self._atTargetCount == self._atTargetThreshold:
+            # Reset the target count
+            self._atTargetCount = 0
             # Turn the motors off
             self._xDcMotor.turnOff()
             self._yDcMotor.turnOff()
