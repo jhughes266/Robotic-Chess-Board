@@ -14,19 +14,19 @@ class PieceMover:
             of the carriage
             gripper: The object that controls the gripper.
         """
-        self._pidXY = pidXY
-        self._gripper = gripper
+        self.__pidXY = pidXY
+        self.__gripper = gripper
         # Dictionaries that convert the grid cordinates to the underlying
         # cordinates that the PID controller can use. This could be done with a
         # simple mathmatical calculation but the dictionary enable us to account
         # for offsets that may need to be put in. Can potentially just change
         # this to a math equation later if that is approriate.
-        self._xGridCordinateToBaseCordinates = {
+        self.__xGridCordinateToBaseCordinates = {
             0:16, 1:24, 2:32, 3:40, 4:48, 5:56, 6:64, 7:72, 8:80, 9:88, 10:96,
             11:104
             }
         
-        self._yGridCordinateToBaseCordinates = {
+        self.__yGridCordinateToBaseCordinates = {
             0:16, 1:24, 2:32, 3:40, 4:48, 5:56, 6:64, 7:72, 8:80, 9:88, 10:96,
             11:104
             }
@@ -50,9 +50,9 @@ class PieceMover:
                 gridY:The y location in the grid where the carriage is to be
                 moved
             """
-            self._pidXY.moveTo(
-                self._xGridCordinateToBaseCordinates[gridX],
-                self._yGridCordinateToBaseCordinates[gridY]
+            self.__pidXY.moveTo(
+                self.__xGridCordinateToBaseCordinates[gridX],
+                self.__yGridCordinateToBaseCordinates[gridY]
                 )
         
         def movePiece(self, startGridX, startGridY, endGridX, endGridY, engageGripper=True, disengageGripper=True):
@@ -74,18 +74,18 @@ class PieceMover:
             self.moveToGridXY(startGridX, startGridY)
             
             if engageGripper:
-                self._gripper.engage()
+                self.__gripper.engage()
                 
             self.moveToGridXY(endGridX, endGridY)
             
             if disengageGripper:
-                self._gripper.disengage()
+                self.__gripper.disengage()
             
         def moveToCalibration(self):
             """
             Movea the piece the calibration location. 
             """
-            self._gripper.disengage()
-            self._pidXY.moveTo(calibrationX, calibrationY)
+            self.__gripper.disengage()
+            self.__pidXY.moveTo(calibrationX, calibrationY)
         
     

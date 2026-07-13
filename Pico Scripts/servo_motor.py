@@ -14,14 +14,14 @@ class ServoMotor:
             that will control the servo.
         """
         # Init the PWM pin
-        self._servoPwmPin = PWM(Pin(angleControlPinNumber))
+        self.__servoPwmPin = PWM(Pin(angleControlPinNumber))
         # Set the PWM frequency to the frequency required by the servo
         pwmFrequency = 50
-        self._servoPwmPin.freq(pwmFrequency)
+        self.__servoPwmPin.freq(pwmFrequency)
         # All values are in ms
-        self._pwmPeriod = 20.000
-        self._min_pulse_width = 1.000
-        self._max_pulse_width = 2.000
+        self.__pwmPeriod = 20.000
+        self.__min_pulse_width = 1.000
+        self.__max_pulse_width = 2.000
         
         
     def angle(self, angle):
@@ -34,16 +34,16 @@ class ServoMotor:
         # Proportion of the 180 deg that you want the servo to go to.
         proportionOfFullRange = angle / 180
         # The pulse width required to get the desired angle
-        pulseWidth = self._min_pulse_width + ((proportionOfFullRange) * (self._max_pulse_width - self._min_pulse_width))
+        pulseWidth = self.__min_pulse_width + ((proportionOfFullRange) * (self.__max_pulse_width - self.__min_pulse_width))
         # Get the PWM value required by the pico
-        picoPwmValue = int((pulseWidth / self._pwmPeriod) * 65535)
+        picoPwmValue = int((pulseWidth / self.__pwmPeriod) * 65535)
         # Send the PWM to the pin
-        self._servoPwmPin.duty_u16(picoPwmValue)
+        self.__servoPwmPin.duty_u16(picoPwmValue)
     
     def turnOff(self):
         """
         Turn the servo off. This may cause the servo to go limp.
         """
-        self._servoPwmPin.duty_u16(0)
+        self.__servoPwmPin.duty_u16(0)
         
         

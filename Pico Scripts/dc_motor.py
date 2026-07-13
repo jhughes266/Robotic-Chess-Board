@@ -18,24 +18,24 @@ class DcMotor:
             negativePinNumber: When this number pin is on and the positive pin
             is off the motor will go in the negative direction when activated.
         """
-        self._speedControlPwmPin = PWM(Pin(speedControlPwmPinNumber))
-        self._speedControlPwmPin.freq(1000) 
-        self._positivePin = Pin(positivePinNumber, Pin.OUT)
-        self._negativePin = Pin(negativePinNumber, Pin.OUT)
+        self.__speedControlPwmPin = PWM(Pin(speedControlPwmPinNumber))
+        self.__speedControlPwmPin.freq(1000) 
+        self.__positivePin = Pin(positivePinNumber, Pin.OUT)
+        self.__negativePin = Pin(negativePinNumber, Pin.OUT)
     
-    def _spinPositive(self):
+    def __spinPositive(self):
         """
         Make the motor turn so the carriage will move in a positive dirrection
         """
-        self._negativePin.value(0)
-        self._positivePin.value(1)
+        self.__negativePin.value(0)
+        self.__positivePin.value(1)
     
-    def _spinNegative(self):
+    def __spinNegative(self):
         """
         Make the motor turn so the carriage will move in a negative dirrection
         """
-        self._positivePin.value(0)
-        self._negativePin.value(1)
+        self.__positivePin.value(0)
+        self.__negativePin.value(1)
     
     def turnMotor(self, percentageSpeed):
         """
@@ -48,20 +48,20 @@ class DcMotor:
         """
         # Determine the direction to spin the motor
         if percentageSpeed > 0:
-            self._spinPositive()
+            self.__spinPositive()
         elif percentageSpeed < 0:
-            self._spinNegative()
+            self.__spinNegative()
         else:
             self.turnOff()
             return
         
         #Output the PWM signal. Use the absolute value of the percentageSpeed
-        self._speedControlPwmPin.duty_u16(int(65535 * (abs(percentageSpeed) / 100)))
+        self.__speedControlPwmPin.duty_u16(int(65535 * (abs(percentageSpeed) / 100)))
     
     def turnOff(self):
         """
         zeros everything causing the motor to halt
         """
-        self._negativePin.value(0)
-        self._positivePin.value(0)
-        self._speedControlPwmPin.duty_u16(0)
+        self.__negativePin.value(0)
+        self.__positivePin.value(0)
+        self.__speedControlPwmPin.duty_u16(0)

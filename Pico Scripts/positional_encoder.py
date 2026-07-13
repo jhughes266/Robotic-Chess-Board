@@ -15,11 +15,11 @@ class PositionalEncoder:
         """
         # Save as a private attribute. They have seperate names because the init
         # method changes the data type from integers to "Pin" class objects.
-        self._bitPinPairList = bitPinNumberPairList
+        self.__bitPinPairList = bitPinNumberPairList
         
         # Go through and convert all the values of the List to Pin objects
-        for bitNumber in range(len(self._bitPinPairList)):
-            self._bitPinPairList[bitNumber] = Pin(self._bitPinPairList[bitNumber], Pin.IN)
+        for bitNumber in range(len(self.__bitPinPairList)):
+            self.__bitPinPairList[bitNumber] = Pin(self.__bitPinPairList[bitNumber], Pin.IN)
     
     def getPosition(self):
         """
@@ -31,7 +31,7 @@ class PositionalEncoder:
         
         # Loop through and read all the pins in the bitPinList accumulating the
         # value in the "decimalPosition" variable.
-        for bitNumber, pin in enumerate(self._bitPinPairList):
+        for bitNumber, pin in enumerate(self.__bitPinPairList):
             decimalPosition += (2 ** bitNumber) * pin.value()
         
         return decimalPosition

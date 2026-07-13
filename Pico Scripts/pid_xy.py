@@ -26,17 +26,17 @@ class PidXY:
             original output of the controller will be scalled between this value
             and 100%
         """
-        self._xPositionalEncoder = xPositionalEncoder
-        self._yPositionalEncoder = yPositionalEncoder
-        self._xDcMotor = xDcMotor
-        self._yDcMotor = yDcMotor
-        self._xMotorPidDict = xMotorPidDict
-        self._yMotorPidDict = yMotorPidDict
-        self._maxAllowableError = maxAllowableError
-        self._controllerMax = 100
-        self._controllerMin = -100
-        self._atTargetCount = 0
-        self._atTargetThreshold = 500
+        self.__xPositionalEncoder = xPositionalEncoder
+        self.__yPositionalEncoder = yPositionalEncoder
+        self.__xDcMotor = xDcMotor
+        self.__yDcMotor = yDcMotor
+        self.__xMotorPidDict = xMotorPidDict
+        self.__yMotorPidDict = yMotorPidDict
+        self.__maxAllowableError = maxAllowableError
+        self.__controllerMax = 100
+        self.__controllerMin = -100
+        self.__atTargetCount = 0
+        self.__atTargetThreshold = 500
     
     def moveTo(self, targetX, targetY):
         """
@@ -63,11 +63,11 @@ class PidXY:
         
         # Check if the carriage is at the target
         iter_count = 0
-        while not self._atTarget(xError, yError):
+        while not self.__atTarget(xError, yError):
             iter_count += 1
             # Use the positional encoders to make a measurement
-            currentX = self._xPositionalEncoder.getPosition()
-            currentY = self._yPositionalEncoder.getPosition()  
+            currentX = self.__xPositionalEncoder.getPosition()
+            currentY = self.__yPositionalEncoder.getPosition()  
             
             # Record the time the the positional encoders made thier measurement
             previousTime = currentTime
@@ -87,8 +87,8 @@ class PidXY:
                 # On the first itteration we cant use the integral or derivative
                 # terms because there is no previous time measurement
                 firstItterationFlag = False
-                xControllerOutput = self._xMotorPidDict['Kp'] * xError 
-                yControllerOutput = self._yMotorPidDict['Kp'] * yError
+                xControllerOutput = self.__xMotorPidDict['Kp'] * xError 
+                yControllerOutput = self.__yMotorPidDict['Kp'] * yError
                 
             else:
                 # Can use the integral and derivative terms
@@ -98,40 +98,40 @@ class PidXY:
                 yErrorDerivative = (yError - previousYError) / dt
                 
                 # The output of the controller prior to clamping
-                xIdealControllerOutput = ((self._xMotorPidDict['Kp'] * xError) 
-                                         + (self._xMotorPidDict['Ki'] * xErrorIntegral)
-                                         + (self._xMotorPidDict['Kd'] * xErrorDerivative))
+                xIdealControllerOutput = ((self.__xMotorPidDict['Kp'] * xError) 
+                                         + (self.__xMotorPidDict['Ki'] * xErrorIntegral)
+                                         + (self.__xMotorPidDict['Kd'] * xErrorDerivative))
                 
-                yIdealControllerOutput = ((self._yMotorPidDict['Kp'] * yError) 
-                                         + (self._yMotorPidDict['Ki'] * yErrorIntegral)
-                                         + (self._yMotorPidDict['Kd'] * yErrorDerivative))
+                yIdealControllerOutput = ((self.__yMotorPidDict['Kp'] * yError) 
+                                         + (self.__yMotorPidDict['Ki'] * yErrorIntegral)
+                                         + (self.__yMotorPidDict['Kd'] * yErrorDerivative))
                 
                 # Checking whether integral clamping is required or not
-                if not self._integralClamping(xIdealControllerOutput, xError):
+                if not self.__integralClamping(xIdealControllerOutput, xError):
                     xErrorIntegral += xError * dt
                 
-                if not self._integralClamping(yIdealControllerOutput, yError):
+                if not self.__integralClamping(yIdealControllerOutput, yError):
                     yErrorIntegral += yError * dt
                 
                 # Recaculating the controller output after clamping
-                xControllerOutput = ((self._xMotorPidDict['Kp'] * xError) 
-                                    + (self._xMotorPidDict['Ki'] * xErrorIntegral)
-                                    + (self._xMotorPidDict['Kd'] * xErrorDerivative))
+                xControllerOutput = ((self.__xMotorPidDict['Kp'] * xError) 
+                                    + (self.__xMotorPidDict['Ki'] * xErrorIntegral)
+                                    + (self.__xMotorPidDict['Kd'] * xErrorDerivative))
                 
-                yControllerOutput = ((self._yMotorPidDict['Kp'] * yError) 
-                                    + (self._yMotorPidDict['Ki'] * yErrorIntegral)
-                                    + (self._yMotorPidDict['Kd'] * yErrorDerivative))
+                yControllerOutput = ((self.__yMotorPidDict['Kp'] * yError) 
+                                    + (self.__yMotorPidDict['Ki'] * yErrorIntegral)
+                                    + (self.__yMotorPidDict['Kd'] * yErrorDerivative))
                                     
                 
                 
                 
                 # Restricting the controller within the bounds of the maximum
                 # and minimum allowable values. 
-                xControllerOutput = min(self._controllerMax, xControllerOutput)
-                xControllerOutput = max(self._controllerMin, xControllerOutput)
+                xControllerOutput = min(self.__controllerMax, xControllerOutput)
+                xControllerOutput = max(self.__controllerMin, xControllerOutput)
                 
-                yControllerOutput = min(self._controllerMax, yControllerOutput)
-                yControllerOutput = max(self._controllerMin, yControllerOutput)
+                yControllerOutput = min(self.__controllerMax, yControllerOutput)
+                yControllerOutput = max(self.__controllerMin, yControllerOutput)
                 
                 # For testing
                 if iter_count % 100 == 0:
@@ -140,8 +140,8 @@ class PidXY:
 
                 
                 # Turn the motors
-                self._xDcMotor.turnMotor(xControllerOutput)
-                self._yDcMotor.turnMotor(yControllerOutput)
+                self.__xDcMotor.turnMotor(xControllerOutput)
+                self.__yDcMotor.turnMotor(yControllerOutput)
                 
                 
     
@@ -157,11 +157,11 @@ class PidXY:
         """
         # integral clamping prevents integral term from accumulating if the
         # ideal controller output is exceeding maximum or minimum of controller.
-        if(idealControllerOutput >= self._controllerMax and error > 0):
+        if(idealControllerOutput >= self.__controllerMax and error > 0):
             # motor going full tilt in a positive dirrection and reducing the
             # error (error is positive)
             return True
-        elif(idealControllerOutput <= self._controllerMin and error < 0):
+        elif(idealControllerOutput <= self.__controllerMin and error < 0):
             # motor going full tilt in a negative dirrection and reducing the
             # error (error is negative)
             return True
@@ -185,19 +185,19 @@ class PidXY:
         
         # If the carriage is under the maximum allowable error its at the target
         # location
-        if(abs(xError) <= self._maxAllowableError and abs(yError) <= self._maxAllowableError):
-            self._atTargetCount += 1            
+        if(abs(xError) <= self.__maxAllowableError and abs(yError) <= self.__maxAllowableError):
+            self.__atTargetCount += 1            
         else:
-            self._atTargetCount = 0
+            self.__atTargetCount = 0
         
         # The target has been at the target location long enough that it has
         # been deemed to have settled there.
-        if self._atTargetCount == self._atTargetThreshold:
+        if self.__atTargetCount == self.__atTargetThreshold:
             # Reset the target count
-            self._atTargetCount = 0
+            self.__atTargetCount = 0
             # Turn the motors off
-            self._xDcMotor.turnOff()
-            self._yDcMotor.turnOff()
+            self.__xDcMotor.turnOff()
+            self.__yDcMotor.turnOff()
             return True
         
         # Still not at target location
