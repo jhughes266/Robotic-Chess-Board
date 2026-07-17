@@ -23,6 +23,8 @@ void loop() {
   servoLower.write(lowerFinishPos);
   delay(1000);
   servoUpper.write(upperFinishPos);
+  while(true)
+  {}
   /*
 for(pos = 175; pos >= 90; pos -= 1)
   {

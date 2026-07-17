@@ -145,7 +145,7 @@ class PidXY:
                 
                 
     
-    def _integralClamping(self, idealControllerOutput, error):
+    def __integralClamping(self, idealControllerOutput, error):
         """
 
         Args:
@@ -169,7 +169,7 @@ class PidXY:
             # dont need to clamp
             return False
     
-    def _atTarget(self, xError, yError):
+    def __atTarget(self, xError, yError):
         """
         Determines whether or not the carriage has arrived at the target
         position.

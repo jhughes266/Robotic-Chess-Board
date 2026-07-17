@@ -20,8 +20,8 @@ class ServoMotor:
         self.__servoPwmPin.freq(pwmFrequency)
         # All values are in ms
         self.__pwmPeriod = 20.000
-        self.__min_pulse_width = 1.000
-        self.__max_pulse_width = 2.000
+        self.__min_pulse_width = .800
+        self.__max_pulse_width = 2.200
         
         
     def angle(self, angle):

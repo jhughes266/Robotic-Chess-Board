@@ -1,7 +1,10 @@
 from dc_motor import DcMotor
 from positional_encoder import PositionalEncoder
 from pid_xy import PidXY
+from servo_motor import ServoMotor
 from time import sleep
+from gripper import Gripper
+from piece_mover import PieceMover
 
 # 1 Testing the DcMotor object
 """
@@ -143,7 +146,7 @@ else:
                        xMotorPidDict=xMotorPidDict,
                        yMotorPidDict=yMotorPidDict,
                        maxAllowableError=1)
-    
+    """
     for x in range(12,116,8):
         for y in range(12,116,8):
             testPid.moveTo(targetX=x, targetY=y)
@@ -151,8 +154,8 @@ else:
             print("Ypos" + str(yPositionalEncoder.getPosition()))
             print("AT Target")
 
-    #testPid.moveTo(targetX=55, targetY=55)
-    """
+    
+    
     for i in range(2):
         
         testPid.moveTo(targetX=10, targetY=10)
@@ -200,6 +203,56 @@ else:
         print("Ypos" + str(yPositionalEncoder.getPosition()))
         print("AT Target")
         """
+    #testPid.moveTo(targetX=55, targetY=55)
+    #testPid.moveTo(targetX=11, targetY=10)
+    
+    vertical =  ServoMotor(angleControlPinNumber=20)
+    claw = ServoMotor(angleControlPinNumber=21)
+    """
+    for i in range(2):
+        sleep(0.5)
+        lower.angle(95)
+        sleep(0.5)
+        lower.angle(0)
+        sleep(0.5)
+        upper.angle(160)
+        sleep(0.5)
+        upper.angle(120)
+        
+    lower.angle(95)
+    """
+    gripper = Gripper(verticalServo=vertical, clawServo=claw)
+    #gripper.disengage()
+    #gripper.engage()
+    
+    #testPid.moveTo(targetX=11, targetY=11)
+    #testPid.moveTo(targetX=55, targetY=55)
+    
+    #gripper.disengage()
+    
+    pieceMover = PieceMover(pidXY=testPid, gripper=gripper)
+    #pieceMover.movePiece(startGridX=0, startGridY=0, endGridX=5, endGridY=7, engageGripper=False, disengageGripper=False)
+    #pieceMover.moveToCalibration()
+    #pieceMover.moveToGridXY(0,0)
+    #pieceMover.moveToCalibration()
+    
+    #for x in range(12):
+    #    for y in range(12):
+    #            pieceMover.movePiece(startGridX=x, startGridY=y, endGridX=x, endGridY=y, engageGripper=False, disengageGripper=False)
+    
+    for i in range(2):
+        pieceMover.movePiece(startGridX=0, startGridY=0, endGridX=6, endGridY=3, engageGripper=True, disengageGripper=True)
+        pieceMover.movePiece(startGridX=6, startGridY=3, endGridX=11, endGridY=11, engageGripper=True, disengageGripper=True)
+        pieceMover.movePiece(startGridX=11, startGridY=11, endGridX=0, endGridY=0, engageGripper=True, disengageGripper=True)
+
+
+
+
+
+
+        
+    
+
     
 
         
