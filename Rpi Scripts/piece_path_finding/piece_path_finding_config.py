@@ -2,7 +2,7 @@
 # The starting state of the game board before the game starts
 # White is upper case black is lower case
 # [x,y] format
-gameStartState = {
+boardStartStateDictionary = {
     # White
     "P0": [2, 3],
     "P1": [3, 3],
