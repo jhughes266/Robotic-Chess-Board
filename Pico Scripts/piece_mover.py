@@ -22,13 +22,13 @@ class PieceMover:
         # for offsets that may need to be put in. Can potentially just change
         # this to a math equation later if that is approriate.
         self.__xGridCordinateToBaseCordinates = {
-            0:16, 1:24, 2:32, 3:40, 4:48, 5:56, 6:64, 7:72, 8:80, 9:88, 10:96,
-            11:104
+            0:17, 1:25, 2:34, 3:42, 4:50, 5:58, 6:66, 7:74, 8:82, 9:90, 10:98,
+            11:106
             }
         
         self.__yGridCordinateToBaseCordinates = {
-            0:16, 1:24, 2:32, 3:40, 4:48, 5:56, 6:64, 7:72, 8:80, 9:88, 10:96,
-            11:104
+            0:16, 1:24, 2:33, 3:41, 4:49, 5:58, 6:66, 7:74, 8:82, 9:91, 10:99,
+            11:107
             }
         
         # There is a callibration dot on the board that should sit directly over

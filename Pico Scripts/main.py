@@ -5,6 +5,7 @@ from servo_motor import ServoMotor
 from time import sleep
 from gripper import Gripper
 from piece_mover import PieceMover
+import random
 
 # 1 Testing the DcMotor object
 """
@@ -129,12 +130,12 @@ else:
     yDcMotor.turnOff()
     
     xMotorPidDict = {
-        "Kp": 50,
+        "Kp": 72,
         "Ki": 1,
         "Kd": 0
         }
     yMotorPidDict = {
-        "Kp": 50,
+        "Kp": 72,
         "Ki": 1,
         "Kd": 0
         }
@@ -145,7 +146,7 @@ else:
                        yDcMotor=yDcMotor,
                        xMotorPidDict=xMotorPidDict,
                        yMotorPidDict=yMotorPidDict,
-                       maxAllowableError=1)
+                       maxAllowableError=0)
     """
     for x in range(12,116,8):
         for y in range(12,116,8):
@@ -239,11 +240,32 @@ else:
     #for x in range(12):
     #    for y in range(12):
     #            pieceMover.movePiece(startGridX=x, startGridY=y, endGridX=x, endGridY=y, engageGripper=False, disengageGripper=False)
+    """
+    startX = 0
+    startY = 0
+    for i in range(30):
+        endX = random.randint(0,11)
+        endY = random.randint(0,11)
+        pieceMover.movePiece(startGridX=startX, startGridY=startY, endGridX=endX, endGridY=endY, engageGripper=True, disengageGripper=True)
+        startX = endX
+        startY = endY
     
-    for i in range(2):
-        pieceMover.movePiece(startGridX=0, startGridY=0, endGridX=6, endGridY=3, engageGripper=True, disengageGripper=True)
-        pieceMover.movePiece(startGridX=6, startGridY=3, endGridX=11, endGridY=11, engageGripper=True, disengageGripper=True)
-        pieceMover.movePiece(startGridX=11, startGridY=11, endGridX=0, endGridY=0, engageGripper=True, disengageGripper=True)
+    pieceMover.movePiece(startGridX=startX, startGridY=startY, endGridX=0, endGridY=0, engageGripper=True, disengageGripper=True)
+
+    """
+    pieceMover.movePiece(startGridX=1, startGridY=1, endGridX=3, endGridY=1, engageGripper=True, disengageGripper=True)
+    pieceMover.movePiece(startGridX=3, startGridY=1, endGridX=3, endGridY=5, engageGripper=True, disengageGripper=True)
+    pieceMover.movePiece(startGridX=3, startGridY=5, endGridX=1, endGridY=5, engageGripper=True, disengageGripper=True)
+    pieceMover.movePiece(startGridX=1, startGridY=5, endGridX=3, endGridY=5, engageGripper=True, disengageGripper=True)
+    pieceMover.movePiece(startGridX=3, startGridY=5, endGridX=3, endGridY=1, engageGripper=True, disengageGripper=True)
+    pieceMover.movePiece(startGridX=3, startGridY=1, endGridX=1, endGridY=1, engageGripper=True, disengageGripper=True)
+
+
+
+
+
+
+
 
 
 
