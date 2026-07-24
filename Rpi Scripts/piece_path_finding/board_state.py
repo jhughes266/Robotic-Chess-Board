@@ -1,8 +1,12 @@
 from pip._internal.models import candidate
+import copy
 
 from piece_path_finding.action import Action
+from piece_path_finding.piece_path_finding_config import boardStartStateDictionary
+
 
 class BoardState:
+
     def __init__(self, boardStateDictionary):
         self.__boardStateDictionary = boardStateDictionary
 
@@ -17,7 +21,6 @@ class BoardState:
 
         self.__boardPositionMatrix = self.__generateBoardPositionMatrix()
 
-
     def __generateBoardPositionMatrix(self):
         boardPositionMatrix = []
         for i in range(self.__maxCoordinate + 1):
@@ -29,6 +32,66 @@ class BoardState:
             boardPositionMatrix[x][y] = key
 
         return boardPositionMatrix
+
+    def __actionOutsideBoard(self, action):
+        if action.destination[0] > self.__maxCoordinate or action.destination[1] > self.__maxCoordinate or action.destination[
+            0] < self.__minCoordinate or action.destination[1] < self.__minCoordinate:
+            return True
+
+        return False
+
+    def __actionCausesPieceCollision(self, action):
+        x = action.destination[0]
+        y = action.destination[1]
+        if self.__boardPositionMatrix[x][y] is not None:
+            return True
+
+        return False
+
+    def actions(self):
+        actionList = []
+        i = 0
+        for key in self.__boardStateDictionary.keys():
+            for coordinate in self.__adjacentSquareHelper:
+
+                candidateAction = Action(piece=key, initialPosition = [
+                    self.__boardStateDictionary[key][0],
+                    self.__boardStateDictionary[key][1]],
+                    destination= [
+                    self.__boardStateDictionary[key][0] + coordinate[0],
+                    self.__boardStateDictionary[key][1] + coordinate[1]
+                ])
+
+                if self.__actionOutsideBoard(candidateAction) or self.__actionCausesPieceCollision(candidateAction):
+                    continue
+
+                actionList.append(candidateAction)
+        return actionList
+
+    def resultantStateAfterAction(self, action):
+        boardStateDictionaryCopy = copy.deepcopy(self.__boardStateDictionary)
+        if action.initialPosition == boardStateDictionaryCopy[action.piece]:
+            boardStateDictionaryCopy[action.piece] = action.destination
+        else:
+            raise ValueError("Actions initial position doesn't match the current initial position of the piece in the board state dictionary!")
+        return BoardState(boardStateDictionaryCopy)
+
+    def boardPosStringId(self):
+        return str(self.__boardPositionMatrix)
+
+    def __str__(self):
+
+        outputString = ""
+        for i in range(self.__maxCoordinate, -1, -1):
+            for j in range(self.__maxCoordinate + 1):
+                if self.__boardPositionMatrix[j][i] is None:
+                    outputString += "  " + "|"
+                else:
+                    outputString += self.__boardPositionMatrix[j][i] + "|"
+
+            outputString += "\n"
+
+        return outputString
 
     def __eq__(self, other):
 
@@ -45,51 +108,7 @@ class BoardState:
 
         return True
 
-    def __str__(self):
-        outputString = ""
-        for i in range(self.__maxCoordinate, -1, -1):
-            for j in range(self.__maxCoordinate + 1):
-                if self.__boardPositionMatrix[j][i] is None:
-                    outputString += "  " + "|"
-                else:
-                    outputString += self.__boardPositionMatrix[j][i] + "|"
 
-            outputString += "\n"
-
-        return outputString
-
-
-    def actions(self):
-        actionList = []
-        i = 0
-        for key in self.__boardStateDictionary.keys():
-            for coordinate in self.__adjacentSquareHelper:
-
-                candidateAction = Action(piece=key, destination=[
-                    self.__boardStateDictionary[key][0] + coordinate[0],
-                    self.__boardStateDictionary[key][1] + coordinate[1]
-                ])
-
-                if self.__actionOutsideBoard(candidateAction) or self.__actionCausesPieceCollision(candidateAction):
-                    continue
-
-                actionList.append(candidateAction)
-        return actionList
-
-    def __actionOutsideBoard(self, action):
-        if action.destination[0] > self.__maxCoordinate or action.destination[1] > self.__maxCoordinate or action.destination[
-            0] < self.__minCoordinate or action.destination[1] < self.__minCoordinate:
-            return True
-
-        return False
-
-    def __actionCausesPieceCollision(self, action):
-        x = action.destination[0]
-        y = action.destination[1]
-        if self.__boardPositionMatrix[x][y] is not None:
-            return True
-
-        return False
 
 
 

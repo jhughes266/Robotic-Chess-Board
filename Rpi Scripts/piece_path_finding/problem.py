@@ -14,5 +14,5 @@ class Problem:
     def action_cost(self):
         pass
 
-    def result(self):
-        pass
+    def result(self, state, action):
+        return state.resultantStateAfterAction(action)
