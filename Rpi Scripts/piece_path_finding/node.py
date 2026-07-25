@@ -3,7 +3,7 @@ class Node:
     """
     Node object that is used in the best first search algorithm.
     """
-    def __init__(self, state, parent, action, pathCost):
+    def __init__(self, state, parent, action, pathCost, totalCost, depth):
         """
         Args:
             state: The state of the graph associated with the node.
@@ -14,4 +14,6 @@ class Node:
         self.state = state
         self.parent = parent
         self.action = action
-        self.cost = pathCost
+        self.pathCost = pathCost
+        self.totalCost = totalCost
+        self.depth = depth

@@ -79,6 +79,23 @@ class BoardState:
     def boardPosStringId(self):
         return str(self.__boardPositionMatrix)
 
+    def distanceToL1(self, otherState):
+
+        manhattanDistance = 0
+        for key in self.__boardStateDictionary:
+            manhattanDistance += abs(otherState.__boardStateDictionary[key][0] - self.__boardStateDictionary[key][0]) + abs(otherState.__boardStateDictionary[key][1] - self.__boardStateDictionary[key][1])
+
+        return manhattanDistance
+
+    def distanceToL2(self, otherState):
+
+        euclideanDistance = 0
+        for key in self.__boardStateDictionary:
+            euclideanDistance += ((otherState.__boardStateDictionary[key][0] - self.__boardStateDictionary[key][0])**2 + (otherState.__boardStateDictionary[key][1] - self.__boardStateDictionary[key][1])**2)**0.5
+
+        return euclideanDistance
+
+
     def __str__(self):
 
         outputString = ""

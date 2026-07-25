@@ -2,7 +2,7 @@
 # The starting state of the game board before the game starts
 # White is upper case black is lower case
 # [x,y] format
-boardStartStateDictionary = {
+boardStartStateDictionary= {
     # White
     "P0": [2, 3],
     "P1": [3, 3],
@@ -40,6 +40,52 @@ boardStartStateDictionary = {
     "n0": [3, 9],
     "n1": [8, 9],
     "n2": [11, 0],
+    "b0": [4, 9],
+    "b1": [7, 9],
+    "q0": [5, 9],
+    "q1": [11, 10],
+    "q2": [11, 11],
+    "k0": [6, 9]
+}
+
+boardTestStateDictionary= {
+    # White
+    "P0": [2, 7],
+    "P1": [3, 7],
+    "P2": [4, 7],
+    "P3": [5, 7],
+    "P4": [6, 7],
+    "P5": [7, 7],
+    "P6": [2, 5],
+    "P7": [4, 5],
+    "R0": [2, 6],
+    "R1": [5, 5],
+    "R2": [0, 10],
+    "N0": [3, 6],
+    "N1": [3, 5],
+    "N2": [0, 11],
+    "B0": [4, 6],
+    "B1": [7, 6],
+    "Q0": [5, 6],
+    "Q1": [7, 4],
+    "Q2": [6, 4],
+    "K0": [6, 6],
+
+    # Black
+    "p0": [2, 8],
+    "p1": [3, 8],
+    "p2": [4, 8],
+    "p3": [5, 8],
+    "p4": [6, 8],
+    "p5": [7, 8],
+    "p6": [7, 5],
+    "p7": [3, 4],
+    "r0": [2, 9],
+    "r1": [2, 4],
+    "r2": [4, 4],
+    "n0": [3, 9],
+    "n1": [6, 5],
+    "n2": [5, 4],
     "b0": [4, 9],
     "b1": [7, 9],
     "q0": [5, 9],
