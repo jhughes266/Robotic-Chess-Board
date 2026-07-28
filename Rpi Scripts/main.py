@@ -12,10 +12,10 @@ if __name__ == '__main__':
    initialState = BoardState(boardStateDictionary=boardTestStateDictionary)
    print(initialState)
 
-   boardGoalStateDictionary = copy.deepcopy(boardTestStateDictionary)
+   boardGoalStateDictionary = copy.deepcopy(boardStartStateDictionary)
 
 
-   boardGoalStateDictionary["P1"] = [7, 3]
+   #boardGoalStateDictionary["P1"] = [7, 3]
    #boardGoalStateDictionary["k0"] = [0, 2]
 
 

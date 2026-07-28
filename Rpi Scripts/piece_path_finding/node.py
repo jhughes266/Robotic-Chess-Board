@@ -10,6 +10,7 @@ class Node:
             parent: The parent of this node. Once the goal is found the solution can trace back through its parents to get to the initial state and thus is finds a solution.
             action: The action that got us to the state on this node.
             pathCost: The CUMULATIVE path cost from the initial state to the current state.
+            depth: The depth of the current node in the search tree.
         """
         self.state = state
         self.parent = parent
