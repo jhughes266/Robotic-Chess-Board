@@ -2,6 +2,7 @@ from unittest import result
 import math
 import random
 import chess
+from chess_adversarial_search.misc import Timer
 
 class Game:
 
@@ -54,18 +55,23 @@ class Game:
 
         return self.__Evaluation(chessBoard)
 
-
     def __Evaluation(self, chessBoard):
-        fen = chessBoard.fen()
-        fenIdx = 0
         utility = 0
-        while fen[fenIdx] != ' ':
-            currentPiece = fen[fenIdx]
-            if currentPiece in self.__pieceBasicUtilityDictionary:
-                utility += self.__pieceBasicUtilityDictionary[currentPiece]
-            fenIdx += 1
+
+        utility += (chessBoard.pieces_mask(chess.PAWN, chess.WHITE).bit_count() * 1)
+        utility += (chessBoard.pieces_mask(chess.BISHOP, chess.WHITE).bit_count() * 3)
+        utility += (chessBoard.pieces_mask(chess.KNIGHT, chess.WHITE).bit_count() * 3)
+        utility += (chessBoard.pieces_mask(chess.ROOK, chess.WHITE).bit_count() * 5)
+        utility += (chessBoard.pieces_mask(chess.QUEEN, chess.WHITE).bit_count() * 9)
+
+        utility += (chessBoard.pieces_mask(chess.PAWN, chess.BLACK).bit_count() * -1)
+        utility += (chessBoard.pieces_mask(chess.BISHOP, chess.BLACK).bit_count() * -3)
+        utility += (chessBoard.pieces_mask(chess.KNIGHT, chess.BLACK).bit_count() * -3)
+        utility += (chessBoard.pieces_mask(chess.ROOK, chess.BLACK).bit_count() * -5)
+        utility += (chessBoard.pieces_mask(chess.QUEEN, chess.BLACK).bit_count() * -9)
 
         return utility
+
 
 
 
