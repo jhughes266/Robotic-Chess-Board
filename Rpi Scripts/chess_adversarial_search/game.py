@@ -5,8 +5,7 @@ import chess
 
 class Game:
 
-    def __init__(self, maxPlyDepth):
-        self.__maxPlyDepth = maxPlyDepth
+    def __init__(self):
         self.__pieceBasicUtilityDictionary = {
             'P': 1,
             'R': 5,
@@ -19,7 +18,6 @@ class Game:
             'n': -3,
             'q': -9
         }
-        self.__previousUtility = 0
 
     def toMove(self, chessBoard):
         return chessBoard.turn
@@ -35,9 +33,9 @@ class Game:
     def reverseMove(self, chessBoard):
         return chessBoard.pop()
 
-    def isTerminal(self, chessBoard, plyDepth):
+    def isTerminal(self, chessBoard):
         ## This may need expanding ##
-        return plyDepth == self.__maxPlyDepth or chessBoard.is_game_over()
+        return chessBoard.is_game_over()
 
     def utility(self, chessBoard):
         # Check if the game is over
@@ -54,10 +52,10 @@ class Game:
                 # Black wins
                 return -99999
 
-        return self.__BasicUtility(chessBoard)
+        return self.__Evaluation(chessBoard)
 
 
-    def __BasicUtility(self, chessBoard):
+    def __Evaluation(self, chessBoard):
         fen = chessBoard.fen()
         fenIdx = 0
         utility = 0
