@@ -15,7 +15,7 @@ if __name__ == '__main__':
    chessBoard = chess.Board()
    game = Game()
    while not chessBoard.is_game_over():
-      engineMove = minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth=7)
+      engineMove = minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth=6)
       chessBoard.push(engineMove)
       print("##############################################")
       print("WHITES MOVE")
