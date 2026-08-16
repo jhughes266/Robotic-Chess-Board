@@ -3,3 +3,4 @@ Rpi Scripts/.idea/
 .idea/
 *.iml
 __pycache__/
+**/secrets.py
