@@ -149,7 +149,31 @@ class SolutionHandler:
 
         return trimmedJaggeredActionList
 
-
+    def getActionString(self):
+        """
+        Returns a string that contains the necessary actions to get from one state to another. This is the string that
+        will be sent to the Pico Web socket server. The string will be in a form that will enable the pico to analyze it
+        and extract the necessary commands and then move the robotic assembly.
+        Returns:
+            outputString: A string with the necessary actions to get from one state to another.
+        """
+        # This stores the final string that will be output from this method
+        outputString = ""
+        # The retrieve necessary actions function returns a 2-D jaggered list. Where each out element is a list of actions.
+        # The internal actions list correspond to the actions that need to be performed to an individual piece. This means
+        # each new outer element corresponds to a changing in the piece that is being moved. So we first take the outer
+        # element which is a sequence of actions that need to be performed and store it in 'actionSequence'
+        for actionSequence in self.retrieveNeccesaryActions():
+            # The 'B' signifies the begining of a new action sequence
+            outputString += "B"
+            # We now loop through all the actions in the sequence.
+            for action in actionSequence:
+                # The I is for initial position and the D for destination
+                outputString += "I" +str(action.initialPosition) + "D" + str(action.destination)
+            # The E is for the end of a given action sequence
+            outputString += "E"
+        # We return the output string after stripping away all spaces.
+        return outputString.replace(" ", "")
 
     def __str__(self):
         """
