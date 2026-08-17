@@ -35,10 +35,6 @@ class PieceMover:
         # the carriage when it is moved to this location.
         self.__calibrationX = 11
         self.__calibrationY = 11
-        
-        # Disengage the gripper and move it to the callibration location ready
-        # for program start
-        self.moveToCalibration()
     
     def moveToGridXY(self, gridX, gridY):
         """
@@ -55,31 +51,17 @@ class PieceMover:
             self.__yGridCordinateToBaseCordinates[gridY]
             )
     
-    def movePiece(self, startGridX, startGridY, endGridX, endGridY, engageGripper=True, disengageGripper=True):
+    def engageGripper(self):
         """
-        Moves a piece from a specified starting location to a specified end
-        location. You can also chose wheather the gripper gets engaged or
-        disengaged at the start.
-        
-        Args:
-            startGridX: The X pos where the piece is.
-            startGridY: The Y pos where the piece is.
-            endGridX: The X pos where you want the piece to end.
-            endGridY: The Y pos where you want the piece to end.
-            engageGripper: Enages the gripper at the start (picks the piece
-            up).
-            disengageGripper: Disengages the gripper at the end (drops the
-            piece off).
+        Engages the gripper.
         """
-        self.moveToGridXY(startGridX, startGridY)
-        
-        if engageGripper:
-            self.__gripper.engage()
-            
-        self.moveToGridXY(endGridX, endGridY)
-        
-        if disengageGripper:
-            self.__gripper.disengage()
+        self.__gripper.engage()
+    
+    def disengageGripper(self):
+        """
+        Diengages the gripper.
+        """
+        self.__gripper.disengage()
         
     def moveToCalibration(self):
         """

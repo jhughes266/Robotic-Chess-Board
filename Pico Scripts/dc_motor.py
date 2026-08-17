@@ -22,6 +22,8 @@ class DcMotor:
         self.__speedControlPwmPin.freq(1000) 
         self.__positivePin = Pin(positivePinNumber, Pin.OUT)
         self.__negativePin = Pin(negativePinNumber, Pin.OUT)
+        # Make sure the motor is turned off
+        self.turnOff()
     
     def __spinPositive(self):
         """

@@ -10,7 +10,6 @@ from chess_adversarial_search.game import Game
 from chess_adversarial_search.minimax_alpha_beta import minimaxAlphaBetaSearch
 
 
-
 if __name__ == '__main__':
    chessBoard = chess.Board()
    game = Game()
@@ -42,7 +41,7 @@ if __name__ == '__main__':
 
 
    print("end")
-   """
+   
    tracemalloc.start()
    initialState = BoardState(boardStateDictionary=boardStartStateDictionary)
    print(initialState)
@@ -73,7 +72,7 @@ if __name__ == '__main__':
    tracemalloc.stop()
 
    print(str(peak/10**6) + " Mb")
-   """
+
 
 
 
