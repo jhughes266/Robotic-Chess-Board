@@ -1,20 +1,10 @@
 import network
 import usocket as socket
 from secrets import SSID, PASSWORD, STATIC_IP, SUBNET, GATEWAY, DNS, PORT
-
-from dc_motor import DcMotor
-from positional_encoder import PositionalEncoder
-from pid_xy import PidXY
-from servo_motor import ServoMotor
-from time import sleep
-from gripper import Gripper
-from piece_mover import PieceMover
-
-# The mode can be "fake" or "real". Fake is for when the robot is not connected
-# it allows the pico to send messages mimicing that it has moved to the correct
-# location. Real is with the real robot attached.
-mode = "mock"
-
+# This import calls a config script which inits all the objects responsible for
+# moving the robotic assembly and then provides us with PieceMover object stored
+# in the pieceMover variable.
+from robot_object_config import pieceMover
 
 # Turn on the wifi on the picos chip
 wlan = network.WLAN(network.STA_IF)
@@ -73,6 +63,7 @@ while True:
     # Handle any exceptions
     except Exception as e:
         print(f"Exception {e} occured!")
+        break
 
 connection.close()
     
