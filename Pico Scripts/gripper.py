@@ -14,10 +14,8 @@ class Gripper:
         self.__clawServo = clawServo
         self.__verticalStartAngle = 95
         self.__verticalEndAngle = 0
-        self.__clawStartAngle = 130
-        self.__clawEndAngle = 120
-        # Disengage the servo at first.
-        self.disengage()
+        self.__clawStartAngle = 160
+        self.__clawEndAngle = 110
     
     def engage(self):
         """
@@ -29,6 +27,7 @@ class Gripper:
         # at its final position.
         sleep(0.5)
         self.__clawServo.angle(self.__clawEndAngle)
+        sleep(0.5)
 
     def disengage(self):
         """

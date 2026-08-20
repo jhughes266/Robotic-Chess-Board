@@ -1,54 +1,9 @@
-from dc_motor import DcMotor
-from positional_encoder import PositionalEncoder
-from pid_xy import PidXY
-from servo_motor import ServoMotor
 from time import sleep
-from gripper import Gripper
-from piece_mover import PieceMover
-import random
+from dc_motor import DcMotor
 
-mode = "NA"
+from robot_object_config import xPositionalEncoder, yPositionalEncoder, xDcMotor, yDcMotor, pid, vertical, claw, gripper, pieceMover
 
-# Testing Setup
-
-# Setup the positional encoder
-xBitPinNumberPairList = [0,1,2,3,4,5,6]
-xPositionalEncoder = PositionalEncoder(bitPinNumberPairList=xBitPinNumberPairList)
-yBitPinNumberPairList = [7,8,9,10,11,12,13]
-yPositionalEncoder = PositionalEncoder(bitPinNumberPairList=yBitPinNumberPairList)
-
-# Setup the motor objects
-xDcMotor = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
-yDcMotor = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
-
-# Set up the PID
-xMotorPidDict = {
-    "Kp": 72,
-    "Ki": 1,
-    "Kd": 0
-    }
-yMotorPidDict = {
-    "Kp": 72,
-    "Ki": 1,
-    "Kd": 0
-    }
-
-pid = PidXY(xPositionalEncoder=xPositionalEncoder,
-                   yPositionalEncoder=yPositionalEncoder,
-                   xDcMotor=xDcMotor,
-                   yDcMotor=yDcMotor,
-                   xMotorPidDict=xMotorPidDict,
-                   yMotorPidDict=yMotorPidDict,
-                   maxAllowableError=0)
-# Set up the servo motors
-vertical =  ServoMotor(angleControlPinNumber=20)
-claw = ServoMotor(angleControlPinNumber=21)
-
-# Set up the gripper
-gripper = Gripper(verticalServo=vertical, clawServo=claw)
-
-# Set up the piece mover
-pieceMover = PieceMover(pidXY=pid, gripper=gripper)
+mode = "PID"
 
 
 if mode == "Positional Encoder":
@@ -61,24 +16,24 @@ if mode == "Positional Encoder":
     
 elif mode == "Motor":
     # Testing the Motor
-    for i in range(2):
-        testMotorX.turnMotor(100)
+    for i in range(1):
+        xDcMotor.turnMotor(100)
         sleep(1)
-        testMotorX.turnMotor(-100)
+        xDcMotor.turnMotor(-100)
         sleep(1)
-        testMotorX.turnOff()
+        xDcMotor.turnOff()
 
-        testMotorY.turnMotor(100)
+        yDcMotor.turnMotor(100)
         sleep(1)
-        testMotorY.turnMotor(-100)
+        yDcMotor.turnMotor(-100)
         sleep(1)
-        testMotorY.turnOff()
+        yDcMotor.turnOff()
         
 elif mode == "Motor and Positional Encoder":
     # Testing the positional encoder
     delay = 15
     print("X POSITIVE")
-    testMotorX.turnMotor(100)
+    xDcMotor.turnMotor(100)
     for i in range(delay):
         xpos = xPositionalEncoder.getPosition()
         ypos = yPositionalEncoder.getPosition()
@@ -87,7 +42,7 @@ elif mode == "Motor and Positional Encoder":
         sleep(0.05)
 
     print("X NEGATIVE")
-    testMotorX.turnMotor(-100)
+    xDcMotor.turnMotor(-100)
     for i in range(delay):
         xpos = xPositionalEncoder.getPosition()
         ypos = yPositionalEncoder.getPosition()
@@ -95,10 +50,10 @@ elif mode == "Motor and Positional Encoder":
         print(f"Ypos {ypos}")
         sleep(0.05)
 
-    testMotorX.turnOff()
+    xDcMotor.turnOff()
 
     print("Y POSITIVE")
-    testMotorY.turnMotor(100)
+    yDcMotor.turnMotor(100)
     for i in range(delay):
         xpos = xPositionalEncoder.getPosition()
         ypos = yPositionalEncoder.getPosition()
@@ -108,7 +63,7 @@ elif mode == "Motor and Positional Encoder":
 
 
     print("Y NEGATIVE")
-    testMotorY.turnMotor(100)
+    yDcMotor.turnMotor(-100)
     for i in range(delay):
         xpos = xPositionalEncoder.getPosition()
         ypos = yPositionalEncoder.getPosition()
@@ -116,27 +71,28 @@ elif mode == "Motor and Positional Encoder":
         print(f"Ypos {ypos}")
         sleep(0.05)
 
-    testMotorY.turnOff()
+    yDcMotor.turnOff()
         
 elif mode == "Servo":
     # Testing the Servo
-    for i in range(2):
-        sleep(0.5)
-        lower.angle(95)
-        sleep(0.5)
-        lower.angle(0)
-        sleep(0.5)
-        upper.angle(160)
-        sleep(0.5)
-        upper.angle(120)
+    
+    sleep(0.5)
+    vertical.angle(0)
+    sleep(0.5)
+    claw.angle(120)
+    sleep(3)
         
-    lower.angle(95)
+    claw.angle(160)
+    sleep(0.5)
+    vertical.angle(95)
+    sleep(0.5)
+
 
 elif mode == "PID":
     # Testing the PID
     for x in range(12,116,8):
         for y in range(12,116,8):
-            testPid.moveTo(targetX=x, targetY=y)
+            pid.moveTo(targetX=x, targetY=y)
             print("Xpos" + str(xPositionalEncoder.getPosition()))
             print("Ypos" + str(yPositionalEncoder.getPosition()))
             print("AT Target")
@@ -146,6 +102,8 @@ elif mode == "Gripper":
     gripper.disengage()
     gripper.engage()
     gripper.disengage()
+    
+    
     
 elif mode == "Piece Mover":
     # Testing the piece mover

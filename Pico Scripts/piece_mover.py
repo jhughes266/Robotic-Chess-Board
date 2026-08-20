@@ -28,7 +28,7 @@ class PieceMover:
         
         self.__yGridCordinateToBaseCordinates = {
             0:16, 1:24, 2:33, 3:41, 4:49, 5:58, 6:66, 7:74, 8:82, 9:91, 10:99,
-            11:107
+            11:106
             }
         
         # There is a callibration dot on the board that should sit directly over

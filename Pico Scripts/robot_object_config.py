@@ -12,18 +12,18 @@ yBitPinNumberPairList = [7,8,9,10,11,12,13]
 yPositionalEncoder = PositionalEncoder(bitPinNumberPairList=yBitPinNumberPairList)
 
 # Setup the motor objects
-xDcMotor = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=18, negativePinNumber=19)
+xDcMotor = DcMotor(speedControlPwmPinNumber=17, positivePinNumber=19, negativePinNumber=18)
 yDcMotor = DcMotor(speedControlPwmPinNumber=14, positivePinNumber=15, negativePinNumber=16)
 
 # Set up the PID
 xMotorPidDict = {
     "Kp": 72,
-    "Ki": 1,
+    "Ki": 3,
     "Kd": 0
     }
 yMotorPidDict = {
     "Kp": 72,
-    "Ki": 1,
+    "Ki": 3,
     "Kd": 0
     }
 
@@ -35,8 +35,8 @@ pid = PidXY(xPositionalEncoder=xPositionalEncoder,
                    yMotorPidDict=yMotorPidDict,
                    maxAllowableError=0)
 # Set up the servo motors
-vertical =  ServoMotor(angleControlPinNumber=20)
-claw = ServoMotor(angleControlPinNumber=21)
+vertical =  ServoMotor(angleControlPinNumber=26)
+claw = ServoMotor(angleControlPinNumber=22)
 
 # Set up the gripper
 gripper = Gripper(verticalServo=vertical, clawServo=claw)
