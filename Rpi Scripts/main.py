@@ -69,7 +69,7 @@ if __name__ == '__main__':
    testSolutionHandler = SolutionHandler(solutionNode)
 
    #testSolutionHandler.retrieveNeccesaryActions()
-   #print(testSolutionHandler)
+   print(testSolutionHandler)
    _, peak = tracemalloc.get_traced_memory()
    tracemalloc.stop()
 
@@ -77,20 +77,20 @@ if __name__ == '__main__':
 
    # Socket Client
 
-   socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-   socket.connect((HOST, PORT))
+   #socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+   #socket.connect((HOST, PORT))
 
    outgoing = testSolutionHandler.getActionString()
 
    print(outgoing)
    print(f"The string being sent is {len(outgoing)} bytes long.")
-   socket.send(outgoing.encode('utf-8'))
+   #socket.send(outgoing.encode('utf-8'))
 
-   incoming = socket.recv(1024).decode('utf-8')
+   #incoming = socket.recv(1024).decode('utf-8')
 
-   socket.send("END".encode('utf-8'))
+   #socket.send("END".encode('utf-8'))
 
-   socket.close()
+   #socket.close()
 
 
 

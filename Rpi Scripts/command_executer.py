@@ -1,4 +1,3 @@
-
 def excuteCommand(command, pieceMover, mode="real"):
     """
     This function takes a command in string form that is read and then excuted by
@@ -49,5 +48,21 @@ def excuteCommand(command, pieceMover, mode="real"):
             pieceMover.disengageGripper()
 
         i += 1
+
+
+
+
+class PieceMover:
+    def engageGripper(self):
+        print("Engaging Gripper")
+
+    def disengageGripper(self):
+        print("Disengaging Gripper")
+
+    def moveToGridXY(self, gridX, gridY):
+        print(f"Moving to X:{gridX}, Y:{gridY}")
+
+testCommand = "[8,3]E[10,4]D[8,2]E[8,3]D[8,4]E[9,4]D[8,3]E[8,4][7,4]D[9,4]E[8,4][8,3]D"
+excuteCommand(testCommand, pieceMover=PieceMover())
 
 

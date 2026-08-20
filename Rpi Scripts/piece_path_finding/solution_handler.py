@@ -164,16 +164,17 @@ class SolutionHandler:
         # each new outer element corresponds to a changing in the piece that is being moved. So we first take the outer
         # element which is a sequence of actions that need to be performed and store it in 'actionSequence'
         for actionSequence in self.retrieveNeccesaryActions():
-            # The 'B' signifies the begining of a new action sequence
-            outputString += "B"
             # We now loop through all the actions in the sequence.
-            for action in actionSequence:
-                # The I is for initial position and the D for destination
-                outputString += "I" +str(action.initialPosition) + "D" + str(action.destination)
-            # The E is for the end of a given action sequence
-            outputString += "E"
+            for i, action in enumerate(actionSequence):
+                outputString += str(action.initialPosition)
+                if i == 0:
+                    outputString += "E"
+
+            outputString += str(actionSequence[-1].destination) + "D"
+
         # We return the output string after stripping away all spaces.
-        return outputString.replace(" ", "")
+        outputString = outputString.replace(" ", "")
+        return outputString
 
     def __str__(self):
         """
