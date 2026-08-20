@@ -14,36 +14,7 @@ from chess_adversarial_search.minimax_alpha_beta import minimaxAlphaBetaSearch
 
 if __name__ == '__main__':
    """
-   chessBoard = chess.Board()
-   game = Game()
-   while not chessBoard.is_game_over():
-      engineMove = minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth=6)
-      chessBoard.push(engineMove)
-      print("##############################################")
-      print("WHITES MOVE")
-      print(engineMove)
-      print(chessBoard)
-      print("##############################################")
-      legalMoveMade = False
-      while legalMoveMade == False:
-         move = input("Select move: ")
-         legalMoves = list(chessBoard.legal_moves)
-         for legalMove in legalMoves:
-            if move == str(legalMove):
-               legalMoveMade = True
-      playerMove = chess.Move.from_uci(move)
-      chessBoard.push(playerMove)
-      #engineMove = minimaxAlphaBetaSearch(game, chessBoard)
-      #chessBoard.push(engineMove)
-      print("##############################################")
-      print("BLACKS MOVE")
-      print(chessBoard)
-      print("##############################################")
-
-
-
-
-   print("end")
+   
    """
    tracemalloc.start()
    initialState = BoardState(boardStateDictionary=boardStartStateDictionary)
@@ -52,7 +23,9 @@ if __name__ == '__main__':
    boardGoalStateDictionary = copy.deepcopy(boardStartStateDictionary)
 
 
-   boardGoalStateDictionary["N1"] = [7, 4]
+   boardGoalStateDictionary["N0"] = [3, 9]
+   boardGoalStateDictionary["n0"] = [3, 2]
+
 
 
 
@@ -74,23 +47,28 @@ if __name__ == '__main__':
    tracemalloc.stop()
 
    print(str(peak/10**6) + " Mb")
-
-   # Socket Client
-
-   #socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-   #socket.connect((HOST, PORT))
-
    outgoing = testSolutionHandler.getActionString()
 
    print(outgoing)
    print(f"The string being sent is {len(outgoing)} bytes long.")
-   #socket.send(outgoing.encode('utf-8'))
 
-   #incoming = socket.recv(1024).decode('utf-8')
+   # Socket Client
 
-   #socket.send("END".encode('utf-8'))
+   socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+   socket.connect((HOST, PORT))
 
-   #socket.close()
+
+   socket.send(outgoing.encode('utf-8'))
+
+   incoming = socket.recv(1024).decode('utf-8')
+
+   socket.send(outgoing.encode('utf-8'))
+
+   incoming = socket.recv(1024).decode('utf-8')
+
+   socket.send("END".encode('utf-8'))
+
+   socket.close()
 
 
 

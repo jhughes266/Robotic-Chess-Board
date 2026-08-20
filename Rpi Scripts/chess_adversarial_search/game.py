@@ -5,9 +5,12 @@ import chess
 from chess_adversarial_search.misc import Timer
 
 class Game:
+    # Class vars
+    EARLY_MIDDLE_GAME = 0
+    END_GAME = 1
 
     def __init__(self):
-        pass
+        self.__pieceSquareTables = PieceSquareTables()
 
     def toMove(self, chessBoard):
         return chessBoard.turn
@@ -116,21 +119,168 @@ class Game:
             raise RuntimeError("Attempted to calculate utility but the game was not in a terminal state!")
 
     def evaluate(self, chessBoard):
-        estimatedUtility = 0
+        materialValue = 0
 
-        estimatedUtility += (chessBoard.pieces_mask(chess.PAWN, chess.WHITE).bit_count() * 1)
-        estimatedUtility += (chessBoard.pieces_mask(chess.BISHOP, chess.WHITE).bit_count() * 3)
-        estimatedUtility += (chessBoard.pieces_mask(chess.KNIGHT, chess.WHITE).bit_count() * 3)
-        estimatedUtility += (chessBoard.pieces_mask(chess.ROOK, chess.WHITE).bit_count() * 5)
-        estimatedUtility += (chessBoard.pieces_mask(chess.QUEEN, chess.WHITE).bit_count() * 9)
+        materialValue += (chessBoard.pieces_mask(chess.PAWN, chess.WHITE).bit_count() * 100)
+        materialValue += (chessBoard.pieces_mask(chess.BISHOP, chess.WHITE).bit_count() * 300)
+        materialValue += (chessBoard.pieces_mask(chess.KNIGHT, chess.WHITE).bit_count() * 300)
+        materialValue += (chessBoard.pieces_mask(chess.ROOK, chess.WHITE).bit_count() * 500)
+        materialValue += (chessBoard.pieces_mask(chess.QUEEN, chess.WHITE).bit_count() * 900)
 
-        estimatedUtility += (chessBoard.pieces_mask(chess.PAWN, chess.BLACK).bit_count() * -1)
-        estimatedUtility += (chessBoard.pieces_mask(chess.BISHOP, chess.BLACK).bit_count() * -3)
-        estimatedUtility += (chessBoard.pieces_mask(chess.KNIGHT, chess.BLACK).bit_count() * -3)
-        estimatedUtility += (chessBoard.pieces_mask(chess.ROOK, chess.BLACK).bit_count() * -5)
-        estimatedUtility += (chessBoard.pieces_mask(chess.QUEEN, chess.BLACK).bit_count() * -9)
+        materialValue += (chessBoard.pieces_mask(chess.PAWN, chess.BLACK).bit_count() * -100)
+        materialValue += (chessBoard.pieces_mask(chess.BISHOP, chess.BLACK).bit_count() * -300)
+        materialValue += (chessBoard.pieces_mask(chess.KNIGHT, chess.BLACK).bit_count() * -300)
+        materialValue += (chessBoard.pieces_mask(chess.ROOK, chess.BLACK).bit_count() * -500)
+        materialValue += (chessBoard.pieces_mask(chess.QUEEN, chess.BLACK).bit_count() * -900)
 
+        gamePhase = self.__evaluateGamePhase(chessBoard)
+        positionEvaluation = self.__pieceSquareTables.evaluate(chessBoard, gamePhase)
+        estimatedUtility = materialValue + positionEvaluation
         return estimatedUtility
+
+    def __evaluateGamePhase(self, chessBoard):
+        whiteQueens = chessBoard.pieces_mask(chess.QUEEN, chess.WHITE).bit_count()
+        whiteRooks = chessBoard.pieces_mask(chess.ROOK, chess.WHITE).bit_count()
+        whiteBishops = chessBoard.pieces_mask(chess.BISHOP, chess.WHITE).bit_count()
+        whiteKnights = chessBoard.pieces_mask(chess.KNIGHT, chess.WHITE).bit_count()
+
+        blackQueens = chessBoard.pieces_mask(chess.QUEEN, chess.BLACK).bit_count()
+        blackRooks = chessBoard.pieces_mask(chess.ROOK, chess.BLACK).bit_count()
+        blackBishops = chessBoard.pieces_mask(chess.BISHOP, chess.BLACK).bit_count()
+        blackKnights = chessBoard.pieces_mask(chess.KNIGHT, chess.BLACK).bit_count()
+
+        whiteIsInEndGame = ((whiteQueens == 1) and (whiteRooks == 0) and (whiteBishops + whiteKnights <= 1)) or (whiteQueens == 0)
+
+        blackIsInEndGame = ((blackQueens == 1) and (blackRooks == 0) and (blackBishops + blackKnights <= 1)) or (blackQueens == 0)
+
+        if whiteIsInEndGame and blackIsInEndGame:
+            return Game.END_GAME
+
+        return Game.EARLY_MIDDLE_GAME
+
+class PieceSquareTables:
+    def __init__(self):
+        pawn = [ 0,  0,  0,  0,  0,  0,  0,  0,
+                50, 50, 50, 50, 50, 50, 50, 50,
+                10, 10, 20, 30, 30, 20, 10, 10,
+                 5,  5, 10, 25, 25, 10,  5,  5,
+                 0,  0,  0, 20, 20,  0,  0,  0,
+                 5, -5,-10,  0,  0,-10, -5,  5,
+                 5, 10, 10,-20,-20, 10, 10,  5,
+                 0,  0,  0,  0,  0,  0,  0,  0]
+        knight = [-50,-40,-30,-30,-30,-30,-40,-50,
+                  -40,-20,  0,  0,  0,  0,-20,-40,
+                  -30,  0, 10, 15, 15, 10,  0,-30,
+                  -30,  5, 15, 20, 20, 15,  5,-30,
+                  -30,  0, 15, 20, 20, 15,  0,-30,
+                  -30,  5, 10, 15, 15, 10,  5,-30,
+                  -40,-20,  0,  5,  5,  0,-20,-40,
+                  -50,-40,-30,-30,-30,-30,-40,-50]
+        bishop = [-20,-10,-10,-10,-10,-10,-10,-20,
+                  -10,  0,  0,  0,  0,  0,  0,-10,
+                  -10,  0,  5, 10, 10,  5,  0,-10,
+                  -10,  5,  5, 10, 10,  5,  5,-10,
+                  -10,  0, 10, 10, 10, 10,  0,-10,
+                  -10, 10, 10, 10, 10, 10, 10,-10,
+                  -10,  5,  0,  0,  0,  0,  5,-10,
+                  -20,-10,-10,-10,-10,-10,-10,-20]
+        rook = [0,  0,  0,  0,  0,  0,  0,  0,
+                5, 10, 10, 10, 10, 10, 10,  5,
+               -5,  0,  0,  0,  0,  0,  0, -5,
+               -5,  0,  0,  0,  0,  0,  0, -5,
+               -5,  0,  0,  0,  0,  0,  0, -5,
+               -5,  0,  0,  0,  0,  0,  0, -5,
+               -5,  0,  0,  0,  0,  0,  0, -5,
+                0,  0,  0,  5,  5,  0,  0,  0]
+        queen = [-20,-10,-10, -5, -5,-10,-10,-20,
+                 -10,  0,  0,  0,  0,  0,  0,-10,
+                 -10,  0,  5,  5,  5,  5,  0,-10,
+                  -5,  0,  5,  5,  5,  5,  0, -5,
+                   0,  0,  5,  5,  5,  5,  0, -5,
+                 -10,  5,  5,  5,  5,  5,  0,-10,
+                 -10,  0,  5,  0,  0,  0,  0,-10,
+                 -20,-10,-10, -5, -5,-10,-10,-20]
+        kingEarlyMiddle = [-30,-40,-40,-50,-50,-40,-40,-30,
+                           -30,-40,-40,-50,-50,-40,-40,-30,
+                           -30,-40,-40,-50,-50,-40,-40,-30,
+                           -30,-40,-40,-50,-50,-40,-40,-30,
+                           -20,-30,-30,-40,-40,-30,-30,-20,
+                           -10,-20,-20,-20,-20,-20,-20,-10,
+                            20, 20,  0,  0,  0,  0, 20, 20,
+                            20, 30, 10,  0,  0, 10, 30, 20]
+        kingEnd = [-50,-40,-30,-20,-20,-30,-40,-50,
+                   -30,-20,-10,  0,  0,-10,-20,-30,
+                   -30,-10, 20, 30, 30, 20,-10,-30,
+                   -30,-10, 30, 40, 40, 30,-10,-30,
+                   -30,-10, 30, 40, 40, 30,-10,-30,
+                   -30,-10, 20, 30, 30, 20,-10,-30,
+                   -30,-30,  0,  0,  0,  0,-30,-30,
+                   -50,-30,-30,-30,-30,-30,-30,-50]
+
+        pawnSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(pawn)
+        knightSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(knight)
+        bishopSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(bishop)
+        rookSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(rook)
+        queenSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(queen)
+        kingSquareTableEarlyMiddleBitMapDictionary = self.__constructPieceSquareTableBitMap(kingEarlyMiddle)
+        kingEndSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(kingEnd)
+
+        self.__allSquareTableBitMapDictionaries = {
+            'pawn' : pawnSquareTableBitMapDictionary,
+            'knight' : knightSquareTableBitMapDictionary,
+            'bishop': bishopSquareTableBitMapDictionary,
+            'rook' : rookSquareTableBitMapDictionary,
+            'queen' : queenSquareTableBitMapDictionary,
+            'kingEarlyMiddle' : kingSquareTableEarlyMiddleBitMapDictionary,
+            'kingEnd' : kingEndSquareTableBitMapDictionary
+        }
+
+        self.__pieceSquareTableNameToChessPieceId = {
+            'pawn' : chess.PAWN,
+            'knight' : chess.KNIGHT,
+            'bishop': chess.BISHOP,
+            'rook' : chess.ROOK,
+            'queen' : chess.QUEEN,
+            'kingEarlyMiddle' : chess.KING,
+            'kingEnd' : chess.KING
+        }
+
+    def evaluate(self, chessBoard, gamePhase):
+
+        for piece in self.__allSquareTableBitMapDictionaries:
+            currentSquareTablePieceBitMapDictionary = self.__allSquareTableBitMapDictionaries[piece]
+            currentWhitePiecePositionBitMap = chessBoard.pieces_mask(self.__pieceSquareTableNameToChessPieceId[piece], chess.WHITE)
+            currentBlackPiecePositionBitMap = chessBoard.pieces_mask(self.__pieceSquareTableNameToChessPieceId[piece], chess.BLACK)
+            for uniquePosEval in currentSquareTablePieceBitMapDictionary:
+                 currentUniquePosEvalBitMap = bin(currentSquareTablePieceBitMapDictionary[uniquePosEval])
+
+
+
+
+    def __constructPieceSquareTableBitMap(self, pieceSquareTable):
+        unqiueNumberSet = set(pieceSquareTable)
+        bitMapDictionary = {}
+        for unqiueNumber in unqiueNumberSet:
+            bitMap = ""
+            for positionalValue in pieceSquareTable:
+                bitMap += str(int(positionalValue == unqiueNumber))
+            bitMapDictionary[unqiueNumber] = int(bitMap, 2)
+
+        return bitMapDictionary
+
+    def printBitMap(self, bitMap):
+        bitMapString = str(bitMap)[2:]
+        additionalZerosNeeded = 64 - len(bitMapString)
+        additionalZeros = "0" * additionalZerosNeeded
+        bitMapString = additionalZeros + bitMapString
+        for i, bit in enumerate(bitMapString):
+            print(bit, end=",")
+            if (i + 1) % 8 == 0:
+                print()
+
+
+
+
 
 
 
