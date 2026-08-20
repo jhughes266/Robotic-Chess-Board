@@ -1,10 +1,12 @@
 import network
 import usocket as socket
+import time
 from secrets import SSID, PASSWORD, STATIC_IP, SUBNET, GATEWAY, DNS, PORT
 # This import calls a config script which inits all the objects responsible for
 # moving the robotic assembly and then provides us with PieceMover object stored
 # in the pieceMover variable.
 from robot_object_config import pieceMover
+from command_executer import excuteCommand
 
 # Turn on the wifi on the picos chip
 wlan = network.WLAN(network.STA_IF)
@@ -17,7 +19,7 @@ wlan.ifconfig((STATIC_IP, SUBNET, GATEWAY, DNS))
 wlan.connect(SSID, PASSWORD)
 
 # Store chars for printing loading wheel
-loadingWheeList = ["|", "/", "-", "\\"]
+loadingWheelList = ["|", "/", "-", "\\"]
 # Waiting until a connection has been made
 while wlan.isconnected() == False:
     for symbol in loadingWheelList:
@@ -47,16 +49,18 @@ while True:
    
     try:
         # Get the command from the client
-        clientCommand = connection.recv(1024)
+        clientCommand = connection.recv(2048)
         # If there is no data restart the loop
         if not clientCommand:
             continue
         # decode the client command
         decodedClientCommand = clientCommand.decode("utf-8")
         print(decodedClientCommand)
-
         if decodedClientCommand == "END":
             break
+        excuteCommand(decodedClientCommand, pieceMover)
+
+        
         connection.sendall("1")
         
     
@@ -66,6 +70,7 @@ while True:
         break
 
 connection.close()
+print("Finished")
     
 
 
