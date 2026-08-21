@@ -1,12 +1,12 @@
 import chess
 from chess_adversarial_search.game import Game
-from chess_adversarial_search.minimax_alpha_beta import minimaxAlphaBetaSearch
-testFen = '4R3/3N3k/5R2/8/6P1/P3K3/1PP2P2/8 w - - 13 57'
-chessBoard = chess.Board(testFen)
+from chess_adversarial_search.minimax_alpha_beta import timeBoundedMinimaxAlphaBetaSearch
+testFen = '8/8/8/1P6/2KN2k1/8/8/8 w - - 0 1'
+chessBoard = chess.Board()
 game = Game()
 while not chessBoard.is_game_over():
 
-    engineMove = minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth=5)
+    engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=5)
     chessBoard.push(engineMove)
     print("##############################################")
     print("WHITES MOVE")

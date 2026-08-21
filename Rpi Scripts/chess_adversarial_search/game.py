@@ -112,10 +112,10 @@ class Game:
         # We now know that the score is either '1-0' or '0-1'
         elif resultStr == '1-0':
             # White wins
-            return 99999 - plyDepth
+            return 999999 - plyDepth
         elif resultStr == '0-1':
             # Black wins
-            return -99999 + plyDepth
+            return -999999 + plyDepth
         else:
             raise RuntimeError("Attempted to calculate utility but the game was not in a terminal state!")
 

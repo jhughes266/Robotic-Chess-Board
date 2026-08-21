@@ -1,10 +1,50 @@
 import math
-
+import time
 from chess_adversarial_search.game import Game
 import chess
 
+def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds):
+    searchStartTime = time.perf_counter()
+    plySearchTimes = []
+    move = None
+    maxPlyDepth = 1
+
+    while True:
+        plyStartTime = time.perf_counter()
+        move = minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth)
+        plyEndTime = time.perf_counter()
+        currentPlyTime = plyEndTime - plyStartTime
+        plySearchTimes.append(currentPlyTime)
+
+        if maxPlyDepth > 1:
+            timeIncreaseFactor = 0
+            for i in range(1, len(plySearchTimes)):
+                timeIncreaseFactor += (plySearchTimes[i] / plySearchTimes[i-1])
+            averageTimeIncreaseFactor = timeIncreaseFactor / (len(plySearchTimes) - 1)
+
+            projectedSearchTimeAfterNextPly = (time.perf_counter() - searchStartTime) + (averageTimeIncreaseFactor * currentPlyTime)
+
+            if projectedSearchTimeAfterNextPly > maxSearchTimeSeconds:
+                print(f"Searched to a depth of {maxPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.")
+
+                break
+
+        maxPlyDepth += 1
+
+
+    return move
+
+
+
+
+
+
+    return move
+
+
 def minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth):
     player = game.toMove(chessBoard)
+    move = None
     if player == chess.WHITE:
         value, move = maxValue(game=game, chessBoard=chessBoard, alpha=-math.inf, beta=math.inf, plyDepth=0, maxPlyDepth=maxPlyDepth)
     elif player == chess.BLACK:
