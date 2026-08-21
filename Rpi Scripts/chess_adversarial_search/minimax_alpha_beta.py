@@ -14,7 +14,7 @@ def minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth):
 
 def maxValue(game, chessBoard, alpha, beta, plyDepth, maxPlyDepth):
     if game.isTerminal(chessBoard):
-        return game.utility(chessBoard), None
+        return game.utility(chessBoard, plyDepth), None
     elif plyDepth == maxPlyDepth:
         return game.evaluate(chessBoard), None
 
@@ -40,7 +40,7 @@ def maxValue(game, chessBoard, alpha, beta, plyDepth, maxPlyDepth):
 
 def minValue(game, chessBoard, alpha, beta, plyDepth, maxPlyDepth):
     if game.isTerminal(chessBoard):
-        return game.utility(chessBoard), None
+        return game.utility(chessBoard, plyDepth), None
     elif plyDepth == maxPlyDepth:
         return game.evaluate(chessBoard), None
 

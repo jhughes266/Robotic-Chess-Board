@@ -3,6 +3,7 @@ import math
 import random
 import chess
 from chess_adversarial_search.misc import Timer
+import copy
 
 class Game:
     # Class vars
@@ -103,7 +104,7 @@ class Game:
         ## This may need expanding ##
         return chessBoard.is_game_over()
 
-    def utility(self, chessBoard):
+    def utility(self, chessBoard, plyDepth):
         resultStr = chessBoard.result()
         # For the time being a draw is assigned a zero (this may need changing)
         if resultStr == '1/2-1/2':
@@ -111,10 +112,10 @@ class Game:
         # We now know that the score is either '1-0' or '0-1'
         elif resultStr == '1-0':
             # White wins
-            return 99999
+            return 99999 - plyDepth
         elif resultStr == '0-1':
             # Black wins
-            return -99999
+            return -99999 + plyDepth
         else:
             raise RuntimeError("Attempted to calculate utility but the game was not in a terminal state!")
 
@@ -136,6 +137,7 @@ class Game:
         gamePhase = self.__evaluateGamePhase(chessBoard)
         positionEvaluation = self.__pieceSquareTables.evaluate(chessBoard, gamePhase)
         estimatedUtility = materialValue + positionEvaluation
+
         return estimatedUtility
 
     def __evaluateGamePhase(self, chessBoard):
@@ -160,125 +162,173 @@ class Game:
 
 class PieceSquareTables:
     def __init__(self):
-        pawn = [ 0,  0,  0,  0,  0,  0,  0,  0,
-                50, 50, 50, 50, 50, 50, 50, 50,
-                10, 10, 20, 30, 30, 20, 10, 10,
-                 5,  5, 10, 25, 25, 10,  5,  5,
-                 0,  0,  0, 20, 20,  0,  0,  0,
-                 5, -5,-10,  0,  0,-10, -5,  5,
-                 5, 10, 10,-20,-20, 10, 10,  5,
-                 0,  0,  0,  0,  0,  0,  0,  0]
-        knight = [-50,-40,-30,-30,-30,-30,-40,-50,
-                  -40,-20,  0,  0,  0,  0,-20,-40,
-                  -30,  0, 10, 15, 15, 10,  0,-30,
-                  -30,  5, 15, 20, 20, 15,  5,-30,
-                  -30,  0, 15, 20, 20, 15,  0,-30,
-                  -30,  5, 10, 15, 15, 10,  5,-30,
-                  -40,-20,  0,  5,  5,  0,-20,-40,
-                  -50,-40,-30,-30,-30,-30,-40,-50]
-        bishop = [-20,-10,-10,-10,-10,-10,-10,-20,
-                  -10,  0,  0,  0,  0,  0,  0,-10,
-                  -10,  0,  5, 10, 10,  5,  0,-10,
-                  -10,  5,  5, 10, 10,  5,  5,-10,
-                  -10,  0, 10, 10, 10, 10,  0,-10,
-                  -10, 10, 10, 10, 10, 10, 10,-10,
-                  -10,  5,  0,  0,  0,  0,  5,-10,
-                  -20,-10,-10,-10,-10,-10,-10,-20]
-        rook = [0,  0,  0,  0,  0,  0,  0,  0,
-                5, 10, 10, 10, 10, 10, 10,  5,
-               -5,  0,  0,  0,  0,  0,  0, -5,
-               -5,  0,  0,  0,  0,  0,  0, -5,
-               -5,  0,  0,  0,  0,  0,  0, -5,
-               -5,  0,  0,  0,  0,  0,  0, -5,
-               -5,  0,  0,  0,  0,  0,  0, -5,
-                0,  0,  0,  5,  5,  0,  0,  0]
-        queen = [-20,-10,-10, -5, -5,-10,-10,-20,
-                 -10,  0,  0,  0,  0,  0,  0,-10,
-                 -10,  0,  5,  5,  5,  5,  0,-10,
-                  -5,  0,  5,  5,  5,  5,  0, -5,
-                   0,  0,  5,  5,  5,  5,  0, -5,
-                 -10,  5,  5,  5,  5,  5,  0,-10,
-                 -10,  0,  5,  0,  0,  0,  0,-10,
-                 -20,-10,-10, -5, -5,-10,-10,-20]
-        kingEarlyMiddle = [-30,-40,-40,-50,-50,-40,-40,-30,
-                           -30,-40,-40,-50,-50,-40,-40,-30,
-                           -30,-40,-40,-50,-50,-40,-40,-30,
-                           -30,-40,-40,-50,-50,-40,-40,-30,
-                           -20,-30,-30,-40,-40,-30,-30,-20,
-                           -10,-20,-20,-20,-20,-20,-20,-10,
-                            20, 20,  0,  0,  0,  0, 20, 20,
-                            20, 30, 10,  0,  0, 10, 30, 20]
-        kingEnd = [-50,-40,-30,-20,-20,-30,-40,-50,
-                   -30,-20,-10,  0,  0,-10,-20,-30,
-                   -30,-10, 20, 30, 30, 20,-10,-30,
-                   -30,-10, 30, 40, 40, 30,-10,-30,
-                   -30,-10, 30, 40, 40, 30,-10,-30,
-                   -30,-10, 20, 30, 30, 20,-10,-30,
-                   -30,-30,  0,  0,  0,  0,-30,-30,
-                   -50,-30,-30,-30,-30,-30,-30,-50]
+        # The reversal is necessary because the python chess library labels the bottom left square as incrementing left
+        # to right up the board. List Indexing goes the top left right to left down the board. The board is symmetrical
+        # "down the middle" so no other operations need to be performed.
+        #White pieces
+        self.__pawnWhite = [ 0,  0,  0,  0,  0,  0,  0,  0,
+                            50, 50, 50, 50, 50, 50, 50, 50,
+                            10, 10, 20, 30, 30, 20, 10, 10,
+                             5,  5, 10, 25, 25, 10,  5,  5,
+                             0,  0,  0, 20, 20,  0,  0,  0,
+                             5, -5,-10,  0,  0,-10, -5,  5,
+                             5, 10, 10,-20,-20, 10, 10,  5,
+                             0,  0,  0,  0,  0,  0,  0,  0]
+        self.__pawnWhite.reverse()
+        self.__knightWhite = [-50,-40,-30,-30,-30,-30,-40,-50,
+                              -40,-20,  0,  0,  0,  0,-20,-40,
+                              -30,  0, 10, 15, 15, 10,  0,-30,
+                              -30,  5, 15, 20, 20, 15,  5,-30,
+                              -30,  0, 15, 20, 20, 15,  0,-30,
+                              -30,  5, 10, 15, 15, 10,  5,-30,
+                              -40,-20,  0,  5,  5,  0,-20,-40,
+                              -50,-40,-30,-30,-30,-30,-40,-50]
+        self.__knightWhite.reverse()
+        self.__bishopWhite = [-20,-10,-10,-10,-10,-10,-10,-20,
+                              -10,  0,  0,  0,  0,  0,  0,-10,
+                              -10,  0,  5, 10, 10,  5,  0,-10,
+                              -10,  5,  5, 10, 10,  5,  5,-10,
+                              -10,  0, 10, 10, 10, 10,  0,-10,
+                              -10, 10, 10, 10, 10, 10, 10,-10,
+                              -10,  5,  0,  0,  0,  0,  5,-10,
+                              -20,-10,-10,-10,-10,-10,-10,-20]
+        self.__bishopWhite.reverse()
+        self.__rookWhite = [0,  0,  0,  0,  0,  0,  0,  0,
+                            5, 10, 10, 10, 10, 10, 10,  5,
+                           -5,  0,  0,  0,  0,  0,  0, -5,
+                           -5,  0,  0,  0,  0,  0,  0, -5,
+                           -5,  0,  0,  0,  0,  0,  0, -5,
+                           -5,  0,  0,  0,  0,  0,  0, -5,
+                           -5,  0,  0,  0,  0,  0,  0, -5,
+                            0,  0,  0,  5,  5,  0,  0,  0]
+        self.__rookWhite.reverse()
+        self.__queenWhite = [-20,-10,-10, -5, -5,-10,-10,-20,
+                             -10,  0,  0,  0,  0,  0,  0,-10,
+                             -10,  0,  5,  5,  5,  5,  0,-10,
+                              -5,  0,  5,  5,  5,  5,  0, -5,
+                               0,  0,  5,  5,  5,  5,  0, -5,
+                             -10,  5,  5,  5,  5,  5,  0,-10,
+                             -10,  0,  5,  0,  0,  0,  0,-10,
+                             -20,-10,-10, -5, -5,-10,-10,-20]
+        self.__queenWhite.reverse()
+        self.__kingEarlyMiddleWhite = [-30,-40,-40,-50,-50,-40,-40,-30,
+                                       -30,-40,-40,-50,-50,-40,-40,-30,
+                                       -30,-40,-40,-50,-50,-40,-40,-30,
+                                       -30,-40,-40,-50,-50,-40,-40,-30,
+                                       -20,-30,-30,-40,-40,-30,-30,-20,
+                                       -10,-20,-20,-20,-20,-20,-20,-10,
+                                        20, 20,  0,  0,  0,  0, 20, 20,
+                                        20, 30, 10,  0,  0, 10, 30, 20]
+        self.__kingEarlyMiddleWhite.reverse()
+        self.__kingEndWhite = [-50,-40,-30,-20,-20,-30,-40,-50,
+                               -30,-20,-10,  0,  0,-10,-20,-30,
+                               -30,-10, 20, 30, 30, 20,-10,-30,
+                               -30,-10, 30, 40, 40, 30,-10,-30,
+                               -30,-10, 30, 40, 40, 30,-10,-30,
+                               -30,-10, 20, 30, 30, 20,-10,-30,
+                               -30,-30,  0,  0,  0,  0,-30,-30,
+                               -50,-30,-30,-30,-30,-30,-30,-50]
+        self.__kingEndWhite.reverse()
 
-        pawnSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(pawn)
-        knightSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(knight)
-        bishopSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(bishop)
-        rookSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(rook)
-        queenSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(queen)
-        kingSquareTableEarlyMiddleBitMapDictionary = self.__constructPieceSquareTableBitMap(kingEarlyMiddle)
-        kingEndSquareTableBitMapDictionary = self.__constructPieceSquareTableBitMap(kingEnd)
+        self.__pawnBlack = self.__pawnWhite[::-1]
+        self.__pawnBlack = [positionValue * -1 for positionValue in self.__pawnBlack]
+        self.__knightBlack = self.__knightWhite[::-1]
+        self.__knightBlack = [positionValue * -1 for positionValue in self.__knightBlack]
+        self.__bishopBlack = self.__bishopWhite[::-1]
+        self.__bishopBlack = [positionValue * -1 for positionValue in self.__bishopBlack]
+        self.__rookBlack = self.__rookWhite[::-1]
+        self.__rookBlack = [positionValue * -1 for positionValue in self.__rookBlack]
+        self.__queenBlack = self.__queenWhite[::-1]
+        self.__queenBlack = [positionValue * -1 for positionValue in self.__queenBlack]
+        self.__kingEarlyMiddleBlack = self.__kingEarlyMiddleWhite[::-1]
+        self.__kingEarlyMiddleBlack = [positionValue * -1 for positionValue in self.__kingEarlyMiddleBlack]
+        self.__kingEndBlack = self.__kingEndWhite[::-1]
+        self.__kingEndBlack = [positionValue * -1 for positionValue in self.__kingEndBlack]
 
-        self.__allSquareTableBitMapDictionaries = {
-            'pawn' : pawnSquareTableBitMapDictionary,
-            'knight' : knightSquareTableBitMapDictionary,
-            'bishop': bishopSquareTableBitMapDictionary,
-            'rook' : rookSquareTableBitMapDictionary,
-            'queen' : queenSquareTableBitMapDictionary,
-            'kingEarlyMiddle' : kingSquareTableEarlyMiddleBitMapDictionary,
-            'kingEnd' : kingEndSquareTableBitMapDictionary
+        # Storing in dictionary for easy access later
+        self.__pieceTableDict = {
+            'pawnWhite' : self.__pawnWhite,
+            'knightWhite' : self.__knightWhite,
+            'bishopWhite' : self.__bishopWhite,
+            'rookWhite' : self.__rookWhite,
+            'queenWhite' : self.__queenWhite,
+            'kingEarlyMiddleWhite' : self.__kingEarlyMiddleWhite,
+            'kingEndWhite' : self.__kingEndWhite,
+
+            'pawnBlack' : self.__pawnBlack,
+            'knightBlack' : self.__knightBlack,
+            'bishopBlack' : self.__bishopBlack,
+            'rookBlack' : self.__rookBlack,
+            'queenBlack' : self.__queenBlack,
+            'kingEarlyMiddleBlack' : self.__kingEarlyMiddleBlack,
+            'kingEndBlack' : self.__kingEndBlack
         }
 
-        self.__pieceSquareTableNameToChessPieceId = {
-            'pawn' : chess.PAWN,
-            'knight' : chess.KNIGHT,
-            'bishop': chess.BISHOP,
-            'rook' : chess.ROOK,
-            'queen' : chess.QUEEN,
-            'kingEarlyMiddle' : chess.KING,
-            'kingEnd' : chess.KING
+        # Dictionary for mapping from previous dictionary names to a python chess piece
+        self.__nameToChessPiece = {
+            'pawnWhite' : chess.PAWN,
+            'knightWhite' : chess.KNIGHT,
+            'bishopWhite' : chess.BISHOP,
+            'rookWhite' : chess.ROOK,
+            'queenWhite' : chess.QUEEN,
+            'kingEarlyMiddleWhite': chess.KING,
+            'kingEndWhite' : chess.KING,
+
+            'pawnBlack': chess.PAWN,
+            'knightBlack': chess.KNIGHT,
+            'bishopBlack': chess.BISHOP,
+            'rookBlack': chess.ROOK,
+            'queenBlack': chess.QUEEN,
+            'kingEarlyMiddleBlack': chess.KING,
+            'kingEndBlack': chess.KING,
+        }
+
+        #Dictionary for mapping from name to colour
+        self.__nameToColour = {
+            'pawnWhite' : chess.WHITE,
+            'knightWhite' : chess.WHITE,
+            'bishopWhite' : chess.WHITE,
+            'rookWhite' : chess.WHITE,
+            'queenWhite' : chess.WHITE,
+            'kingEarlyMiddleWhite': chess.WHITE,
+            'kingEndWhite' : chess.WHITE,
+
+            'pawnBlack': chess.BLACK,
+            'knightBlack': chess.BLACK,
+            'bishopBlack': chess.BLACK,
+            'rookBlack': chess.BLACK,
+            'queenBlack': chess.BLACK,
+            'kingEarlyMiddleBlack': chess.BLACK,
+            'kingEndBlack': chess.BLACK,
         }
 
     def evaluate(self, chessBoard, gamePhase):
 
-        for piece in self.__allSquareTableBitMapDictionaries:
-            currentSquareTablePieceBitMapDictionary = self.__allSquareTableBitMapDictionaries[piece]
-            currentWhitePiecePositionBitMap = chessBoard.pieces_mask(self.__pieceSquareTableNameToChessPieceId[piece], chess.WHITE)
-            currentBlackPiecePositionBitMap = chessBoard.pieces_mask(self.__pieceSquareTableNameToChessPieceId[piece], chess.BLACK)
-            for uniquePosEval in currentSquareTablePieceBitMapDictionary:
-                 currentUniquePosEvalBitMap = bin(currentSquareTablePieceBitMapDictionary[uniquePosEval])
+        positionEvaluation = 0
+        for pieceTableKey in self.__pieceTableDict:
+            pieceTable = self.__pieceTableDict[pieceTableKey]
+            pythonChessPiece = self.__nameToChessPiece[pieceTableKey]
+            pythonChessColour = self.__nameToColour[pieceTableKey]
+
+            for square in chessBoard.pieces(pythonChessPiece, pythonChessColour):
+                positionEvaluation += pieceTable[square]
+
+        return positionEvaluation
 
 
+    def printTable(self, table):
 
+        for i, val in enumerate(table[::-1]):
+            if val < 10 and val >= 0:
+                print("  ", end="")
+            elif val >= 10:
+                print(" ", end="")
+            elif val < 0 and val > -10:
+                print(" ", end="")
 
-    def __constructPieceSquareTableBitMap(self, pieceSquareTable):
-        unqiueNumberSet = set(pieceSquareTable)
-        bitMapDictionary = {}
-        for unqiueNumber in unqiueNumberSet:
-            bitMap = ""
-            for positionalValue in pieceSquareTable:
-                bitMap += str(int(positionalValue == unqiueNumber))
-            bitMapDictionary[unqiueNumber] = int(bitMap, 2)
-
-        return bitMapDictionary
-
-    def printBitMap(self, bitMap):
-        bitMapString = str(bitMap)[2:]
-        additionalZerosNeeded = 64 - len(bitMapString)
-        additionalZeros = "0" * additionalZerosNeeded
-        bitMapString = additionalZeros + bitMapString
-        for i, bit in enumerate(bitMapString):
-            print(bit, end=",")
-            if (i + 1) % 8 == 0:
+            print(val, end=",")
+            if (i+1) % 8 == 0:
                 print()
-
-
 
 
 
