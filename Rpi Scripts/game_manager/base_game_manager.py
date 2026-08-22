@@ -7,7 +7,7 @@ from chess_adversarial_search.minimax_alpha_beta import timeBoundedMinimaxAlphaB
 class GameManager:
     def __init__(self):
         self._gameMode = None
-        self._maxSearchTimeSeconds = 2
+        self._maxSearchTimeSeconds = 5
 
     def selectMode(self):
         acceptableModes = {'1', '2', '3', '4'}
@@ -23,25 +23,75 @@ class GameManager:
     def playGame(self):
         chessBoard = chess.Board()
         game = Game()
-        while not chessBoard.is_game_over():
+        print(f"The initial board state is:\n{str(chessBoard)}")
+        while True:
 
             if self._gameMode == '1':
-                pass
+                playerMove = chess.Move.from_uci(self._selectMove("white", chessBoard))
+                chessBoard.push(playerMove)
+                print(f"The white players move was {playerMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
+
+                self._engineMoveInfo("black")
+                engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
+                chessBoard.push(engineMove)
+                print(f"The black robot move was {engineMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
+
+
             elif self._gameMode == '2':
                 self._engineMoveInfo("white")
                 engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
                 chessBoard.push(engineMove)
                 print(f"The white robot move was {engineMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
 
                 playerMove = chess.Move.from_uci(self._selectMove("black", chessBoard))
                 chessBoard.push(playerMove)
                 print(f"The black players move was {playerMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
-
+                if chessBoard.is_game_over():
+                    break
 
             elif self._gameMode == '3':
-                pass
+                playerMove = chess.Move.from_uci(self._selectMove("white", chessBoard))
+                chessBoard.push(playerMove)
+                print(f"The white players move was {playerMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
+
+                playerMove = chess.Move.from_uci(self._selectMove("black", chessBoard))
+                chessBoard.push(playerMove)
+                print(f"The black players move was {playerMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
+
             elif self._gameMode == '4':
-                pass
+                self._engineMoveInfo("white")
+                engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard,maxSearchTimeSeconds=self._maxSearchTimeSeconds)
+                chessBoard.push(engineMove)
+                print(f"The white robot move was {engineMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
+
+                self._engineMoveInfo("black")
+                engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard,maxSearchTimeSeconds=self._maxSearchTimeSeconds)
+                chessBoard.push(engineMove)
+                print(f"The white robot move was {engineMove}.\nThe state of the board after this move is:\n{str(chessBoard)}")
+                if chessBoard.is_game_over():
+                    break
+
+        resultStr = chessBoard.result()
+        if resultStr == '1/2-1/2':
+            print("Draw")
+        elif resultStr == '1-0':
+            # White wins
+            print("White Wins")
+        elif resultStr == '0-1':
+            # Black wins
+            print("Black Wins")
 
     def _selectMove(self, colour, chessBoard):
         selectedMove = None

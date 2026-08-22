@@ -25,7 +25,7 @@ def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds):
             projectedSearchTimeAfterNextPly = (time.perf_counter() - searchStartTime) + (averageTimeIncreaseFactor * currentPlyTime)
 
             if projectedSearchTimeAfterNextPly > maxSearchTimeSeconds:
-                print(f"Searched to a depth of {maxPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.")
+                print(f"\n---------------------------------------\nSearched to a depth of {maxPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.\n---------------------------------------\n")
 
                 break
 
@@ -33,14 +33,6 @@ def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds):
 
 
     return move
-
-
-
-
-
-
-    return move
-
 
 def minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth):
     player = game.toMove(chessBoard)
