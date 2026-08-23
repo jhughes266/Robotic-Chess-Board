@@ -3,20 +3,20 @@ import time
 from chess_adversarial_search.game import Game
 import chess
 
-def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds):
+def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds, maxSearchPlyDepth):
     searchStartTime = time.perf_counter()
     plySearchTimes = []
     move = None
-    maxPlyDepth = 1
+    currentPlyDepth = 1
 
     while True:
         plyStartTime = time.perf_counter()
-        move = minimaxAlphaBetaSearch(game, chessBoard, maxPlyDepth)
+        move = minimaxAlphaBetaSearch(game, chessBoard, currentPlyDepth)
         plyEndTime = time.perf_counter()
         currentPlyTime = plyEndTime - plyStartTime
         plySearchTimes.append(currentPlyTime)
 
-        if maxPlyDepth > 1:
+        if currentPlyDepth > 1:
             timeIncreaseFactor = 0
             for i in range(1, len(plySearchTimes)):
                 timeIncreaseFactor += (plySearchTimes[i] / plySearchTimes[i-1])
@@ -24,12 +24,12 @@ def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds):
 
             projectedSearchTimeAfterNextPly = (time.perf_counter() - searchStartTime) + (averageTimeIncreaseFactor * currentPlyTime)
 
-            if projectedSearchTimeAfterNextPly > maxSearchTimeSeconds:
-                print(f"\n---------------------------------------\nSearched to a depth of {maxPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.\n---------------------------------------\n")
+            if (projectedSearchTimeAfterNextPly > maxSearchTimeSeconds) or (currentPlyDepth==maxSearchPlyDepth):
+                print(f"\n---------------------------------------\nSearched to a depth of {currentPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.\n---------------------------------------\n")
 
                 break
 
-        maxPlyDepth += 1
+        currentPlyDepth += 1
 
 
     return move
