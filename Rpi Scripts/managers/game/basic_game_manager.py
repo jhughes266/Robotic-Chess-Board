@@ -4,8 +4,9 @@ from chess_adversarial_search.minimax_alpha_beta import timeBoundedMinimaxAlphaB
 
 
 
-class GameManager:
-    def __init__(self):
+class BasicGameManager:
+    def __init__(self, boardManager):
+        self._boardManager = boardManager
         self._gameMode = None
         self._maxSearchTimeSeconds = 5
         self._maxSearchPlyDepth = 1000
@@ -26,6 +27,7 @@ class GameManager:
     def selectMode(self):
         acceptableModes = {'1', '2', '3', '4'}
         while True:
+            self._gameMode = '1'
             self._gameMode = input(
                 "Select game mode!\n1: White human player vs black robot\n2: Black human player vs black white\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
 
@@ -39,6 +41,7 @@ class GameManager:
         acceptableDifficulties = {'1', '2', '3', '4', '5', '6'}
         while True:
             if self._gameMode in validGameModes:
+                difficulty = '1'
                 difficulty = input(f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within {self._maxSearchTimeSeconds} seconds)\n(Please note that irrespective of the difficulty the game will search for at most {self._maxSearchTimeSeconds} seconds.)\nSelection: ")
 
                 if difficulty not in acceptableDifficulties:
@@ -51,7 +54,7 @@ class GameManager:
 
     def playGame(self):
         chessBoard = chess.Board()
-        game = Game()
+        game = Game(boardManager=self._boardManager)
         print(f"The initial board state is:\n{str(chessBoard)}\n---------------------------------------")
         while True:
 
@@ -60,6 +63,7 @@ class GameManager:
                     break
                 playerMove = self._selectMove("white", chessBoard)
                 playerMove = chess.Move.from_uci(playerMove)
+                self._boardManager.executeMove(playerMove, chessBoard)
                 chessBoard.push(playerMove)
                 self._resultingMoveInfo("white", playerMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -67,6 +71,7 @@ class GameManager:
 
                 self._engineMoveInfo("black")
                 engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=self._maxSearchTimeSeconds, maxSearchPlyDepth=self._maxSearchPlyDepth)
+                self._boardManager.executeMove(engineMove, chessBoard)
                 chessBoard.push(engineMove)
                 self._resultingMoveInfo("black", engineMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -76,6 +81,7 @@ class GameManager:
             elif self._gameMode == '2':
                 self._engineMoveInfo("white")
                 engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=self._maxSearchTimeSeconds, maxSearchPlyDepth=self._maxSearchPlyDepth)
+                self._boardManager.executeMove(engineMove, chessBoard)
                 chessBoard.push(engineMove)
                 self._resultingMoveInfo("white", engineMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -85,6 +91,7 @@ class GameManager:
                     break
                 playerMove = self._selectMove("black", chessBoard)
                 playerMove = chess.Move.from_uci(playerMove)
+                self._boardManager.executeMove(playerMove, chessBoard)
                 chessBoard.push(playerMove)
                 self._resultingMoveInfo("black", playerMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -95,6 +102,7 @@ class GameManager:
                     break
                 playerMove = self._selectMove("white", chessBoard)
                 playerMove = chess.Move.from_uci(playerMove)
+                self._boardManager.executeMove(playerMove, chessBoard)
                 chessBoard.push(playerMove)
                 self._resultingMoveInfo("white", playerMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -104,6 +112,7 @@ class GameManager:
                     break
                 playerMove = self._selectMove("black", chessBoard)
                 playerMove = chess.Move.from_uci(playerMove)
+                self._boardManager.executeMove(playerMove, chessBoard)
                 chessBoard.push(playerMove)
                 self._resultingMoveInfo("black", playerMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -112,6 +121,7 @@ class GameManager:
             elif self._gameMode == '4':
                 self._engineMoveInfo("white")
                 engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=self._maxSearchTimeSeconds, maxSearchPlyDepth=self._maxSearchPlyDepth)
+                self._boardManager.executeMove(engineMove, chessBoard)
                 chessBoard.push(engineMove)
                 self._resultingMoveInfo("white", engineMove, chessBoard)
                 if chessBoard.is_game_over():
@@ -119,12 +129,15 @@ class GameManager:
 
                 self._engineMoveInfo("black")
                 engineMove = timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds=self._maxSearchTimeSeconds, maxSearchPlyDepth=self._maxSearchPlyDepth)
+                self._boardManager.executeMove(engineMove, chessBoard)
                 chessBoard.push(engineMove)
                 self._resultingMoveInfo("black", engineMove, chessBoard)
                 if chessBoard.is_game_over():
                     break
 
         self._resultInfo(chessBoard)
+        self._boardManager.gameEndMessage()
+        self._boardManager.resetBoard()
 
 
     def _selectMove(self, colour, chessBoard):

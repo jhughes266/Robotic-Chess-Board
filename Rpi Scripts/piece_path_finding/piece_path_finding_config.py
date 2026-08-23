@@ -2,7 +2,7 @@
 # The starting state of the game board before the game starts
 # White is upper case black is lower case
 # [x,y] format
-boardStartStateDictionary= {
+initialBoardStartStateDictionary= {
     # White
     "P0": [2, 3],
     "P1": [3, 3],
@@ -14,10 +14,10 @@ boardStartStateDictionary= {
     "P7": [9, 3],
     "R0": [2, 2],
     "R1": [9, 2],
-    "R2": [0, 10],
+    "R2": [11, 1],
     "N0": [3, 2],
     "N1": [8, 2],
-    "N2": [0, 11],
+    "N2": [11, 0],
     "B0": [4, 2],
     "B1": [7, 2],
     "Q0": [5, 2],
@@ -36,10 +36,10 @@ boardStartStateDictionary= {
     "p7": [9, 8],
     "r0": [2, 9],
     "r1": [9, 9],
-    "r2": [11, 1],
+    "r2": [0, 10],
     "n0": [3, 9],
     "n1": [8, 9],
-    "n2": [11, 0],
+    "n2": [0, 11],
     "b0": [4, 9],
     "b1": [7, 9],
     "q0": [5, 9],

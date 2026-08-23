@@ -10,7 +10,8 @@ class Game:
     EARLY_MIDDLE_GAME = 0
     END_GAME = 1
 
-    def __init__(self):
+    def __init__(self, boardManager):
+        self.__boardManager = boardManager
         self.__pieceSquareTables = PieceSquareTables()
 
     def toMove(self, chessBoard):

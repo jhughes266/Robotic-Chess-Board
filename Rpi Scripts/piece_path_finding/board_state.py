@@ -2,13 +2,11 @@ from pip._internal.models import candidate
 import copy
 
 from piece_path_finding.action import Action
-from piece_path_finding.piece_path_finding_config import boardStartStateDictionary
 
 
 class BoardState:
     """
-    Stores the state of the board and all related functions for the board state that is stored inside the problem
-    abstraction and used in the best first search algorithm.
+    Stores the state of the board and all related functions for the board state that is stored inside the problem abstraction and used in the best first search algorithm. Furthermore, the board state is also utilized by the board manager classes.
     """
 
     # When checking for available actions I have to check right, left, up and down. Rather than doing this inside the
@@ -199,6 +197,16 @@ class BoardState:
             euclideanDistance += ((otherState.__boardStateDictionary[key][0] - self.__boardStateDictionary[key][0])**2 + (otherState.__boardStateDictionary[key][1] - self.__boardStateDictionary[key][1])**2)**0.5
 
         return euclideanDistance
+
+    def getPieceAtLocation(self, location):
+        """
+        Gets the piece at the given location
+        Args:
+            Location: the location to get the piece at
+        Returns:
+            The string representation of the piece at the given location
+        """
+        return self.__boardPositionMatrix[location[0]][location[1]]
 
 
     def __str__(self):

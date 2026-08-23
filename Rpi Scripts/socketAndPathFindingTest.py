@@ -1,5 +1,5 @@
 from piece_path_finding.board_state import BoardState
-from piece_path_finding.piece_path_finding_config import boardStartStateDictionary, boardTestStateDictionary
+from piece_path_finding.piece_path_finding_config import initialBoardStartStateDictionary, boardTestStateDictionary
 from piece_path_finding.best_first_search import bestFirstSearch
 from piece_path_finding.problem import Problem
 from piece_path_finding.solution_handler import SolutionHandler
@@ -17,10 +17,10 @@ if __name__ == '__main__':
    
    """
    tracemalloc.start()
-   initialState = BoardState(boardStateDictionary=boardStartStateDictionary)
+   initialState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
    print(initialState)
 
-   boardGoalStateDictionary = copy.deepcopy(boardStartStateDictionary)
+   boardGoalStateDictionary = copy.deepcopy(initialBoardStartStateDictionary)
 
 
    boardGoalStateDictionary["N0"] = [3, 9]
@@ -53,7 +53,7 @@ if __name__ == '__main__':
    print(f"The string being sent is {len(outgoing)} bytes long.")
 
    # Socket Client
-
+   """
    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    socket.connect((HOST, PORT))
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
    socket.send("END".encode('utf-8'))
 
    socket.close()
-
+   """
 
 
 
