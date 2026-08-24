@@ -37,7 +37,7 @@ class GameMode(ABC):
         if self._userInterface.claimDraw(chessBoard):
             return True
         playerMove = chess.Move.from_uci(self._userInterface.playerSelectMove(chessBoard))
-        #self._boardManager.executeMove(playerMove, chessBoard)
+        self._boardManager.executeMove(playerMove, chessBoard)
         chessBoard.push(playerMove)
         self._userInterface.resultingMoveInfo(chessBoard, playerMove)
         if chessBoard.is_game_over():
@@ -51,7 +51,7 @@ class GameMode(ABC):
                                                        chessBoard=chessBoard,
                                                        maxSearchTimeSeconds=self._maxSearchTimeSeconds,
                                                        maxSearchPlyDepth=self._maxSearchPlyDepth)
-        #self._boardManager.executeMove(engineMove, chessBoard)
+        self._boardManager.executeMove(engineMove, chessBoard)
         chessBoard.push(engineMove)
         self._userInterface.resultingMoveInfo(chessBoard, engineMove)
         if chessBoard.is_game_over():

@@ -1,5 +1,5 @@
 
-class BasicCommunicationManager:
+class CommunicationManager:
     def __init__(self):
         pass
 
@@ -18,5 +18,5 @@ class BasicCommunicationManager:
     def disconnectFromPico(self):
         print("Disconnected from Pico!")
 
-class PicoCommunicationManager(BasicCommunicationManager):
+class PicoCommunicationManager(CommunicationManager):
     pass
