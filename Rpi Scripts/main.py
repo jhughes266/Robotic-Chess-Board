@@ -1,11 +1,14 @@
-from managers.game.basic_game_manager import BasicGameManager
-from managers.board.basic_board_manager import BasicBoardManager
+from managers.game.game_manager import GameManager
+from managers.board.board_manager import BasicBoardManager
 from managers.wifi_communication.basic_communication_manager import BasicCommunicationManager
+from managers.game.user_interface.user_interface import *
+
 
 if __name__ == '__main__':
     basicCommunicationManager = BasicCommunicationManager()
     basicBoardManager = BasicBoardManager(communicationManager=basicCommunicationManager)
-    gameManager = BasicGameManager(boardManager=basicBoardManager)
+    userInterface = TextUserInterface()
+    gameManager = GameManager(boardManager=basicBoardManager, userInterface=userInterface, maxSearchTimeSeconds=5)
 
     while gameManager.startOrQuit():
         basicCommunicationManager.connectToPico()

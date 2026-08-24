@@ -17,3 +17,6 @@ class BasicCommunicationManager:
 
     def disconnectFromPico(self):
         print("Disconnected from Pico!")
+
+class PicoCommunicationManager(BasicCommunicationManager):
+    pass

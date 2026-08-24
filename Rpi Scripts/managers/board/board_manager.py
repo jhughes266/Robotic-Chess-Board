@@ -7,7 +7,7 @@ from piece_path_finding.best_first_search import bestFirstSearch
 from piece_path_finding.problem import Problem
 from piece_path_finding.solution_handler import SolutionHandler
 
-class BasicBoardManager:
+class BoardManager:
     def __init__(self, communicationManager):
         self._communicationManager = communicationManager
 
@@ -15,7 +15,6 @@ class BasicBoardManager:
 
         if self._boardState is None:
             self._boardState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
-
 
     def _chessSquareToBoardGridXY(self, square):
         file = square[0]
@@ -29,8 +28,8 @@ class BasicBoardManager:
 
     def executeMove(self, move, chessBoard):
         goalBoardState = None
-        initialPosition = str(move.uci()[0:2])
-        destinationPosition = str(move.uci()[2:4])
+        initialPosition = move.uci()[0:2]
+        destinationPosition = move.uci()[2:4]
 
         if ((move.promotion is not None) and chessBoard.is_capture(move)):
 

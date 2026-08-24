@@ -1,3 +1,4 @@
+"""
 import chess
 from chess_adversarial_search.game import Game
 from chess_adversarial_search.minimax_alpha_beta import timeBoundedMinimaxAlphaBetaSearch
@@ -33,3 +34,4 @@ while not chessBoard.is_game_over():
 
 
 print("end")
+"""
