@@ -15,8 +15,6 @@ class BoardManager:
         if self._boardState is None:
             self._boardState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
 
-        print(self._boardState)
-
     def _chessSquareToBoardGridXY(self, square):
         file = square[0]
         rank = square[1]
@@ -26,6 +24,12 @@ class BoardManager:
 
     def _loadBoardState(self):
         return None
+
+    def promotionIsIllegal(self, move):
+        promotedPiecePrefix = move.uci()[4]
+        if self._boardState.findDeadPieceLocation(promotedPiecePrefix) is None:
+            return False
+        return True
 
     def executeMove(self, move, chessBoard):
         goalBoardState = None
@@ -54,7 +58,7 @@ class BoardManager:
             goalBoardState = goalBoardState.resultantStateAfterAction(victimAction)
 
             # Promoted Piece
-            promotedPiecePrefix = move.uci()[5]
+            promotedPiecePrefix = move.uci()[4]
             colourOfPromotedPiece = chessBoard.turn
             if colourOfPromotedPiece == chess.WHITE:
                 promotedPiecePrefix = promotedPiecePrefix.upper()
@@ -95,7 +99,7 @@ class BoardManager:
             goalBoardState = self._boardState.resultantStateAfterAction(pawnKillAction)
 
             # Promotion
-            promotedPiecePrefix = move.uci()[5]
+            promotedPiecePrefix = move.uci()[4]
             colourOfPromotedPiece = chessBoard.turn
             if colourOfPromotedPiece == chess.WHITE:
                 promotedPiecePrefix = promotedPiecePrefix.upper()

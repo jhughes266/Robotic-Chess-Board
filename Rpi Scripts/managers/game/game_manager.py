@@ -48,7 +48,7 @@ class GameManager:
 
     def playGame(self):
         chessBoard = chess.Board()
-        game = Game()
+        game = Game(self._boardManager)
         self._gameMode.playGameMode(chessBoard, game)
         self._gameMode.endOfGame(chessBoard)
 

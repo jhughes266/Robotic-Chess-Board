@@ -10,11 +10,17 @@ class Game:
     EARLY_MIDDLE_GAME = 0
     END_GAME = 1
 
-    def __init__(self):
+    def __init__(self, boardManager):
         self.__pieceSquareTables = PieceSquareTables()
+        self.__boardManager = boardManager
 
     def toMove(self, chessBoard):
         return chessBoard.turn
+
+    def promotionIsIlegal(self, move):
+        if move.promotion is not None:
+            return self.__boardManager.promotionIsIlegal(move)
+        return False
 
     def actions(self, chessBoard):
         # May need to adapt this for the promotion if material is not available
@@ -28,6 +34,10 @@ class Game:
 
         if chessBoard.turn == chess.WHITE:
             for move in unorderedLegalMoves:
+                # Checks if the move is a promotion and if its illegal (The piece that is being promoted isnt in the
+                # graveyard). Then we dont add it to the list and just continue and move onto the next move.
+                if self.promotionIsIlegal(move):
+                    continue
                 originSquare = move.from_square
                 destinationSquare = move.to_square
 
@@ -58,6 +68,10 @@ class Game:
 
         elif chessBoard.turn == chess.BLACK:
             for move in unorderedLegalMoves:
+                # Checks if the move is a promotion and if its illegal (The piece that is being promoted isnt in the
+                # graveyard). Then we dont add it to the list and just continue and move onto the next move.
+                if self.promotionIsIlegal(move):
+                    continue
                 originSquare = move.from_square
                 destinationSquare = move.to_square
 

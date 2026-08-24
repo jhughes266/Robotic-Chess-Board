@@ -239,8 +239,6 @@ class BoardState:
         # None means the piece is not in the graveyard.
         return None
 
-
-
     def findFreeGraveSpace(self, victimColour):
         if victimColour == chess.WHITE:
             return self.__findFreeWhiteGraveSpace()
