@@ -1,6 +1,5 @@
-from pip._internal.models import candidate
 import copy
-
+import chess
 from piece_path_finding.action import Action
 
 
@@ -208,6 +207,81 @@ class BoardState:
         """
         return self.__boardPositionMatrix[location[0]][location[1]]
 
+    def findDeadPieceLocation(self, promotedPiecePrefix):
+        x = 0
+        for y in range(0, len(self.__boardPositionMatrix)):
+            pieceAtLocation = self.__boardPositionMatrix[x][y]
+            pieceAtLocationSuffix = pieceAtLocation[0]
+            if pieceAtLocationSuffix == promotedPiecePrefix:
+                return x, y
+
+        y = len(self.__boardPositionMatrix)
+        for x in range(0, len(self.__boardPositionMatrix)):
+            pieceAtLocation = self.__boardPositionMatrix[x][y]
+            pieceAtLocationSuffix = pieceAtLocation[0]
+            if pieceAtLocationSuffix == promotedPiecePrefix:
+                return x, y
+
+        x = len(self.__boardPositionMatrix) - 1
+        for y in range(0, len(self.__boardPositionMatrix)):
+            pieceAtLocation = self.__boardPositionMatrix[x][y]
+            pieceAtLocationSuffix = pieceAtLocation[0]
+            if pieceAtLocationSuffix == promotedPiecePrefix:
+                return x, y
+
+        y = 0
+        for x in range(0, len(self.__boardPositionMatrix)):
+            pieceAtLocation = self.__boardPositionMatrix[x][y]
+            pieceAtLocationSuffix = pieceAtLocation[0]
+            if pieceAtLocationSuffix == promotedPiecePrefix:
+                return x, y
+
+        # None means the piece is not in the graveyard.
+        return None
+
+
+
+    def findFreeGraveSpace(self, victimColour):
+        if victimColour == chess.WHITE:
+            return self.__findFreeWhiteGraveSpace()
+        elif victimColour == chess.BLACK:
+            return self.__findFreeBlackGraveSpace()
+
+    def __findFreeWhiteGraveSpace(self):
+        x = 0
+        for y in range(0, int(len(self.__boardPositionMatrix)/2)):
+            if self.__boardPositionMatrix[x][y] is None:
+                return [x, y]
+
+        y = 0
+        for x in range(0, len(self.__boardPositionMatrix)):
+            if self.__boardPositionMatrix[x][y] is None:
+                return [x, y]
+
+        x = len(self.__boardPositionMatrix) - 1
+        for y in range(0,  int(len(self.__boardPositionMatrix)/2)):
+            if self.__boardPositionMatrix[x][y] is None:
+                return [x, y]
+
+        assert False, "There is no free white grave space! This should never happen!"
+
+    def __findFreeBlackGraveSpace(self):
+        x = 0
+        for y in range(int(len(self.__boardPositionMatrix)/2), len(self.__boardPositionMatrix)):
+            if self.__boardPositionMatrix[x][y] is None:
+                return [x, y]
+
+        y = len(self.__boardPositionMatrix) - 1
+        for x in range(0, len(self.__boardPositionMatrix)):
+            if self.__boardPositionMatrix[x][y] is None:
+                return [x, y]
+
+        x = len(self.__boardPositionMatrix) - 1
+        for y in range(int(len(self.__boardPositionMatrix)/2), len(self.__boardPositionMatrix)):
+            if self.__boardPositionMatrix[x][y] is None:
+                return [x, y]
+
+        assert False, "There is no free black grave space! This should never happen!"
 
     def __str__(self):
         """
