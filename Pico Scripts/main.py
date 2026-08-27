@@ -8,6 +8,7 @@ from secrets import SSID, PASSWORD, STATIC_IP, SUBNET, GATEWAY, DNS, PORT
 from robot_object_config import pieceMover
 from command_executer import excuteCommand
 
+pieceMover.disengageGripper()
 # Turn on the wifi on the picos chip
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -49,20 +50,20 @@ while True:
    
     try:
         # Get the command from the client
-        clientCommand = connection.recv(2048)
+        clientCommand = connection.recv(4096)
         # If there is no data restart the loop
         if not clientCommand:
             continue
         # decode the client command
         decodedClientCommand = clientCommand.decode("utf-8")
-        print(decodedClientCommand)
         if decodedClientCommand == "END":
             break
+    
         excuteCommand(decodedClientCommand, pieceMover)
-
+        print("command executed!")
         
         connection.sendall("1")
-        
+        print("confirmation sent")    
     
     # Handle any exceptions
     except Exception as e:

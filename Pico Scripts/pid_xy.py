@@ -134,9 +134,9 @@ class PidXY:
                 yControllerOutput = max(self.__controllerMin, yControllerOutput)
                 
                 # For testing
-                if iter_count % 100 == 0:
-                    print("X |Pos: " + str(currentX) +  " Error: " + str(xError) + " Controller Out: " + str(xControllerOutput))
-                    print("Y |Pos: " + str(currentY) +  " Error: " + str(yError) + " Controller Out: " + str(yControllerOutput))
+                #if iter_count % 100 == 0:
+                    #print("X |Pos: " + str(currentX) +  " Error: " + str(xError) + " Controller Out: " + str(xControllerOutput))
+                    #print("Y |Pos: " + str(currentY) +  " Error: " + str(yError) + " Controller Out: " + str(yControllerOutput))
 
                 
                 # Turn the motors

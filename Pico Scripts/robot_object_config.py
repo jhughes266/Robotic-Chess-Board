@@ -33,7 +33,7 @@ pid = PidXY(xPositionalEncoder=xPositionalEncoder,
                    yDcMotor=yDcMotor,
                    xMotorPidDict=xMotorPidDict,
                    yMotorPidDict=yMotorPidDict,
-                   maxAllowableError=0)
+                   maxAllowableError=1)
 # Set up the servo motors
 vertical =  ServoMotor(angleControlPinNumber=26)
 claw = ServoMotor(angleControlPinNumber=22)

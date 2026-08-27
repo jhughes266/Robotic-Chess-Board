@@ -20,8 +20,9 @@ def excuteCommand(command, pieceMover, mode="real"):
         return
 
     # First we disengage the gripper to make sure it wont interfer with any pieces
-    pieceMover.disengageGripper()
-
+    #pieceMover.disengageGripper()
+    print(command)
+    print(len(command))
     i = 0
     while i < len(command):
 
@@ -47,7 +48,7 @@ def excuteCommand(command, pieceMover, mode="real"):
             pieceMover.engageGripper()
         elif character == "D":
             pieceMover.disengageGripper()
-
+    
         i += 1
 
 

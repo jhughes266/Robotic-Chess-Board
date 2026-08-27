@@ -3,7 +3,7 @@ from dc_motor import DcMotor
 
 from robot_object_config import xPositionalEncoder, yPositionalEncoder, xDcMotor, yDcMotor, pid, vertical, claw, gripper, pieceMover
 
-mode = "PID"
+mode = "NA"
 
 
 if mode == "Positional Encoder":

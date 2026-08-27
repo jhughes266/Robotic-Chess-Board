@@ -69,5 +69,4 @@ class PieceMover:
         """
         self.__gripper.disengage()
         self.__pidXY.moveTo(self.__calibrationX, self.__calibrationY)
-    
-    
+
