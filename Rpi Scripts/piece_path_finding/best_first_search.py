@@ -33,7 +33,7 @@ def bestFirstSearch(problem):
         # Pop the lowest cost node off the priority queue.
         node = frontier.pop()
         # Update the search progress.
-        searchProgress.updateProgress(node.totalCost)
+        searchProgress.updateProgress(node)
         # Check if the popped node is the goal. If it is return it as we have found the solution
         if problem.isGoal(node.state):
             return node

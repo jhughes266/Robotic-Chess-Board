@@ -19,6 +19,53 @@ class BoardState:
     # The maximum and minimum coordinates on the board
     __maxCoordinate = 11
     __minCoordinate = 0
+    # The squares that make up the piece graveyards
+    __WhiteGraveSquares = [[0, 5],
+                           [0, 4],
+                           [0, 3],
+                           [0, 2],
+                           [0, 1],
+                           [0, 0],
+                           [1, 0],
+                           [2, 0],
+                           [3, 0],
+                           [4, 0],
+                           [5, 0],
+                           [6, 0],
+                           [7, 0],
+                           [8, 0],
+                           [9, 0],
+                           [10, 0],
+                           [11, 0],
+                           [11, 1],
+                           [11, 2],
+                           [11, 3],
+                           [11, 4],
+                           [11, 5]]
+
+    __BlackGraveSquares = [[0, 6],
+                           [0, 7],
+                           [0, 8],
+                           [0, 9],
+                           [0, 10],
+                           [0, 11],
+                           [1, 11],
+                           [2, 11],
+                           [3, 11],
+                           [4, 11],
+                           [5, 11],
+                           [6, 11],
+                           [7, 11],
+                           [8, 11],
+                           [9, 11],
+                           [10, 11],
+                           [11, 11],
+                           [11, 10],
+                           [11, 9],
+                           [11, 8],
+                           [11, 7],
+                           [11, 6]]
+
 
     def __init__(self, boardStateDictionary):
         """
@@ -208,36 +255,19 @@ class BoardState:
         return self.__boardPositionMatrix[location[0]][location[1]]
 
     def findDeadPieceLocation(self, promotedPiecePrefix):
-        x = 0
-        for y in range(0, len(self.__boardPositionMatrix)):
+
+        for location in (BoardState.__WhiteGraveSquares + BoardState.__BlackGraveSquares):
+            x = location[0]
+            y = location[1]
             pieceAtLocation = self.__boardPositionMatrix[x][y]
+            if pieceAtLocation is None:
+                continue
             pieceAtLocationSuffix = pieceAtLocation[0]
             if pieceAtLocationSuffix == promotedPiecePrefix:
-                return x, y
+                return [x, y]
 
-        y = len(self.__boardPositionMatrix)
-        for x in range(0, len(self.__boardPositionMatrix)):
-            pieceAtLocation = self.__boardPositionMatrix[x][y]
-            pieceAtLocationSuffix = pieceAtLocation[0]
-            if pieceAtLocationSuffix == promotedPiecePrefix:
-                return x, y
-
-        x = len(self.__boardPositionMatrix) - 1
-        for y in range(0, len(self.__boardPositionMatrix)):
-            pieceAtLocation = self.__boardPositionMatrix[x][y]
-            pieceAtLocationSuffix = pieceAtLocation[0]
-            if pieceAtLocationSuffix == promotedPiecePrefix:
-                return x, y
-
-        y = 0
-        for x in range(0, len(self.__boardPositionMatrix)):
-            pieceAtLocation = self.__boardPositionMatrix[x][y]
-            pieceAtLocationSuffix = pieceAtLocation[0]
-            if pieceAtLocationSuffix == promotedPiecePrefix:
-                return x, y
-
-        # None means the piece is not in the graveyard.
         return None
+
 
     def findFreeGraveSpace(self, victimColour):
         if victimColour == chess.WHITE:
@@ -246,40 +276,23 @@ class BoardState:
             return self.__findFreeBlackGraveSpace()
 
     def __findFreeWhiteGraveSpace(self):
-        x = 0
-        for y in range(0, int(len(self.__boardPositionMatrix)/2)):
-            if self.__boardPositionMatrix[x][y] is None:
-                return [x, y]
 
-        y = 0
-        for x in range(0, len(self.__boardPositionMatrix)):
-            if self.__boardPositionMatrix[x][y] is None:
-                return [x, y]
-
-        x = len(self.__boardPositionMatrix) - 1
-        for y in range(0,  int(len(self.__boardPositionMatrix)/2)):
+        for location in BoardState.__WhiteGraveSquares:
+            x = location[0]
+            y = location[1]
             if self.__boardPositionMatrix[x][y] is None:
                 return [x, y]
 
         assert False, "There is no free white grave space! This should never happen!"
 
     def __findFreeBlackGraveSpace(self):
-        x = 0
-        for y in range(int(len(self.__boardPositionMatrix)/2), len(self.__boardPositionMatrix)):
+        for location in BoardState.__BlackGraveSquares:
+            x = location[0]
+            y = location[1]
             if self.__boardPositionMatrix[x][y] is None:
                 return [x, y]
 
-        y = len(self.__boardPositionMatrix) - 1
-        for x in range(0, len(self.__boardPositionMatrix)):
-            if self.__boardPositionMatrix[x][y] is None:
-                return [x, y]
-
-        x = len(self.__boardPositionMatrix) - 1
-        for y in range(int(len(self.__boardPositionMatrix)/2), len(self.__boardPositionMatrix)):
-            if self.__boardPositionMatrix[x][y] is None:
-                return [x, y]
-
-        assert False, "There is no free black grave space! This should never happen!"
+        assert False, "There is no free white grave space! This should never happen!"
 
     def __str__(self):
         """

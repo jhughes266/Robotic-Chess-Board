@@ -1,5 +1,7 @@
+import sys
+
 from piece_path_finding.board_state import BoardState
-from piece_path_finding.piece_path_finding_config import initialBoardStartStateDictionary
+from piece_path_finding.piece_path_finding_config import initialBoardStartStateDictionary, capturePromotionBoardStartStateDictionary, enPassantDictionary, ksCastleBoardStartStateDictionary
 from piece_path_finding.action import Action
 from piece_path_finding.best_first_search import bestFirstSearch
 from piece_path_finding.problem import Problem
@@ -15,6 +17,8 @@ class BoardManager:
         if self._boardState is None:
             self._boardState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
 
+        print(self._boardState)
+
     def _chessSquareToBoardGridXY(self, square):
         file = square[0]
         rank = square[1]
@@ -27,7 +31,7 @@ class BoardManager:
 
     def promotionIsIllegal(self, move):
         promotedPiecePrefix = move.uci()[4]
-        if self._boardState.findDeadPieceLocation(promotedPiecePrefix) is None:
+        if self._boardState.findDeadPieceLocation(promotedPiecePrefix) is not None:
             return False
         return True
 
@@ -38,6 +42,9 @@ class BoardManager:
 
         if ((move.promotion is not None) and chessBoard.is_capture(move)):
             goalBoardState = self.__promotionAndCapture(move, chessBoard, initialPosition, destinationPosition)
+
+        elif chessBoard.is_en_passant(move):
+            goalBoardState = self.__enPassant(move, chessBoard, initialPosition, destinationPosition)
 
         elif chessBoard.is_capture(move):
             goalBoardState = self.__capture(move, chessBoard, initialPosition, destinationPosition)
@@ -51,14 +58,12 @@ class BoardManager:
         elif chessBoard.is_queenside_castling(move):
             goalBoardState = self.__queensideCastle(move, chessBoard, initialPosition, destinationPosition)
 
-        elif chessBoard.is_en_passant(move):
-            goalBoardState = self.__enPassant(move, chessBoard, initialPosition, destinationPosition)
         else:
             goalBoardState = self.__normalMove(move, chessBoard, initialPosition, destinationPosition)
 
         actionString = self.__findActionString(initialState=self._boardState, goalState=goalBoardState)
         self._boardState = goalBoardState
-        self.__communicationManager.sendDatatoPico(actionString)
+        self.__communicationManager.sendDataToPico(actionString)
         self.__communicationManager.recieveDataFromPico()
 
     def __promotionAndCapture(self, move, chessBoard, initialPosition, destinationPosition):
@@ -96,6 +101,7 @@ class BoardManager:
         return goalBoardState
 
     def __capture(self, move, chessBoard, initialPosition, destinationPosition):
+        print("capture")
         # Victim
         victimInitialPosition = destinationPosition
         # The move hasn't been executed yet so it is the attackers turn. So the opposite colour is the victim
@@ -116,6 +122,7 @@ class BoardManager:
         return goalBoardState
 
     def __promotion(self, move, chessBoard, initialPosition, destinationPosition):
+        print("promotion")
         # Pawn
         pawnInitialPosition = initialPosition
         # The pawn is from the player who is moving
@@ -140,6 +147,7 @@ class BoardManager:
         return goalBoardState
 
     def __kingsideCastle(self, move, chessBoard, initialPosition, destinationPosition):
+        print("kingsideCastle")
         # King to destination
         kingInitialPosition = initialPosition
         kingDestinationPosition = destinationPosition
@@ -152,12 +160,13 @@ class BoardManager:
         rookInitialPosition[0] += 3
         rookDestinationPosition = kingInitialPosition[:]
         rookDestinationPosition[0] += 1
-        piece = goalBoardState.getPieceAtLocation(initialPosition)
+        piece = goalBoardState.getPieceAtLocation(rookInitialPosition)
         action = Action(piece=piece, initialPosition=rookInitialPosition, destination=rookDestinationPosition)
         goalBoardState = goalBoardState.resultantStateAfterAction(action)
         return goalBoardState
 
     def __queensideCastle(self, move, chessBoard, initialPosition, destinationPosition):
+        print("queensideCastle")
         # King to destination
         kingInitialPosition = initialPosition
         kingDestinationPosition = destinationPosition
@@ -170,15 +179,16 @@ class BoardManager:
         rookInitialPosition[0] -= 4
         rookDestinationPosition = kingInitialPosition[:]
         rookDestinationPosition[0] -= 1
-        piece = goalBoardState.getPieceAtLocation(initialPosition)
+        piece = goalBoardState.getPieceAtLocation(rookInitialPosition)
         action = Action(piece=piece, initialPosition=rookInitialPosition, destination=rookDestinationPosition)
         goalBoardState = goalBoardState.resultantStateAfterAction(action)
         return goalBoardState
 
     def __enPassant(self, move, chessBoard, initialPosition, destinationPosition):
+        print("enPassant")
         # Victim Pawn
         # There needs to be an offset because the pawn is either up or down depending on the capturing side.
-        vivictimYOffset = -1
+        victimYOffset = -1
         if chessBoard.turn == chess.BLACK:
             victimYOffset = +1
         victimInitialPosition = destinationPosition[:]
@@ -201,6 +211,7 @@ class BoardManager:
         return goalBoardState
 
     def __normalMove(self, move, chessBoard, initialPosition, destinationPosition):
+        print("normalMove")
         # Piece
         pieceInitialPosition = initialPosition
         pieceDestinationPosition = destinationPosition
@@ -213,6 +224,7 @@ class BoardManager:
         problem = Problem(initialState=initialState, goalState=goalState)
         solutionNode = bestFirstSearch(problem)
         solutionHandler = SolutionHandler(solutionNode)
+        print(solutionHandler)
         return solutionHandler.getActionString()
 
     def gameEndMessage(self):
@@ -220,6 +232,7 @@ class BoardManager:
 
     def resetBoard(self):
         goalState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
+        print(self._boardState)
         actionString = self.__findActionString(initialState=self._boardState, goalState=goalState)
         self._boardState = goalState
         self.__communicationManager.sendDatatoPico(actionString)

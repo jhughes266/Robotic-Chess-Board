@@ -14,15 +14,15 @@ class SearchProgress:
         # First iteration flag
         self.__firstIteration = True
 
-    def updateProgress(self, cost):
+    def updateProgress(self, node):
         """
         Updates the progress of the search. If a better cost has been found it stores it and then prints it.
         Args:
             cost: incoming cost
         """
-        if cost < self.__bestCost:
-            self.__bestCost = round(cost, 2)
-            print("\rL2 distance until goal: " + str(self), end=" ")
+        if node.totalCost < self.__bestCost:
+            self.__bestCost = round(node.totalCost, 2)
+            print("\rL2 distance until goal: " + str(self), end="\n")
 
     def __str__(self):
         """

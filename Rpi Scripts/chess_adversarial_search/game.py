@@ -19,7 +19,7 @@ class Game:
 
     def promotionIsIlegal(self, move):
         if move.promotion is not None:
-            return self.__boardManager.promotionIsIlegal(move)
+            return self.__boardManager.promotionIsIllegal(move)
         return False
 
     def actions(self, chessBoard):

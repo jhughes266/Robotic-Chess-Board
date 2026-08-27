@@ -16,9 +16,9 @@ class GameMode(ABC):
     def selectDifficulty(self):
         acceptableDifficulties = {'1', '2', '3', '4', '5', '6'}
         while True:
-            difficulty = input(
-                f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within {self._maxSearchTimeSeconds} seconds)\n(Please note that irrespective of the difficulty the game will search for at most {self._maxSearchTimeSeconds} seconds.)\nSelection: ")
+            input(f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within {self._maxSearchTimeSeconds} seconds)\n(Please note that irrespective of the difficulty the game will search for at most {self._maxSearchTimeSeconds} seconds.)\nSelection: ")
 
+            difficulty = '2'
             if difficulty not in acceptableDifficulties:
                 print("You have selected an invalid difficulty level! Please Reselect!\n")
                 continue
@@ -33,6 +33,7 @@ class GameMode(ABC):
         self._boardManager.resetBoard()
 
     def _playerMove(self, chessBoard):
+        print("###################\n###################\n###################\n###################\n###################\n")
         self._userInterface.moveInfo(chessBoard)
         if self._userInterface.claimDraw(chessBoard):
             return True
@@ -42,7 +43,7 @@ class GameMode(ABC):
         self._userInterface.resultingMoveInfo(chessBoard, playerMove)
         if chessBoard.is_game_over():
             return True
-
+        print("###################\n###################\n###################\n###################\n###################\n")
         return False
 
     def _engineMove(self, chessBoard, game):

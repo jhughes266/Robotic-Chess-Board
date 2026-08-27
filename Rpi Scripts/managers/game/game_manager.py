@@ -25,8 +25,9 @@ class GameManager:
 
     def selectMode(self):
         while True:
-            selection = input(
-                "Select game mode!\n1: White human player vs black robot\n2: Black human player vs black white\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
+
+            selection = input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
+
 
             if selection == '1':
                 self._gameMode = WhitePlayerBlackRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
@@ -46,8 +47,8 @@ class GameManager:
     def selectDifficulty(self):
         self._gameMode.selectDifficulty()
 
-    def playGame(self):
-        chessBoard = chess.Board()
+    def playGame(self, fen=chess.STARTING_FEN):
+        chessBoard = chess.Board(fen)
         game = Game(self._boardManager)
         self._gameMode.playGameMode(chessBoard, game)
         self._gameMode.endOfGame(chessBoard)
