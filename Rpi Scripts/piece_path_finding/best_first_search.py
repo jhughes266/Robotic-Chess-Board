@@ -26,14 +26,14 @@ def bestFirstSearch(problem):
     # Add the initial state as an entry.
     reached[node.state.boardPosStringId()] = node.totalCost
     # A search progress object used to track how the search is progressing
-    searchProgress = SearchProgress()
+    #searchProgress = SearchProgress()
     # Keep looping through until all nodes have been removed from the frontier. To be fair this may as well be while
     # true exploring the entire state space for this problem is intractable.
     while not frontier.empty():
         # Pop the lowest cost node off the priority queue.
         node = frontier.pop()
         # Update the search progress.
-        searchProgress.updateProgress(node)
+        #searchProgress.updateProgress(node)
         # Check if the popped node is the goal. If it is return it as we have found the solution
         if problem.isGoal(node.state):
             return node

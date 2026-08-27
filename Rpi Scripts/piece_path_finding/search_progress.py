@@ -22,7 +22,7 @@ class SearchProgress:
         """
         if node.totalCost < self.__bestCost:
             self.__bestCost = round(node.totalCost, 2)
-            print("\rL2 distance until goal: " + str(self), end="\n")
+            print("\rL2 distance until goal: " + str(self), end="")
 
     def __str__(self):
         """

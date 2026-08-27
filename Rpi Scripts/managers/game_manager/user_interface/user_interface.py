@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import os
 class UserInterface(ABC):
-    def __init__(self):
+    def __init__(self, boardManager):
+        self._boardManager = boardManager
         self._chessColourAsText = ['Black', 'White']
 
     @abstractmethod
@@ -30,7 +31,15 @@ class TextUserInterface(UserInterface):
         legalMoveMade = False
         while not legalMoveMade:
             candidateMove = input("Please enter your move!: ")
-            legalMoves = list(chessBoard.legal_moves)
+            availableMoves = list(chessBoard.legal_moves)
+            legalMoves = []
+
+            # Checks if the player selected promotion is supported
+            for move in availableMoves:
+                if (move.promotion) and (self._boardManager.promotionIsIllegal(move)):
+                    continue
+                legalMoves.append(move)
+
             for move in legalMoves:
                 if str(move) == candidateMove:
                     legalMoveMade = True
@@ -38,7 +47,7 @@ class TextUserInterface(UserInterface):
                     break
 
             if not legalMoveMade:
-                print("The move that you have selected is illegal! Please re-enter your move!")
+                print("The move that you have selected is illegal OR there is not enough material for the promotion requested! Please re-enter your move!")
 
         return selectedMove
 

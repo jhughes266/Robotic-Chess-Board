@@ -1,7 +1,7 @@
 import sys
 
 from piece_path_finding.board_state import BoardState
-from piece_path_finding.piece_path_finding_config import initialBoardStartStateDictionary, capturePromotionBoardStartStateDictionary, enPassantDictionary, ksCastleBoardStartStateDictionary
+from piece_path_finding.piece_path_finding_config import initialBoardStartStateDictionary, intermediateBoardEndStateDictionary
 from piece_path_finding.action import Action
 from piece_path_finding.best_first_search import bestFirstSearch
 from piece_path_finding.problem import Problem
@@ -16,8 +16,6 @@ class BoardManager:
 
         if self._boardState is None:
             self._boardState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
-
-        print(self._boardState)
 
     def _chessSquareToBoardGridXY(self, square):
         file = square[0]
@@ -101,7 +99,6 @@ class BoardManager:
         return goalBoardState
 
     def __capture(self, move, chessBoard, initialPosition, destinationPosition):
-        print("capture")
         # Victim
         victimInitialPosition = destinationPosition
         # The move hasn't been executed yet so it is the attackers turn. So the opposite colour is the victim
@@ -122,7 +119,6 @@ class BoardManager:
         return goalBoardState
 
     def __promotion(self, move, chessBoard, initialPosition, destinationPosition):
-        print("promotion")
         # Pawn
         pawnInitialPosition = initialPosition
         # The pawn is from the player who is moving
@@ -147,7 +143,6 @@ class BoardManager:
         return goalBoardState
 
     def __kingsideCastle(self, move, chessBoard, initialPosition, destinationPosition):
-        print("kingsideCastle")
         # King to destination
         kingInitialPosition = initialPosition
         kingDestinationPosition = destinationPosition
@@ -166,7 +161,6 @@ class BoardManager:
         return goalBoardState
 
     def __queensideCastle(self, move, chessBoard, initialPosition, destinationPosition):
-        print("queensideCastle")
         # King to destination
         kingInitialPosition = initialPosition
         kingDestinationPosition = destinationPosition
@@ -185,7 +179,6 @@ class BoardManager:
         return goalBoardState
 
     def __enPassant(self, move, chessBoard, initialPosition, destinationPosition):
-        print("enPassant")
         # Victim Pawn
         # There needs to be an offset because the pawn is either up or down depending on the capturing side.
         victimYOffset = -1
@@ -211,7 +204,6 @@ class BoardManager:
         return goalBoardState
 
     def __normalMove(self, move, chessBoard, initialPosition, destinationPosition):
-        print("normalMove")
         # Piece
         pieceInitialPosition = initialPosition
         pieceDestinationPosition = destinationPosition
@@ -224,19 +216,21 @@ class BoardManager:
         problem = Problem(initialState=initialState, goalState=goalState)
         solutionNode = bestFirstSearch(problem)
         solutionHandler = SolutionHandler(solutionNode)
-        print(solutionHandler)
         return solutionHandler.getActionString()
 
     def gameEndMessage(self):
         pass
 
     def resetBoard(self):
-        goalState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
-        print(self._boardState)
-        actionString = self.__findActionString(initialState=self._boardState, goalState=goalState)
-        self._boardState = goalState
-        self.__communicationManager.sendDatatoPico(actionString)
-        self.__communicationManager.recieveDataFromPico()
+        resetStateDictionarySequence = [intermediateBoardEndStateDictionary, initialBoardStartStateDictionary]
+
+        for dictionary in resetStateDictionarySequence:
+            goalState = BoardState(boardStateDictionary=dictionary)
+            actionString = self.__findActionString(initialState=self._boardState, goalState=goalState)
+            self._boardState = goalState
+            self.__communicationManager.sendDataToPico(actionString)
+            self.__communicationManager.recieveDataFromPico()
+
 
 
 

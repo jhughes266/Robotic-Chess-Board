@@ -33,7 +33,6 @@ class GameMode(ABC):
         self._boardManager.resetBoard()
 
     def _playerMove(self, chessBoard):
-        print("###################\n###################\n###################\n###################\n###################\n")
         self._userInterface.moveInfo(chessBoard)
         if self._userInterface.claimDraw(chessBoard):
             return True
@@ -43,7 +42,6 @@ class GameMode(ABC):
         self._userInterface.resultingMoveInfo(chessBoard, playerMove)
         if chessBoard.is_game_over():
             return True
-        print("###################\n###################\n###################\n###################\n###################\n")
         return False
 
     def _engineMove(self, chessBoard, game):

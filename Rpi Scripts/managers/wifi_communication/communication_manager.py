@@ -1,3 +1,6 @@
+import socket
+from secrets import HOST, PORT
+
 
 class CommunicationManager:
     def __init__(self):
@@ -19,4 +22,24 @@ class CommunicationManager:
         print("Disconnected from Pico!")
 
 class PicoCommunicationManager(CommunicationManager):
-    pass
+    def __init__(self):
+        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def connectToPico(self):
+        self.__socket.connect((HOST, PORT))
+        print("Connected to the Pico!")
+
+
+    def sendDataToPico(self, data):
+        self.__socket.send(data.encode('utf-8'))
+        print("Data sent to the Pico!")
+        print(f"The Data is:\n {data}")
+
+    def recieveDataFromPico(self):
+        incoming = self.__socket.recv(1024).decode('utf-8')
+        print("Data received from Pico!")
+
+    def disconnectFromPico(self):
+        self.__socket.send("END".encode('utf-8'))
+        self.__socket.close()
+        print("Disconnected from Pico!")
