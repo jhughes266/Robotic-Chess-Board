@@ -21,13 +21,31 @@ class CommunicationManager:
     def disconnectFromPico(self):
         print("Disconnected from Pico!")
 
+    def sendCommandToPico(self, command, maxCommandSize):
+        self.sendDataToPico(command)
+        self.recieveDataFromPico()
+
 class PicoCommunicationManager(CommunicationManager):
     def __init__(self):
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connectToPico(self):
+        print("Attempting to connect to Pico!")
         self.__socket.connect((HOST, PORT))
         print("Connected to the Pico!")
+
+    def sendCommandToPico(self, command, maxCommandSize):
+        subCommand = ''
+        for char in command:
+            subCommand += char
+            if len(subCommand) > maxCommandSize and char == ']':
+                self.sendDataToPico(subCommand)
+                self.recieveDataFromPico()
+                subCommand = ''
+        # Send remaining data to pico
+        self.sendDataToPico(subCommand)
+        self.recieveDataFromPico()
+
 
 
     def sendDataToPico(self, data):
