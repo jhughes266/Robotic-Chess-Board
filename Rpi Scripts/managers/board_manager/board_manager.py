@@ -61,7 +61,7 @@ class BoardManager:
 
         actionString = self.__findActionString(initialState=self._boardState, goalState=goalBoardState)
         self._boardState = goalBoardState
-        self.__communicationManager.sendCommandToPico(actionString, maxCommandSize=20)
+        self.__communicationManager.executeCommand(actionString, maxCommandSize=20)
 
     def __promotionAndCapture(self, move, chessBoard, initialPosition, destinationPosition):
         # Pawn
@@ -227,7 +227,7 @@ class BoardManager:
             goalState = BoardState(boardStateDictionary=dictionary)
             actionString = self.__findActionString(initialState=self._boardState, goalState=goalState)
             self._boardState = goalState
-            self.__communicationManager.sendCommandToPico(actionString, maxCommandSize=20)
+            self.__communicationManager.executeCommand(actionString, maxCommandSize=20)
 
 
 

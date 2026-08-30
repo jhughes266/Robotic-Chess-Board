@@ -21,7 +21,7 @@ class CommunicationManager:
     def disconnectFromPico(self):
         print("Disconnected from Pico!")
 
-    def sendCommandToPico(self, command, maxCommandSize):
+    def executeCommand(self, command, maxCommandSize):
         self.sendDataToPico(command)
         self.recieveDataFromPico()
 
@@ -34,7 +34,7 @@ class PicoCommunicationManager(CommunicationManager):
         self.__socket.connect((HOST, PORT))
         print("Connected to the Pico!")
 
-    def sendCommandToPico(self, command, maxCommandSize):
+    def executeCommand(self, command, maxCommandSize):
         subCommand = ''
         for char in command:
             subCommand += char
