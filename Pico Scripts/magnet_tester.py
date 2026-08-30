@@ -18,7 +18,7 @@ def magnet_tester(numberOfIterations):
     # Disengage the gripper before the program starts
     pieceMover.disengageGripper()
     # Loop through the specified number of itterations
-    for iteration in range(1, numberOfIterations + 1):
+    for iteration in range(1, numberOfIterations):
         # Move to the current location and engage the gripper
         pieceMover.moveToGridXY(gridX=currentMagnetLocation[0], gridY=currentMagnetLocation[1])
         pieceMover.engageGripper()
