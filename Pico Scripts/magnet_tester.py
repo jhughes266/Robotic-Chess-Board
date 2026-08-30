@@ -34,9 +34,6 @@ def magnet_tester(numberOfIterations):
         # This pauses the execution of the routine incase a magnet has fallen
         haltFlag = input("Enter nothing to continue OR enter anything to halt")
         
-        if haltFlag != "":
-            print(itteration)
-            break
         
     # Move the magnet back to the starting location
     pieceMover.moveToGridXY(gridX=currentMagnetLocation[0], gridY=currentMagnetLocation[1])
