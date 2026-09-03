@@ -14,7 +14,7 @@ def magnet_tester(numberOfIterations):
     # Where the magnet intially starts
     initialMagnetLocation = [0,0]
     # The current location of the magnet
-    currentMangetLocation = initialMagnetLocation[::]
+    currentMagnetLocation = initialMagnetLocation[::]
     # Disengage the gripper before the program starts
     pieceMover.disengageGripper()
     # Loop through the specified number of itterations
@@ -25,14 +25,14 @@ def magnet_tester(numberOfIterations):
         # Get a new location and move the magner there and then disengage the
         # gripper.
         newX = random.randint(0,11)
-        newy = random.randint(0,11)
+        newY = random.randint(0,11)
         pieceMover.moveToGridXY(gridX=newX, gridY=newY)
         pieceMover.disengageGripper()
         # Update the current location of the magnet
         currentMagnetLocation[0] = newX
         currentMagnetLocation[1] = newY
         # This pauses the execution of the routine incase a magnet has fallen
-        haltFlag = input("Enter nothing to continue OR enter anything to halt")
+        #haltFlag = input("Enter nothing to continue OR enter anything to halt")
         
         
     # Move the magnet back to the starting location

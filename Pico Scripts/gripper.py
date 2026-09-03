@@ -13,7 +13,7 @@ class Gripper:
         self.__verticalServo = verticalServo
         self.__clawServo = clawServo
         self.__verticalStartAngle = 95
-        self.__verticalEndAngle = 10
+        self.__verticalEndAngle = 15
         self.__clawStartAngle = 140
         self.__clawEndAngle = 110
     
