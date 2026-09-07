@@ -2,7 +2,6 @@ from unittest import result
 import math
 import random
 import chess
-from chess_adversarial_search.misc import Timer
 import copy
 
 class Game:
