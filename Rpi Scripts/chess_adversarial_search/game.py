@@ -200,8 +200,18 @@ class Game:
             assert False, "The game was not in a terminal game state! This should not happen inside this function."
 
     def evaluate(self, chessBoard):
+        """
+        Performs evaluation of the current board position as an estimate of utility.
+        Args:
+             chessBoard: A python chess board object.
+        Returns:
+            A float estimating the utility of the current board position. With more positive numbers being better for
+            white and more negative numbers being better for black.
+        """
+        # The material value of all the pieces
         materialValue = 0
 
+        # Using centipawns
         materialValue += (chessBoard.pieces_mask(chess.PAWN, chess.WHITE).bit_count() * 100)
         materialValue += (chessBoard.pieces_mask(chess.BISHOP, chess.WHITE).bit_count() * 300)
         materialValue += (chessBoard.pieces_mask(chess.KNIGHT, chess.WHITE).bit_count() * 300)
@@ -214,34 +224,46 @@ class Game:
         materialValue += (chessBoard.pieces_mask(chess.ROOK, chess.BLACK).bit_count() * -500)
         materialValue += (chessBoard.pieces_mask(chess.QUEEN, chess.BLACK).bit_count() * -900)
 
+        # Get the current game phase
         gamePhase = self.__evaluateGamePhase(chessBoard)
+        # Use the piece square tables to evaluate the strength of the position
         positionEvaluation = self.__pieceSquareTables.evaluate(chessBoard, gamePhase)
+        # Sum the material value and the position evaluation
         estimatedUtility = materialValue + positionEvaluation
 
         return estimatedUtility
 
     def __evaluateGamePhase(self, chessBoard):
+        # Get the amount of each white piece on the board
         whiteQueens = chessBoard.pieces_mask(chess.QUEEN, chess.WHITE).bit_count()
         whiteRooks = chessBoard.pieces_mask(chess.ROOK, chess.WHITE).bit_count()
         whiteBishops = chessBoard.pieces_mask(chess.BISHOP, chess.WHITE).bit_count()
         whiteKnights = chessBoard.pieces_mask(chess.KNIGHT, chess.WHITE).bit_count()
-
+        # Get the amount of each black piece on the board
         blackQueens = chessBoard.pieces_mask(chess.QUEEN, chess.BLACK).bit_count()
         blackRooks = chessBoard.pieces_mask(chess.ROOK, chess.BLACK).bit_count()
         blackBishops = chessBoard.pieces_mask(chess.BISHOP, chess.BLACK).bit_count()
         blackKnights = chessBoard.pieces_mask(chess.KNIGHT, chess.BLACK).bit_count()
 
+        # White is in end game phase when it has 1 queen and 1 or less minor pieces OR if its queen is gone.
         whiteIsInEndGame = ((whiteQueens == 1) and (whiteRooks == 0) and (whiteBishops + whiteKnights <= 1)) or (whiteQueens == 0)
-
+        # Black is in end game phase when it has 1 queen and 1 or less minor pieces OR if its queen is gone.
         blackIsInEndGame = ((blackQueens == 1) and (blackRooks == 0) and (blackBishops + blackKnights <= 1)) or (blackQueens == 0)
 
+        # To trigger the end game condition both players have to be in the end game.
         if whiteIsInEndGame and blackIsInEndGame:
             return Game.END_GAME
 
         return Game.EARLY_MIDDLE_GAME
 
 class PieceSquareTables:
+    """
+    A class that is used to implement the piece square tables and also handles the evaluation of positions
+    """
     def __init__(self):
+        """
+        Initialize all the piece square tables
+        """
         # The reversal is necessary because the python chess library labels the bottom left square as incrementing left
         # to right up the board. List Indexing goes the top left right to left down the board. The board is symmetrical
         # "down the middle" so no other operations need to be performed.
@@ -310,6 +332,7 @@ class PieceSquareTables:
                                -50,-30,-30,-30,-30,-30,-30,-50]
         self.__kingEndWhite.reverse()
 
+        # "Invert" the tables for black
         self.__pawnBlack = self.__pawnWhite[::-1]
         self.__pawnBlack = [positionValue * -1 for positionValue in self.__pawnBlack]
         self.__knightBlack = self.__knightWhite[::-1]
@@ -383,11 +406,22 @@ class PieceSquareTables:
         }
 
     def evaluate(self, chessBoard, gamePhase):
-
+        # Evaluate the current chessboard positon
         positionEvaluation = 0
         for pieceTableKey in self.__pieceTableDict:
             pieceTable = self.__pieceTableDict[pieceTableKey]
             pythonChessPiece = self.__nameToChessPiece[pieceTableKey]
+
+            if pythonChessPiece == chess.KING:
+                if (pieceTableKey == 'kingEarlyMiddleWhite' or pieceTableKey == 'kingEarlyMiddleBlack') and (gamePhase == Game.EARLY_MIDDLE_GAME):
+                    pass
+                elif (pieceTableKey == 'kingEndWhite' or pieceTableKey == 'kingEngBlack') and (gamePhase == Game.END_GAME):
+                    pass
+                else:
+                    continue
+
+            print(f"{gamePhase}: {pieceTableKey}")
+
             pythonChessColour = self.__nameToColour[pieceTableKey]
 
             for square in chessBoard.pieces(pythonChessPiece, pythonChessColour):

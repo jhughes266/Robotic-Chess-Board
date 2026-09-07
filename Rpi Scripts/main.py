@@ -7,7 +7,7 @@ from managers.game_manager.user_interface.user_interface import *
 
 
 if __name__ == '__main__':
-    communicationManager = PicoCommunicationManager()
+    communicationManager = CommunicationManager()
     communicationManager.connectToPico()
     boardManager = BoardManager(communicationManager=communicationManager)
     userInterface = TextUserInterface(boardManager=boardManager)
