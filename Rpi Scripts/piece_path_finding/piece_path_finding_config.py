@@ -1,4 +1,6 @@
-
+"""
+Board state dictionaries used to store preset board states that are needed.
+"""
 # The starting state of the game board before the game starts
 # White is upper case black is lower case
 # [x,y] format
@@ -47,7 +49,8 @@ initialBoardStartStateDictionary= {
     "q2": [11, 11],
     "k0": [6, 9]
 }
-
+# Intermediate board state for when the board is going back to its initial state. This intermediate state is easier to get
+# to which means the GBFS doesnt hang.
 intermediateBoardEndStateDictionary= {
     # White
     "P0": [0, 3],
