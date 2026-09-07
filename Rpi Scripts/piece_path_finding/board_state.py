@@ -255,37 +255,59 @@ class BoardState:
         return self.__boardPositionMatrix[location[0]][location[1]]
 
     def findDeadPieceLocation(self, promotedPiecePrefix):
-
+        """
+        Searches the piece graveyard to see if the piece provide to function is there then returns the location.
+        Args:
+            promotedPiecePrefix: The prefix of the promoted piece that gives what piece is to be promoted
+        Returns:
+            The location of the piece in the graveyard and returns none if the piece is not present in the graveyard.
+        """
+        # Loop through all the graveyard squares.
         for location in (BoardState.__WhiteGraveSquares + BoardState.__BlackGraveSquares):
             x = location[0]
             y = location[1]
             pieceAtLocation = self.__boardPositionMatrix[x][y]
+            # Theres is no piece at the location.
             if pieceAtLocation is None:
                 continue
             pieceAtLocationSuffix = pieceAtLocation[0]
+            # If the piece has been found return its location.
             if pieceAtLocationSuffix == promotedPiecePrefix:
                 return [x, y]
-
+        # Piece was not found return none.
         return None
 
-
     def findFreeGraveSpace(self, victimColour):
+        """
+        Gets the location of a free grave square for the specified colour.
+        Args:
+            victimColour: The colour of the victim piece.
+        Returns:
+            The location of the free grave square for the specified colour.
+        """
         if victimColour == chess.WHITE:
             return self.__findFreeWhiteGraveSpace()
         elif victimColour == chess.BLACK:
             return self.__findFreeBlackGraveSpace()
 
     def __findFreeWhiteGraveSpace(self):
-
+        """
+        Find the location of a free white grave square.
+        Returns:
+            The location of the free white grave square.
+        """
         for location in BoardState.__WhiteGraveSquares:
             x = location[0]
             y = location[1]
             if self.__boardPositionMatrix[x][y] is None:
                 return [x, y]
-
+        # There is a grave square for every piece. This portion of the function should never be reached.
         assert False, "There is no free white grave space! This should never happen!"
 
     def __findFreeBlackGraveSpace(self):
+        """
+        Same logic as above.
+        """
         for location in BoardState.__BlackGraveSquares:
             x = location[0]
             y = location[1]
