@@ -205,7 +205,7 @@ class Game:
         Args:
              chessBoard: A python chess board object.
         Returns:
-            A float estimating the utility of the current board position. With more positive numbers being better for
+            A integer number estimating the utility of the position. With more positive numbers being better for
             white and more negative numbers being better for black.
         """
         # The material value of all the pieces
@@ -406,30 +406,44 @@ class PieceSquareTables:
         }
 
     def evaluate(self, chessBoard, gamePhase):
+        """
+        Evaluate the current position taking into account the game phase when it comes to the king.
+        Args:
+            chessBoard: A chess board object.
+            gamePhase: The game phase 0 for early middle game and 1 for end game.
+        Returns:
+            A integer number estimating the utility of the position. With more positive numbers being better for
+            white and more negative numbers being better for black.
+        """
         # Evaluate the current chessboard positon
         positionEvaluation = 0
+        # Get the piece table key
         for pieceTableKey in self.__pieceTableDict:
+            # Extract the piece table
             pieceTable = self.__pieceTableDict[pieceTableKey]
+            # Get the python chess value of the piece being analyzed
             pythonChessPiece = self.__nameToChessPiece[pieceTableKey]
-
+            # Not the best way of checking that the game phase and piece square table work. This would be reworked if
+            # more game phases and or piece square tables for other pieces for different phases.
+            # Only worried about the king
             if pythonChessPiece == chess.KING:
+                # The key and the game phase match can continue with eval
                 if (pieceTableKey == 'kingEarlyMiddleWhite' or pieceTableKey == 'kingEarlyMiddleBlack') and (gamePhase == Game.EARLY_MIDDLE_GAME):
                     pass
                 elif (pieceTableKey == 'kingEndWhite' or pieceTableKey == 'kingEngBlack') and (gamePhase == Game.END_GAME):
                     pass
+                # The key and the game phase done match so we don't evaluate
                 else:
                     continue
-
-            print(f"{gamePhase}: {pieceTableKey}")
-
+            # Get the colour of the chess piece
             pythonChessColour = self.__nameToColour[pieceTableKey]
-
+            # Loop through all the squares where the given colour piece is and evaluate the position.
             for square in chessBoard.pieces(pythonChessPiece, pythonChessColour):
                 positionEvaluation += pieceTable[square]
 
         return positionEvaluation
 
-
+    # For testing purpose only.
     def printTable(self, table):
 
         for i, val in enumerate(table[::-1]):
