@@ -106,11 +106,18 @@ def test(mode=None):
         
     elif mode == "Piece Mover":
         # Testing the piece mover
+        """
         pieceMover.moveToCalibration()
         pieceMover.moveToGridXY(gridX=0, gridY=0)
         pieceMover.engageGripper()
         pieceMover.moveToGridXY(gridX=1, gridY=0)
         pieceMover.moveToGridXY(gridX=0, gridY=0)
         pieceMover.disengageGripper()
+        """
+        pieceMover.engageGripper()
+        for x in range(12):
+            for y in range(12):
+                pieceMover.moveToGridXY(gridX=x, gridY=y)
 
+                
     print("End of Test!")
