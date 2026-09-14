@@ -12,7 +12,6 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
 
     objPoints = []
     imgPoints = []
-    successfulFiles = []
 
     for fileName in images:
         image = cv2.imread(fileName)
@@ -24,7 +23,6 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
             objPoints.append(objp)
             corners2 = cv2.cornerSubPix(gray, corners, (11,11), (-1,-1), criteria)
             imgPoints.append(corners)
-            successfulFiles.append(fileName)
 
             cv2.drawChessboardCorners(image, chessBoardSize, corners2, ret)
             cv2.imshow('img', image)
@@ -35,19 +33,7 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
     ret, cameraMatrix, dist, rvecs, tvecs = cv2.calibrateCamera(objPoints, imgPoints, gray.shape[::-1], None, None)
     np.savetxt('resources/calibration_results/' + cameraName + '/camera_matrix.txt', cameraMatrix)
     np.savetxt('resources/calibration_results/' + cameraName + '/dist.txt', dist)
-    #clear directory for new results
-    rvecsContents = os.listdir('resources/calibration_results/' + cameraName + '/rvecs')
-    for file in rvecsContents:
-        os.remove('resources/calibration_results/' + cameraName + '/rvecs/' + file)
-    tvecsContents = os.listdir('resources/calibration_results/' + cameraName + '/tvecs')
-    for file in tvecsContents:
-        os.remove('resources/calibration_results/' + cameraName + '/tvecs/' + file)
-    # The r and tvecs correspond to the order in which successful calibration patterns were found
-    for i, fileName in enumerate(successfulFiles):
-        imageNameAndExt = fileName.split("\\")
-        imageName = imageNameAndExt[-1].split(".")[0]
-        np.savetxt('resources/calibration_results/' + cameraName + '/rvecs/' + imageName + '.txt', rvecs[i])
-        np.savetxt('resources/calibration_results/' + cameraName + '/tvecs/' + imageName + '.txt', tvecs[i])
+
 
 
 calibrateCamera(cameraName='csi_cam',
