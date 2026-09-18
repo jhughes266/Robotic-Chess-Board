@@ -26,7 +26,7 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
 
             cv2.drawChessboardCorners(image, chessBoardSize, corners2, ret)
             cv2.imshow('img', image)
-            cv2.waitKey(1000)
+            cv2.waitKey(100)
 
     cv2.destroyAllWindows()
 
@@ -34,12 +34,24 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
     np.savetxt('resources/calibration_results/' + cameraName + '/camera_matrix.txt', cameraMatrix)
     np.savetxt('resources/calibration_results/' + cameraName + '/dist.txt', dist)
 
+    newImage = cv2.imread("resources/test3.jpg")
+    h, w = newImage.shape[:2]
+    newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 0, (w, h))
+    print(newCameraMatrix)
+    print(roi)
+    dst = cv2.undistort(newImage, cameraMatrix, dist, None, newCameraMatrix)
+    x, y, w, h = roi
+    dst = dst[y:y + h, x:x + w]
+    cv2.imshow('dst', dst)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 calibrateCamera(cameraName='csi_cam',
                 chessBoardSize=(7,7),
                 chessBoardSquareSideLength=28.5,
                 calibrationPatternsDirectory='resources/calibration_images/csi_cam/')
+
 
 calibrateCamera(cameraName='usb_cam',
                 chessBoardSize=(7,7),

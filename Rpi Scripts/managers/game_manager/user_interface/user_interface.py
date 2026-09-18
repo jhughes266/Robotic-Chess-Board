@@ -84,3 +84,6 @@ class TextUserInterface(UserInterface):
             print("Black Wins!\n\n\n")
         else:
             print("The game is drawn!\n\n\n")
+
+class HandUserInterface(UserInterface):
+    pass
