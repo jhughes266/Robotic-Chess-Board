@@ -13,7 +13,7 @@ class GameManager:
     def startOrQuit(self):
         acceptableSelection = {'0', '1'}
         while True:
-            selection = input("Enter 0 to quit the game or 1 to start the game!\nSelection: ")
+            selection = self._userInterface.gameEntryPrompt()
 
             if selection in acceptableSelection:
                 if selection == '0':
@@ -21,13 +21,12 @@ class GameManager:
                 else:
                     return True
 
-            print("Invalid selection! Please try again!\n")
+            self._userInterface.displayText("Invalid selection! Please try again!\n")
 
     def selectMode(self):
         while True:
 
-            selection = input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
-
+            selection = self._userInterface.getGameModeFromUser()
 
             if selection == '1':
                 self._gameMode = WhitePlayerBlackRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
@@ -42,7 +41,7 @@ class GameManager:
                 self._gameMode = RobotRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
                 return
 
-            print("Invalid selection! Please try again!\n")
+            self._userInterface.displayText("Invalid selection! Please try again!\n")
 
     def selectDifficulty(self):
         self._gameMode.selectDifficulty()

@@ -18,7 +18,7 @@ class GameMode(ABC):
     def selectDifficulty(self):
         acceptableDifficulties = {'1', '2', '3', '4', '5', '6'}
         while True:
-            difficulty = self._userInterface.selectDifficulty()
+            difficulty = self._userInterface.getDifficultyFromUser()
 
             if difficulty not in acceptableDifficulties:
                 self._userInterface.displayText("You have selected an invalid difficulty level! Please Reselect!\n")
@@ -61,16 +61,12 @@ class GameMode(ABC):
         if chessBoard.is_game_over():
             return True
         return False
-    #######################################################
-    #######################################################
-    #######################################################
-    #######################################################
-    #######################################################
+
     def __playerSelectMove(self, chessBoard):
         selectedMove = None
         legalMoveMade = False
         while not legalMoveMade:
-            candidateMove = self._userInterface.playerSelectMove()
+            candidateMove = self._userInterface.getMoveFromUser()
             availableMoves = list(chessBoard.legal_moves)
             legalMoves = []
 
@@ -123,12 +119,6 @@ class GameMode(ABC):
             self._userInterface.displayText("Black Wins!\n\n\n")
         else:
             self._userInterface.displayText("The game is drawn!\n\n\n")
-    #######################################################
-    #######################################################
-    #######################################################
-    #######################################################
-    #######################################################
-
 
 class WhitePlayerBlackRobot(GameMode):
     def playGameMode(self, chessBoard, game):
@@ -154,17 +144,11 @@ class PlayerPlayer(GameMode):
             if self._playerMove(chessBoard):
                 break
 
-            if self._playerMove(chessBoard):
-                break
-
     def selectDifficulty(self):
         return None
 
 class RobotRobot(GameMode):
     def playGameMode(self, chessBoard, game):
         while True:
-            if self._engineMove(chessBoard, game):
-                break
-
             if self._engineMove(chessBoard, game):
                 break

@@ -2,6 +2,7 @@ import math
 import time
 from chess_adversarial_search.game import Game
 import chess
+from console_debug_info import ConsoleDebugInfo
 
 def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds, maxSearchPlyDepth):
     """
@@ -46,7 +47,7 @@ def timeBoundedMinimaxAlphaBetaSearch(game, chessBoard, maxSearchTimeSeconds, ma
             # Cease the search once the maximum time has been exceeded or the max search depth has been reached.
             if (projectedSearchTimeAfterNextPly > maxSearchTimeSeconds) or (currentPlyDepth==maxSearchPlyDepth):
                 # Print information on the search.
-                print(f"\n---------------------------------------\nSearched to a depth of {currentPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.\n---------------------------------------\n")
+                ConsoleDebugInfo.printToConsole(f"\n---------------------------------------\nSearched to a depth of {currentPlyDepth}.\nThe time spent on searching the final ply was {round(currentPlyTime, 4)} seconds. \nThe average time increase factor between plys is {round(averageTimeIncreaseFactor, 4)}.\nThe total search time was {round(time.perf_counter() - searchStartTime, 4)} seconds.\n---------------------------------------\n")
                 # Break out of the search loop
                 break
         # Increment the current ply depth that is being searched to.

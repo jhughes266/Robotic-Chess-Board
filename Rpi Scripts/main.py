@@ -1,5 +1,5 @@
 import chess
-
+from console_debug_info import ConsoleDebugInfo
 from managers.game_manager.game_manager import GameManager
 from managers.board_manager.board_manager import BoardManager
 from managers.wifi_communication.communication_manager import PicoCommunicationManager, CommunicationManager
@@ -7,6 +7,7 @@ from managers.game_manager.user_interface.user_interface import *
 
 
 if __name__ == '__main__':
+    ConsoleDebugInfo.consoleOutputEnabled(enable=True)
     communicationManager = CommunicationManager()
     communicationManager.connectToPico()
     boardManager = BoardManager(communicationManager=communicationManager)
