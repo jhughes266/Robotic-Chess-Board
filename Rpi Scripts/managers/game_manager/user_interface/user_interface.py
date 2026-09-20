@@ -6,84 +6,46 @@ class UserInterface(ABC):
         self._chessColourAsText = ['Black', 'White']
 
     @abstractmethod
-    def playerSelectMove(self, chessBoard):
+    def playerSelectMove(self):
         pass
 
     @abstractmethod
-    def claimDraw(self, chessBoard):
+    def displayText(self, str):
         pass
 
     @abstractmethod
-    def moveInfo(self, chessBoard):
+    def yesOrNoQuestion(self, str):
         pass
 
     @abstractmethod
-    def resultingMoveInfo(self, chessBoard, move):
+    def selectDifficulty(self):
         pass
 
-    @abstractmethod
-    def gameResultInfo(self, chessBoard):
-        pass
+
 
 class TextUserInterface(UserInterface):
-    def playerSelectMove(self, chessBoard):
-        selectedMove = None
-        legalMoveMade = False
-        while not legalMoveMade:
-            candidateMove = input("Please enter your move!: ")
-            availableMoves = list(chessBoard.legal_moves)
-            legalMoves = []
+    def playerSelectMove(self):
+        return input("Please enter your move!: ")
 
-            # Checks if the player selected promotion is supported
-            for move in availableMoves:
-                if (move.promotion) and (self._boardManager.promotionIsIllegal(move)):
-                    continue
-                legalMoves.append(move)
+    def displayText(self, str):
+        print(str)
 
-            for move in legalMoves:
-                if str(move) == candidateMove:
-                    legalMoveMade = True
-                    selectedMove = candidateMove
-                    break
+    def yesOrNoQuestion(self, str):
+        str += "\nEnter NO or YES:\nSelection: "
+        return input(str)
 
-            if not legalMoveMade:
-                print("The move that you have selected is illegal OR there is not enough material for the promotion requested! Please re-enter your move!")
-
-        return selectedMove
-
-    def claimDraw(self, chessBoard):
-
-        while chessBoard.can_claim_draw():
-            if chessBoard.can_claim_fifty_moves():
-                selection = input("It has been 50 consecutive moves without a capture or pawn move would you like to claim a draw?:\nEnter NO or YES:\nSelection: ")
-            else:
-                selection = input("The exact same three positions have occurred during the game! Would you like to claim a draw?:\nEnter NO or YES:\nSelection: ")
-
-            if selection == "NO":
-                return False
-            elif selection == "YES":
-                return True
-            else:
-                print("The selection was not recognized. Please re-enter your selection!")
-
-        return False
-
-    def moveInfo(self, chessBoard):
-        print(f"%%%%%%%%%%%%%%%%%%%%%%%\nIt is {self._chessColourAsText[chessBoard.turn]} turn to move.The state of the board is:\n{chessBoard}")
-
-    def resultingMoveInfo(self, chessBoard, move):
-        print(f"The move made was {move}.\nThe state of the board after this move is:\n{str(chessBoard)}\n%%%%%%%%%%%%%%%%%%%%%%%")
-
-    def gameResultInfo(self, chessBoard):
-        resultStr = chessBoard.result()
-        if resultStr == '1-0':
-            # White wins
-            print("White Wins!\n\n\n")
-        elif resultStr == '0-1':
-            # Black wins
-            print("Black Wins!\n\n\n")
-        else:
-            print("The game is drawn!\n\n\n")
+    def selectDifficulty(self):
+        return input(f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within maximum search time!)\n(Please note that irrespective of the difficulty the game will search for at most the maximum search time.)\nSelection: ")
 
 class HandUserInterface(UserInterface):
-    pass
+    def playerSelectMove(self):
+        pass
+
+    def displayText(self, str):
+        pass
+
+    def yesOrNoQuestion(self, str):
+        pass
+
+    def selectDifficulty(self):
+        pass

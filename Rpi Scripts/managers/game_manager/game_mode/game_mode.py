@@ -8,6 +8,8 @@ class GameMode(ABC):
         self._userInterface = userInterface
         self._maxSearchTimeSeconds = maxSearchTimeSeconds
         self._maxSearchPlyDepth = 1000
+        self._chessColourAsText = ['Black', 'White']
+
 
     @abstractmethod
     def playGameMode(self, chessBoard, game):
@@ -16,10 +18,10 @@ class GameMode(ABC):
     def selectDifficulty(self):
         acceptableDifficulties = {'1', '2', '3', '4', '5', '6'}
         while True:
-            difficulty = input(f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within {self._maxSearchTimeSeconds} seconds)\n(Please note that irrespective of the difficulty the game will search for at most {self._maxSearchTimeSeconds} seconds.)\nSelection: ")
+            difficulty = self._userInterface.selectDifficulty()
 
             if difficulty not in acceptableDifficulties:
-                print("You have selected an invalid difficulty level! Please Reselect!\n")
+                self._userInterface.displayText("You have selected an invalid difficulty level! Please Reselect!\n")
                 continue
 
             if int(difficulty) >= 1 and int(difficulty) <= 5:
@@ -67,9 +69,8 @@ class GameMode(ABC):
     def __playerSelectMove(self, chessBoard):
         selectedMove = None
         legalMoveMade = False
-        # all the inputs and prints get routed to the user interface
         while not legalMoveMade:
-            candidateMove = input("Please enter your move!: ")
+            candidateMove = self._userInterface.playerSelectMove()
             availableMoves = list(chessBoard.legal_moves)
             legalMoves = []
 
@@ -86,48 +87,42 @@ class GameMode(ABC):
                     break
 
             if not legalMoveMade:
-                print(
-                    "The move that you have selected is illegal OR there is not enough material for the promotion requested! Please re-enter your move!")
+                self._userInterface.displayText("The move that you have selected is illegal OR there is not enough material for the promotion requested! Please re-enter your move!")
 
         return selectedMove
 
     def __claimDraw(self, chessBoard):
-        # all the inputs and prints get routed to the user interface
         while chessBoard.can_claim_draw():
             if chessBoard.can_claim_fifty_moves():
-                selection = input(
-                    "It has been 50 consecutive moves without a capture or pawn move would you like to claim a draw?:\nEnter NO or YES:\nSelection: ")
+                selection = self._userInterface.yesOrNoQuestion("It has been 50 consecutive moves without a capture or pawn move would you like to claim a draw?")
             else:
-                selection = input(
-                    "The exact same three positions have occurred during the game! Would you like to claim a draw?:\nEnter NO or YES:\nSelection: ")
+                selection = self._userInterface.yesOrNoQuestion("The exact same three positions have occurred during the game! Would you like to claim a draw?")
 
             if selection == "NO":
                 return False
             elif selection == "YES":
                 return True
             else:
-                print("The selection was not recognized. Please re-enter your selection!")
+                self._userInterface.displayText("The selection was not recognized. Please re-enter your selection!")
 
         return False
 
     def __moveInfo(self, chessBoard):
-        self._chessColourAsText = ['Black', 'White']
-        print(f"%%%%%%%%%%%%%%%%%%%%%%%\nIt is {self._chessColourAsText[chessBoard.turn]} turn to move.The state of the board is:\n{chessBoard}")
+        self._userInterface.displayText(f"%%%%%%%%%%%%%%%%%%%%%%%\nIt is {self._chessColourAsText[chessBoard.turn]} turn to move.The state of the board is:\n{chessBoard}")
 
     def __resultingMoveInfo(self, chessBoard, move):
-        print(
-            f"The move made was {move}.\nThe state of the board after this move is:\n{str(chessBoard)}\n%%%%%%%%%%%%%%%%%%%%%%%")
+        self._userInterface.displayText(f"The move made was {move}.\nThe state of the board after this move is:\n{str(chessBoard)}\n%%%%%%%%%%%%%%%%%%%%%%%")
 
     def __gameResultInfo(self, chessBoard):
         resultStr = chessBoard.result()
         if resultStr == '1-0':
             # White wins
-            print("White Wins!\n\n\n")
+            self._userInterface.displayText("White Wins!\n\n\n")
         elif resultStr == '0-1':
             # Black wins
-            print("Black Wins!\n\n\n")
+            self._userInterface.displayText("Black Wins!\n\n\n")
         else:
-            print("The game is drawn!\n\n\n")
+            self._userInterface.displayText("The game is drawn!\n\n\n")
     #######################################################
     #######################################################
     #######################################################
