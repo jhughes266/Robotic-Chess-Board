@@ -31,11 +31,14 @@ def calculateDistanceToPoint(p1, p2, camera_matrix):
     print(f"xDist: {xDist}, yDist: {yDist}, zDist: {zDist}")
 
 def getCameraCordinate(event, x, y, flags, params):
-
+    # Triggers when the left button has been clicked
     if event == cv2.EVENT_LBUTTONDOWN:
+        # Append a tupple with the x y location of the click
         points.append((x,y))
+        # Draw a circle at the click location
         cv2.circle(undistoredImage, (x, y), 2, (0, 0, 255), -1)
         cv2.imshow('Undistorted Image', undistoredImage)
+        # Once two clicks have taken place perform the distance calculation
         if len(points) == 2:
             calculateDistanceToPoint(p1=points[0], p2=points[1], camera_matrix=newCameraMatrix)
 
@@ -57,12 +60,11 @@ dst = cv2.undistort(image, cameraMatrix, distCoeff, None, newCameraMatrix)
 x, y, w, h = roi
 undistoredImage = dst[y:y + h, x:x + w]
 print(f"The undistorted image has dims of: {undistoredImage.shape}")
-# put where the optical axis pierces the sensor
-
+# put a circle where the optical axis pierces the sensor
 cv2.circle(undistoredImage,
            (int(newCameraMatrix[0][2]), int(newCameraMatrix[1][2])),
            4, (255, 0, 255), -1)
-
+# put a rectangle to indicate the quadrant where you can click
 cv2.rectangle(undistoredImage,
               (int(newCameraMatrix[0][2]),0), (undistoredImage.shape[1], int(newCameraMatrix[1][2])),
               (0, 0, 255), 1)
