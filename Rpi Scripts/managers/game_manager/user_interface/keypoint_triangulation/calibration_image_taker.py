@@ -18,4 +18,3 @@ if cv2.waitKey(0) & 0xFF == ord('q'):
 
 usbCam.tearDown()
 csiCam.tearDown()
-
