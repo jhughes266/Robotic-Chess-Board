@@ -5,7 +5,9 @@ import cv2
 
 
 class camera(ABC):
-    def __init__(self, deviceIndex=0):
+    def __init__(self, captureWidth, captureHeight, deviceIndex=0):
+        self._captureWidth = captureWidth
+        self._captureHeight = captureHeight
         self._deviceIndex = deviceIndex
 
     @abstractmethod
@@ -23,6 +25,8 @@ class camera(ABC):
 class OpenCvDevice(camera):
     def setUp(self):
         self.__cap = cv2.VideoCapture(self._deviceIndex)
+        self.__cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._captureWidth)
+        self.__cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._captureHeight)
         if not self.__cap.isOpened():
             ConsoleDebugInfo.printToConsole("Could not open camera")
             exit(0)
@@ -42,7 +46,11 @@ class OpenCvDevice(camera):
 
 class PiCameraDevice(camera):
     def setUp(self):
-        self.__piCamera = PiCamera2(camera=self._deviceIndex)
+        self.__piCamera = Picamera2()
+        config = self.__piCamera.create_still_configuration(
+            main={"size": (self._captureWidth, self._captureHeight),"format":"BGR888"},
+            sensor={"output_size": (3280, 2464)})
+        self.__piCamera.configure(config)
         self.__piCamera.start()
 
     def tearDown(self):
@@ -56,6 +64,7 @@ class PiCameraDevice(camera):
         try:
             array = self.__piCamera.capture_array()
         except Exception as e:
+            ConsoleDebugInfo.printToConsole(e)
             ConsoleDebugInfo.printToConsole("Could not capture image with the PICAMERA device!")
 
         return array
