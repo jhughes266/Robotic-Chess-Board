@@ -3,7 +3,7 @@ import glob
 import numpy as np
 import os
 
-def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calibrationPatternsDirectory, patternFileExtension = '.jpg'):
+def calibrateCamera(cameraName, chessBoardSize, chessBoardSquareSideLength, calibrationPatternsDirectory, testUndistortPath, patternFileExtension = '.jpg'):
     images = glob.glob(calibrationPatternsDirectory + '*' + patternFileExtension)
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -26,7 +26,7 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
 
             cv2.drawChessboardCorners(image, chessBoardSize, corners2, ret)
             cv2.imshow('img', image)
-            cv2.waitKey(100)
+            cv2.waitKey(1000)
 
     cv2.destroyAllWindows()
 
@@ -34,7 +34,7 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
     np.savetxt('resources/calibration_results/' + cameraName + '/camera_matrix.txt', cameraMatrix)
     np.savetxt('resources/calibration_results/' + cameraName + '/dist.txt', dist)
 
-    newImage = cv2.imread("resources/test3.jpg")
+    newImage = cv2.imread(testUndistortPath)
     h, w = newImage.shape[:2]
     newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 0, (w, h))
     print(newCameraMatrix)
@@ -50,11 +50,13 @@ def calibrateCamera(cameraName,chessBoardSize, chessBoardSquareSideLength, calib
 calibrateCamera(cameraName='csi_cam',
                 chessBoardSize=(7,7),
                 chessBoardSquareSideLength=28.5,
+                testUndistortPath='resources/csiTest.jpg',
                 calibrationPatternsDirectory='resources/calibration_images/csi_cam/')
 
 
 calibrateCamera(cameraName='usb_cam',
                 chessBoardSize=(7,7),
                 chessBoardSquareSideLength=28.5,
+                testUndistortPath='resources/usbTest.jpg',
                 calibrationPatternsDirectory='resources/calibration_images/usb_cam/')
 
