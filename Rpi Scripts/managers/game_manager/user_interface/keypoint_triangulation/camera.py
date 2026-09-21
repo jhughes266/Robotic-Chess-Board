@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from picamera2 import Picamera2
+#from picamera2 import Picamera2
 from console_debug_info import ConsoleDebugInfo
 import cv2
 
@@ -68,25 +68,5 @@ class PiCameraDevice(camera):
             ConsoleDebugInfo.printToConsole("Could not capture image with the PICAMERA device!")
 
         return array
-
-class DummyPicamera2():
-    def __init__(self, deviceIndex):
-        ConsoleDebugInfo.printToConsole("INITIATING A DUMMY PICAMERA DEVICE PLEASE USE THE REAL PICAMERA IN THE ACTUAL SCRIPT")
-
-    def start(self):
-        ConsoleDebugInfo.printToConsole("STARTING DUMMY PICAMERA")
-
-    def stop_preview(self):
-        ConsoleDebugInfo.printToConsole("STOPPING PREVIEW FOR DUMMY PICAMERA")
-
-    def stop(self):
-        ConsoleDebugInfo.printToConsole("STOPPING DUMMY PICAMERA")
-
-    def close(self):
-        ConsoleDebugInfo.printToConsole("CLOSING DUMMY PICAMERA")
-
-    def capture_array(self):
-        #ConsoleDebugInfo.printToConsole(f"CAPTURING A DUMMY PICAMERA IMAGE")
-        return None
 
 

@@ -1,28 +1,54 @@
+import copy
+import cv2
 from managers.game_manager.user_interface.keypoint_triangulation.camera import *
-#from camera import *
 
-import numpy as np
-mode = 'csi'
+def showChessBoardDetection(image):
+    # Deepcopy the image so that when drawing on this one it doesnt effect the original
+    imageCopy = copy.deepcopy(image)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+    # Turn the image gray
+    gray = cv2.cvtColor(imageCopy, cv2.COLOR_BGR2GRAY)
+    # Find chessboard corners
+    ret, corners = cv2.findChessboardCorners(gray, chessBoardSize, None)
+    # If found draw corners on the baord
+    if ret == True:
+        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        cv2.drawChessboardCorners(imageCopy, chessBoardSize, corners2, ret)
+    # Return the copy of the image
+    return imageCopy
 
-usbCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
-csiCam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
+# Define either 'csi' or 'usb' depending on which camera you want to use to take the images
+mode = 'usb'
+# Size of the chessboard in the image
+chessBoardSize = (7, 7)
+# Instantiate the camera devices
+if mode == 'usb':
+    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
+elif mode == 'csi':
+    cam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
+# Call the setup method on the camera
+cam.setUp()
+# Store the image save count which is used to name files
+imageSaveCount = 0
+# Keep going until the user specifies
+while True:
+    #capture the image with the camera
+    image = cam.captureImage()
+    # Perform the chessboard pattern detection on the image to see if the image works
+    displayImage = showChessBoardDetection(image)
+    # Show the image with the chessboard pattern
+    cv2.imshow('capture', displayImage)
+    # Capture the key press
+    key = cv2.waitKey(0) & 0xFF
+    # Save the image if 'y'
+    if key == ord('y'):
+        cv2.imwrite(f"resources/calibration_images/{mode}_cam/cal_{imageSaveCount}.jpg", image)
+        imageSaveCount += 1
+    # Quit the capturing if 'q'
+    elif key == ord('q'):
+        break
+    # Redo if anything else
 
-usbCam.setUp()
-csiCam.setUp()
+# Free camera resources
+cam.tearDown()
 
-
-numCalibrationImages = 20
-for i in range(numCalibrationImages):
-    input("Hit enter to take next image")
-    usbImage = usbCam.captureImage()
-    csiImage = csiCam.captureImage()
-
-    combinedImage = np.hstack((csiImage, usbImage))
-    cv2.imshow('capture', combinedImage)
-    if mode == 'usb':
-        cv2.imwrite(f"resources/calibration_images/usb_cam/cal_{i}.jpg",usbImage)
-    elif mode == 'csi':
-        cv2.imwrite(f"resources/calibration_images/csi_cam/cal_{i}.jpg", csiImage)
-
-usbCam.tearDown()
-csiCam.tearDown()

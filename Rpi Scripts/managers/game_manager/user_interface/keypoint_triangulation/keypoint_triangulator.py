@@ -1,5 +1,5 @@
 from operator import iadd
-
+import sympy as sp
 import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -38,6 +38,7 @@ class KeypointTriangulator:
         self.__bCamObj.tearDown()
 
     def run(self):
+
         aCamImage, bCamImage = self.__captureImages()
 
         aCamImageUndistorted, aNewCamMatrix = self.__undistortImage(aCamImage, self.__aCamMatrix, self.__aDistCoeffs)
@@ -45,22 +46,19 @@ class KeypointTriangulator:
 
         aCamDetectionResult, bCamDetectionResult = self.__keypointExtraction(aCamImageUndistorted, bCamImageUndistorted)
 
-        ### For debugging ####
-        if aCamDetectionResult != None or bCamDetectionResult != None:
-            self.__drawKeypoints(aCamDetectionResult, aCamImage)
-            self.__drawKeypoints(bCamDetectionResult, bCamImage)
+        if aCamDetectionResult is None or bCamDetectionResult is None:
+            return None
+
+        self.__drawKeypoints(aCamDetectionResult, aCamImage)
+        self.__drawKeypoints(bCamDetectionResult, bCamImage)
 
         combinedImage = np.hstack((aCamImage, bCamImage))
 
         cv2.imshow('capture', combinedImage)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            return False
-        ######################
-
-        self.__triangulePoints(aCamDetectionResult=aCamDetectionResult, bCamDetectionResult=bCamDetectionResult,
-                               aNewCamMatrix=aNewCamMatrix , bNewCamMatrix=bNewCamMatrix, offset=(0,0,0))
-        return True
+        landMarkRealWorldLocation = self.__triangulePoints(aCamDetectionResult=aCamDetectionResult, bCamDetectionResult=bCamDetectionResult,
+                               aNewCamMatrix=aNewCamMatrix , bNewCamMatrix=bNewCamMatrix, offset=(1,2,3))
+        return landMarkRealWorldLocation
 
     def __captureImages(self):
         aCamImage = self.__aCamObj.captureImage()
@@ -110,43 +108,58 @@ class KeypointTriangulator:
         fxa = aNewCamMatrix[0][0]
         fya = aNewCamMatrix[1][1]
         oxa = aNewCamMatrix[0][2]
-        oxb = aNewCamMatrix[1][2]
+        oya = aNewCamMatrix[1][2]
 
         fxb = bNewCamMatrix[0][0]
         fyb = bNewCamMatrix[1][1]
         oxb = bNewCamMatrix[0][2]
-        oxb = bNewCamMatrix[1][2]
+        oyb = bNewCamMatrix[1][2]
 
-        for aCamLandmark, bCamLandmark in zip(aCamDetectionResult.hand_landmarks[0], bCamDetectionResult.hand_landmarks[0]):
-            pass
+        landMarkRealWorldLocation = []
+
+        for i, (aCamLandmark, bCamLandmark) in enumerate(zip(aCamDetectionResult.hand_landmarks[0], bCamDetectionResult.hand_landmarks[0])):
+
+            # Get the location of the landmark for camera a
+            ua = aCamLandmark.x
+            va = aCamLandmark.y
+            # Get the location of the landmark for camera b
+            ub = bCamLandmark.x
+            vb = bCamLandmark.y
+            # calculate the components of the a direction vector
+            ia = (ua - oxa) / fxa
+            ja = (va - oya) / fya
+            ka = 1
+            # calculate the components of the b direction vector
+            ib = (ub - oxb) / fxb
+            jb = (vb - oyb) / fyb
+            kb = 1
+            # Constructing the direction vectors
+            aDir = np.array([ia, ja, ka])
+            bDir = np.array([ib, jb, kb])
+            # Construct the position vector for b (this is the offset) we assume that a starts at (0,0,0)
+            bPos = np.array([xOffset, yOffset, zOffset])
+            # Calculating the different quantities for the triangulation equations
+            P = np.sum(aDir * aDir)
+            S = np.sum(aDir * bDir)
+            R = np.sum(aDir * bPos)
+            T = np.sum(bDir * bDir)
+            U = np.sum(bDir * bPos)
+            # Using the calculated simultaneous equations to get the parameters
+            denominator = P*T - S**2
+            ta = (R*T - S*U)/denominator
+            tb = (S*R - P*U)/denominator
+            # Using the parameters to construct the line equations and get the locations of the minimum distance between lines
+            aLocMin = ta * aDir
+            bLocMin = tb * bDir + bPos
+            # Getting the average of the two to get the best estimate of the location of the minimum distance
+            estimatedMinimumDistancePoint = (aLocMin + bLocMin) / 2
+            # Storing the result in created list
+            landMarkRealWorldLocation.append(estimatedMinimumDistancePoint)
+        # Returning the real world location of the landmarks
+        return landMarkRealWorldLocation
 
 
-        """
-        ia = 
-        ja =
-        ka =
 
-        ib =
-        jb =
-        kb =
-        
-        
-        
-        print(bCamMatrix)
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-
-        ox = 640
-        oy = 360
-        fx = 3
-        fy = 3
-
-        z = np.linspace(0,10,100)
-        x = (z * (uRefCam - ox)) / fx
-        y = (z * (vRefCam - oy)) / fy
-        ax.plot3D(x, y, z, 'red')
-        plt.show()
-        """
 
     def __normalizedCordinatesToPixel(self, results, xDim, yDim):
         landmarkList = results.hand_landmarks[0]
@@ -163,13 +176,27 @@ class KeypointTriangulator:
                 for landmark in hand:
                     cv2.circle(image, (int(landmark.x), int(landmark.y)), 5, (0, 0, 255), -1)
 
-testCam1 = OpenCvDevice(0)
-#testCam2 = OpenCvDevice(0)
+
+ta, tb, P, Q, R, S, T, U = sp.symbols("ta tb P Q R S T U")
+
+eq1 = sp.Eq(ta*P - tb*Q - R,0)
+eq2 = sp.Eq(-ta*S + tb*T + U,0)
+
+solution = sp.solve((eq1, eq2), (ta, tb))
+print(solution)
+
+testCam1 = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
+#testCam2 = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
 testTri = KeypointTriangulator(aCamObj=testCam1, bCamObj=testCam1,aCamIntrinsicDir='resources/calibration_results/usb_cam', bCamIntrinsicDir='resources/calibration_results/csi_cam')
 testTri.setUp()
 
-while testTri.run():
-    pass
+while True:
+    ### For debugging ####
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+    landmarkLocations = testTri.run()
+    print(landmarkLocations)
+
 
 testTri.tearDown()
 
