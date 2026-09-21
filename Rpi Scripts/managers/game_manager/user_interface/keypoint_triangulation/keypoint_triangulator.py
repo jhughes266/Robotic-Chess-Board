@@ -118,6 +118,7 @@ class KeypointTriangulator:
         oxb = bNewCamMatrix[1][2]
 
         for aCamLandmark, bCamLandmark in zip(aCamDetectionResult.hand_landmarks[0], bCamDetectionResult.hand_landmarks[0]):
+            pass
 
 
         """

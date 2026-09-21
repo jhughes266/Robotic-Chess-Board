@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from picamera2 import Picamera2
 from console_debug_info import ConsoleDebugInfo
 import cv2
 
@@ -42,7 +42,7 @@ class OpenCvDevice(camera):
 
 class PiCameraDevice(camera):
     def setUp(self):
-        self.__piCamera = DummyPicamera2(self._deviceIndex)
+        self.__piCamera = PiCamera2(camera=self._deviceIndex)
         self.__piCamera.start()
 
     def tearDown(self):
