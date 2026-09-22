@@ -37,7 +37,7 @@ def calibrateCamera(cameraName,
             # Draw the image detected pattern on the board
             cv2.drawChessboardCorners(image, chessBoardSize, corners2, ret)
             cv2.imshow('img', image)
-            cv2.waitKey(1000)
+            cv2.waitKey(100)
     # Destroy all windows
     cv2.destroyAllWindows()
     # Perform camera calibration
@@ -56,22 +56,24 @@ def calibrateCamera(cameraName,
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     # Get the reprojection error
+    
     meanError = 0
     for i in range(len(objPoints)):
         imgpoints2, _ = cv2.projectPoints(objPoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
+        imgpoints2 = imgpoints2.reshape(-1,2)
         error = cv2.norm(imgPoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
         meanError += error
     print(f"The total error is: {meanError/len(objPoints)}")
-
+    
 calibrateCamera(cameraName='csi_cam',
-                chessBoardSize=(7,7),
+                chessBoardSize=(7,6),
                 chessBoardSquareSideLength=28.5,
                 testUndistortPath='resources/csiTest.jpg',
                 calibrationPatternsDirectory='resources/calibration_images/csi_cam/')
 
 
 calibrateCamera(cameraName='usb_cam',
-                chessBoardSize=(7,7),
+                chessBoardSize=(7,6),
                 chessBoardSquareSideLength=28.5,
                 testUndistortPath='resources/usbTest.jpg',
                 calibrationPatternsDirectory='resources/calibration_images/usb_cam/')

@@ -1,6 +1,7 @@
 import copy
 import cv2
 from managers.game_manager.user_interface.keypoint_triangulation.camera import *
+import time
 
 def showChessBoardDetection(image):
     # Deepcopy the image so that when drawing on this one it doesnt effect the original
@@ -18,12 +19,12 @@ def showChessBoardDetection(image):
     return imageCopy
 
 # Define either 'csi' or 'usb' depending on which camera you want to use to take the images
-mode = 'usb'
+mode = 'csi'
 # Size of the chessboard in the image
-chessBoardSize = (7, 7)
+chessBoardSize = (7, 6)
 # Instantiate the camera devices
 if mode == 'usb':
-    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
+    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 1)
 elif mode == 'csi':
     cam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
 # Call the setup method on the camera
@@ -34,6 +35,8 @@ imageSaveCount = 0
 while True:
     #capture the image with the camera
     image = cam.captureImage()
+    if image is None:
+        continue
     # Perform the chessboard pattern detection on the image to see if the image works
     displayImage = showChessBoardDetection(image)
     # Show the image with the chessboard pattern
@@ -43,12 +46,16 @@ while True:
     # Save the image if 'y'
     if key == ord('y'):
         cv2.imwrite(f"resources/calibration_images/{mode}_cam/cal_{imageSaveCount}.jpg", image)
+        print("Image Saved")
         imageSaveCount += 1
     # Quit the capturing if 'q'
     elif key == ord('q'):
         break
+    elif key == ord('n'):
+        print("Image Rejected")
     # Redo if anything else
-
+    #time.sleep(1)
+cv2.destroyAllWindows()
 # Free camera resources
 cam.tearDown()
 

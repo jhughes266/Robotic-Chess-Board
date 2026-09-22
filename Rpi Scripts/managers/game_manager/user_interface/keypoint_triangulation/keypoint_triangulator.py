@@ -1,5 +1,4 @@
 from operator import iadd
-import sympy as sp
 import cv2
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -189,17 +188,13 @@ class KeypointTriangulator:
                     cv2.circle(image, (int(landmark.x), int(landmark.y)), 5, (0, 0, 255), -1)
 
 
-ta, tb, P, Q, R, S, T, U = sp.symbols("ta tb P Q R S T U")
 
-eq1 = sp.Eq(ta*P - tb*Q - R,0)
-eq2 = sp.Eq(-ta*S + tb*T + U,0)
 
-solution = sp.solve((eq1, eq2), (ta, tb))
-print(solution)
+aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=1)
+bCam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
 
-testCam1 = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
 #testCam2 = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
-testTri = KeypointTriangulator(aCamObj=testCam1, bCamObj=testCam1,aCamIntrinsicDir='resources/calibration_results/usb_cam', bCamIntrinsicDir='resources/calibration_results/csi_cam')
+testTri = KeypointTriangulator(aCamObj=aCam, bCamObj=bCam,aCamIntrinsicDir='resources/calibration_results/usb_cam', bCamIntrinsicDir='resources/calibration_results/csi_cam')
 testTri.setUp()
 
 while True:
