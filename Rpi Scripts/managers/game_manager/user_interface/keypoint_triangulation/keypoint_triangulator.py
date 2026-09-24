@@ -21,6 +21,8 @@ class KeypointTriangulator:
         # store the distortion coefficients in private attributes
         self.__aDistCoeffs = np.loadtxt(aCamIntrinsicDir + '/dist.txt')
         self.__bDistCoeffs = np.loadtxt(bCamIntrinsicDir + '/dist.txt')
+        # offset with a as the origin
+        self.__offset = np.loadtxt('resources/calibration_results/offset.txt')
 
     def setUp(self):
         # Camera object setup
@@ -65,7 +67,7 @@ class KeypointTriangulator:
             bCamDetectionResult=bCamDetectionResult,
             aNewCamMatrix=aNewCamMatrix,
             bNewCamMatrix=bNewCamMatrix,
-            offset=(1,2,3))
+            offset=self.__offset)
 
         return landMarkRealWorldLocation
 
@@ -190,7 +192,7 @@ class KeypointTriangulator:
 
 
 
-aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=1)
+aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
 bCam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
 
 #testCam2 = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)

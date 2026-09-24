@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from picamera2 import Picamera2
+#from picamera2 import Picamera2
 from console_debug_info import ConsoleDebugInfo
 import cv2
 
@@ -48,7 +48,7 @@ class PiCameraDevice(camera):
     def setUp(self):
         self.__piCamera = Picamera2()
         config = self.__piCamera.create_still_configuration(
-            main={"size": (self._captureWidth, self._captureHeight),"format":"BGR888"},
+            main={"size": (self._captureWidth, self._captureHeight),"format":"RGB888"},
             sensor={"output_size": (3280, 2464)})
         self.__piCamera.configure(config)
         self.__piCamera.start()
@@ -68,5 +68,3 @@ class PiCameraDevice(camera):
             ConsoleDebugInfo.printToConsole("Could not capture image with the PICAMERA device!")
 
         return array
-
-

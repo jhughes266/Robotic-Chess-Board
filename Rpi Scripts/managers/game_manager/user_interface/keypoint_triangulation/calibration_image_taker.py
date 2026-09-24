@@ -24,9 +24,9 @@ mode = 'csi'
 chessBoardSize = (7, 6)
 # Instantiate the camera devices
 if mode == 'usb':
-    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 1)
+    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
 elif mode == 'csi':
-    cam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
+    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 2)
 # Call the setup method on the camera
 cam.setUp()
 # Store the image save count which is used to name files
