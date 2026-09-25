@@ -4,3 +4,4 @@ Rpi Scripts/.idea/
 *.iml
 __pycache__/
 **/secrets.py
+.venv/

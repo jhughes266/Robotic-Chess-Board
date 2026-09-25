@@ -4,8 +4,7 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 import matplotlib.pyplot as plt
 import numpy as np
-
-#from mediapipe.tasks.python.vision.drawing_utils import draw_landmarks
+import copy
 
 from managers.game_manager.user_interface.keypoint_triangulation.camera import *
 
@@ -27,19 +26,10 @@ class KeypointTriangulator:
         # Camera object setup
         self.__aCamObj.setUp()
         self.__bCamObj.setUp()
-        # Media pipe hands setup
-        base_options = python.BaseOptions(model_asset_path='resources/hands_model/hand_landmarker.task')
-        options = vision.HandLandmarkerOptions(base_options=base_options,
-                                               min_hand_detection_confidence=0.05,
-                                               min_hand_presence_confidence=0.05,
-                                               min_tracking_confidence=0.05,
-                                               num_hands=1)
-        self.__detector = vision.HandLandmarker.create_from_options(options=options)
-
+    
     def tearDown(self):
         self.__aCamObj.tearDown()
         self.__bCamObj.tearDown()
-        self.__detector.close()
 
     def run(self):
         # First capture the images from both cameras
@@ -48,35 +38,20 @@ class KeypointTriangulator:
         aCamImageUndistorted, aNewCamMatrix = self.__undistortImage(aCamImage, self.__aCamMatrix, self.__aDistCoeffs)
         bCamImageUndistorted, bNewCamMatrix = self.__undistortImage(bCamImage, self.__bCamMatrix, self.__bDistCoeffs)
         # Extract all the hand keypoints from both images
-        aCamDetectionResult, bCamDetectionResult = self.__keypointExtraction(aCamImageUndistorted, bCamImageUndistorted)
-        # The hand must be present in both images otherwise if it is not return None to indicate that triangulation
-        # cannot take place
-        if aCamDetectionResult is None or bCamDetectionResult is None:
-            
-            if aCamDetectionResult is not None:
-                self.__drawKeypoints(aCamDetectionResult, aCamImageUndistorted)
-
-            if bCamDetectionResult is not None:
-                self.__drawKeypoints(bCamDetectionResult, bCamImageUndistorted)
-            combinedImage = np.hstack((bCamImageUndistorted, aCamImageUndistorted))
-            cv2.imshow('capture', combinedImage)
-            return None
-        # For debugging purposes we are drawin the location of all the keypoints
-        self.__drawKeypoints(aCamDetectionResult, aCamImageUndistorted)
-        self.__drawKeypoints(bCamDetectionResult, bCamImageUndistorted)
-        # Horizontal stack the images
-        combinedImage = np.hstack((bCamImageUndistorted, aCamImageUndistorted))
-        # Show the combined images
-        cv2.imshow('capture', combinedImage)
+        ua, va, ub, vb = self.__stylusExtraction(aCamImageUndistorted, bCamImageUndistorted)
+        stylusRealWorldLocation = None
         # Get the realworld location of all the landmarks
-        landMarkRealWorldLocation = self.__triangulePoints(
-            aCamDetectionResult=aCamDetectionResult,
-            bCamDetectionResult=bCamDetectionResult,
-            aNewCamMatrix=aNewCamMatrix,
-            bNewCamMatrix=bNewCamMatrix,
-            offset=self.__offset)
+        if ua is not None:
+            stylusRealWorldLocation = self.__triangulePoints(
+                ua=ua,
+                va=va,
+                ub=ub,
+                vb=vb,
+                aNewCamMatrix=aNewCamMatrix,
+                bNewCamMatrix=bNewCamMatrix,
+                offset=self.__offset)
 
-        return landMarkRealWorldLocation
+        return stylusRealWorldLocation
 
     def __captureImages(self):
         #Capture images from both cameras
@@ -96,41 +71,58 @@ class KeypointTriangulator:
         croppedUndistorted = undistorted[y:y + h, x:x + w]
         return croppedUndistorted, newCamMatrix
 
-    def __keypointExtraction(self, aCamImage, bCamImage):
-        # Convert all the images to the required RGB
-        aCamImageRgb = cv2.cvtColor(aCamImage, cv2.COLOR_BGR2RGB)
-        bCamImageRgb = cv2.cvtColor(bCamImage, cv2.COLOR_BGR2RGB)
-        # Get the Mp images of both cameras
-        aCamMpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=aCamImageRgb)
-        bCamMpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=bCamImageRgb)
-        # Perform the pose detection
-        aCamDetectionResult = self.__detector.detect(aCamMpImage)
-        bCamDetectionResult = self.__detector.detect(bCamMpImage)
-        # If the length of the resulting detection is 0 in either it means the detection was unsuccessful
-        if len(aCamDetectionResult.hand_landmarks) == 0 or len(bCamDetectionResult.hand_landmarks) == 0:
-            return None, None
-        # Put the x and y coordinates in pixels
-        aCamDetectionResult = self.__normalizedCordinatesToPixel(results=aCamDetectionResult,
-                                                                 xDim=aCamImage.shape[1],
-                                                                 yDim=aCamImage.shape[0])
-
-        bCamDetectionResult = self.__normalizedCordinatesToPixel(results=bCamDetectionResult,
-                                                                   xDim=bCamImage.shape[1],
-                                                                   yDim=bCamImage.shape[0])
-
-        return aCamDetectionResult, bCamDetectionResult
+    def __stylusExtraction(self, aCamImage, bCamImage):
+        
+        dispImageA = copy.deepcopy(aCamImage)
+        dispImageB = copy.deepcopy(bCamImage)
     
-    def __normalizedCordinatesToPixel(self, results, xDim, yDim):
-        landmarkList = results.hand_landmarks[0]
-        for landmark in landmarkList:
-            landmark.x = landmark.x * xDim
-            landmark.y = landmark.y * yDim
-        return results
+        aCamImage = aCamImage.astype(np.int32)
+        bCamImage = bCamImage.astype(np.int32)
+        
+        aGreenAmount = 2 * aCamImage[:,:,1]- aCamImage[:,:,0] - aCamImage[:,:,2]
+        aGreenAmount = (np.where(aGreenAmount < 0, 0, aGreenAmount))
+        aGreenAmount = (np.where(aGreenAmount > 255, 255, aGreenAmount))
+        
+        bGreenAmount = 2 * bCamImage[:,:,1]- bCamImage[:,:,0] - bCamImage[:,:,2]
+        bGreenAmount = (np.where(bGreenAmount < 0, 0, bGreenAmount))
+        bGreenAmount = (np.where(bGreenAmount > 255, 255, bGreenAmount))
+        
+        
+        aGreenAmount = aGreenAmount.astype(np.uint8)
+        bGreenAmount = bGreenAmount.astype(np.uint8)
+        
+        aThreshold = 110
+        bThreshold = 45
+        
+        aGreenAmount = (np.where(aGreenAmount < aThreshold, 0, aGreenAmount))
+        bGreenAmount = (np.where(bGreenAmount < bThreshold, 0, bGreenAmount))
+        aGreenAmount = (np.where(aGreenAmount > aThreshold, 255, aGreenAmount))
+        bGreenAmount = (np.where(bGreenAmount > bThreshold, 255, bGreenAmount))
+        
+        vaArray, uaArray = np.where(aGreenAmount > aThreshold)
+        vbArray, ubArray = np.where(bGreenAmount > bThreshold)
+        if len(vaArray) == 0 or len(uaArray) == 0 or len(vbArray) == 0 or len(ubArray) == 0:
+            combinedImage = np.hstack((dispImageB, dispImageA))
+            cv2.imshow('test',combinedImage)
+            return None, None, None, None    
+        va = int(np.average(vaArray))
+        ua = int(np.average(uaArray))
+        vb = int(np.average(vbArray))
+        ub = int(np.average(ubArray))
+        
+        cv2.circle(dispImageA, (ua, va), radius=3, color=(0,0,255), thickness=-1)
+        cv2.circle(dispImageB, (ub, vb), radius=3, color=(0,0,255), thickness=-1)
+        
+        combinedImage = np.hstack((dispImageB, dispImageA))
+        cv2.imshow('test',combinedImage)
 
-    def __triangulePoints(self, aCamDetectionResult, bCamDetectionResult , aNewCamMatrix, bNewCamMatrix, offset):
+
+        return ua, va, ub, vb
+
+    def __triangulePoints(self, ua, va, ub, vb, aNewCamMatrix, bNewCamMatrix, offset):
         # IMPORTANT: The -1's ensure that the tracking result produces the desired cordinate system. That
         # is x:left from aCam Optical Centre y:up from aCam Optical Centre and z:forward from aCam optical Centre
-        
+        print(f"ua:{ua},va:{va},ub:{ub},vb:{vb},")
         # This is the offset for camera b
         xOffset = offset[0]
         yOffset = offset[1]
@@ -145,60 +137,36 @@ class KeypointTriangulator:
         fyb = bNewCamMatrix[1][1] * -1
         oxb = bNewCamMatrix[0][2]
         oyb = bNewCamMatrix[1][2]
-        #print(offset)
-        #print(f"fxa:{fxa}, fya:{fya}, oxa:{oxa}, oya:{oya}")
-        #print(f"fxb:{fxb}, fyb:{fyb}, oxb:{oxb}, oyb:{oyb}")
-        
-        
-        # This list will store all the realworld locations of all the landmarks
-        landMarkRealWorldLocation = []
-        # zip the landmark lists and loop through each individual landmark
-        for i, (aCamLandmark, bCamLandmark) in enumerate(zip(aCamDetectionResult.hand_landmarks[0], bCamDetectionResult.hand_landmarks[0])):
-            # Get the location of the landmark for camera a
-            ua = aCamLandmark.x
-            va = aCamLandmark.y
-            # Get the location of the landmark for camera b
-            ub = bCamLandmark.x
-            vb = bCamLandmark.y
-            # calculate the components of the a direction vector
-            ia = (ua - oxa) / (fxa)
-            ja = (va - oya) / (fya)
-            ka = 1
-            # calculate the components of the b direction vector
-            ib = (ub - oxb) / (fxb)
-            jb = (vb - oyb) / (fyb)
-            kb = 1
-            # Constructing the direction vectors
-            aDir = np.array([ia, ja, ka])
-            bDir = np.array([ib, jb, kb])
-            # Construct the position vector for b (this is the offset) we assume that a starts at (0,0,0)
-            bPos = np.array([xOffset, yOffset, zOffset])
-            # Calculating the different quantities for the triangulation equations
-            P = np.sum(aDir * aDir)
-            S = np.sum(aDir * bDir)
-            R = np.sum(aDir * bPos)
-            T = np.sum(bDir * bDir)
-            U = np.sum(bDir * bPos)
-            # Using the calculated simultaneous equations to get the parameters
-            denominator = P*T - S**2
-            ta = (R*T - S*U)/denominator
-            tb = (S*R - P*U)/denominator
-            # Using the parameters to construct the line equations and get the locations of the minimum distance between lines
-            aLocMin = ta * aDir
-            bLocMin = tb * bDir + bPos
-            # Getting the average of the two to get the best estimate of the location of the minimum distance
-            estimatedMinimumDistancePoint = (aLocMin + bLocMin) / 2
-            # Storing the result in created list
-            landMarkRealWorldLocation.append(estimatedMinimumDistancePoint)
-            if i == 8:
-                pass
-                #print(f"ua:{ua}, va:{va}")
-                #print(f"ub:{ub}, vb:{vb}")
-                #print(f"Va:{aDir},Vb:{bDir}")
-                #print(f"P:{P},S:{S},R:{R},T:{T},U:{U}")
-                #print(estimatedMinimumDistancePoint)
+        # calculate the components of the a direction vector
+        ia = (ua - oxa) / (fxa)
+        ja = (va - oya) / (fya)
+        ka = 1
+        # calculate the components of the b direction vector
+        ib = (ub - oxb) / (fxb)
+        jb = (vb - oyb) / (fyb)
+        kb = 1
+        # Constructing the direction vectors
+        aDir = np.array([ia, ja, ka])
+        bDir = np.array([ib, jb, kb])
+        # Construct the position vector for b (this is the offset) we assume that a starts at (0,0,0)
+        bPos = np.array([xOffset, yOffset, zOffset])
+        # Calculating the different quantities for the triangulation equations
+        P = np.sum(aDir * aDir)
+        S = np.sum(aDir * bDir)
+        R = np.sum(aDir * bPos)
+        T = np.sum(bDir * bDir)
+        U = np.sum(bDir * bPos)
+        # Using the calculated simultaneous equations to get the parameters
+        denominator = P*T - S**2
+        ta = (R*T - S*U)/denominator
+        tb = (S*R - P*U)/denominator
+        # Using the parameters to construct the line equations and get the locations of the minimum distance between lines
+        aLocMin = ta * aDir
+        bLocMin = tb * bDir + bPos
+        # Getting the average of the two to get the best estimate of the location of the minimum distance
+        realWorldLocation = (aLocMin + bLocMin) / 2
         # Returning the real world location of the landmarks
-        return landMarkRealWorldLocation
+        return realWorldLocation
 
     def __drawKeypoints(self, results, image):
         hand_landmarks_list = results.hand_landmarks
@@ -222,9 +190,9 @@ while True:
     ### For debugging ####
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    landmarkLocations = testTri.run()
-    if landmarkLocations is not None:
-        print(landmarkLocations[8])
+    stylusRealWorldLocation = testTri.run()
+    if stylusRealWorldLocation is not None:
+        print(stylusRealWorldLocation)
         print("###################################################")
 
 
