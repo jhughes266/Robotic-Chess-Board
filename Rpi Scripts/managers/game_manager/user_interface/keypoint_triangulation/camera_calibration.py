@@ -37,7 +37,7 @@ def calibrateCamera(cameraName,
             # Draw the image detected pattern on the board
             cv2.drawChessboardCorners(image, chessBoardSize, corners2, ret)
             cv2.imshow('img', image)
-            cv2.waitKey(100)
+            cv2.waitKey(10)
     # Destroy all windows
     cv2.destroyAllWindows()
     # Perform camera calibration
@@ -60,7 +60,6 @@ def calibrateCamera(cameraName,
     meanError = 0
     for i in range(len(objPoints)):
         imgpoints2, _ = cv2.projectPoints(objPoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
-        imgpoints2 = imgpoints2.reshape(-1,2)
         error = cv2.norm(imgPoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
         meanError += error
     print(f"The total error is: {meanError/len(objPoints)}")

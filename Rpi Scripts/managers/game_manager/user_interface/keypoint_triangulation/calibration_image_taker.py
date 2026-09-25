@@ -26,7 +26,7 @@ chessBoardSize = (7, 6)
 if mode == 'usb':
     cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
 elif mode == 'csi':
-    cam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex = 2)
+    cam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
 # Call the setup method on the camera
 cam.setUp()
 # Store the image save count which is used to name files
@@ -48,6 +48,7 @@ while True:
         cv2.imwrite(f"resources/calibration_images/{mode}_cam/cal_{imageSaveCount}.jpg", image)
         print("Image Saved")
         imageSaveCount += 1
+        print(imageSaveCount)
     # Quit the capturing if 'q'
     elif key == ord('q'):
         break

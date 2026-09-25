@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-#from picamera2 import Picamera2
+from picamera2 import Picamera2
 from console_debug_info import ConsoleDebugInfo
 import cv2
 
@@ -25,6 +25,7 @@ class camera(ABC):
 class OpenCvDevice(camera):
     def setUp(self):
         self.__cap = cv2.VideoCapture(self._deviceIndex)
+        self.__cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         self.__cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._captureWidth)
         self.__cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._captureHeight)
         if not self.__cap.isOpened():
