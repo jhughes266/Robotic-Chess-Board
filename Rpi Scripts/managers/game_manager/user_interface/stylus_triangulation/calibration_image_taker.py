@@ -1,6 +1,6 @@
 import copy
 import cv2
-from managers.game_manager.user_interface.keypoint_triangulation.camera import *
+from managers.game_manager.user_interface.stylus_triangulation.camera import *
 import time
 
 def showChessBoardDetection(image):

@@ -11,6 +11,7 @@ class GameManager:
         self._gameMode = None
 
     def startOrQuit(self):
+        self._userInterface.prepareForUserInput()
         acceptableSelection = {'0', '1'}
         while True:
             selection = self._userInterface.gameEntryPrompt()
@@ -22,8 +23,11 @@ class GameManager:
                     return True
 
             self._userInterface.displayText("Invalid selection! Please try again!\n")
+        self._userInterface.finishedWithUserInput()
 
     def selectMode(self):
+        self._userInterface.prepareForUserInput()
+
         while True:
 
             selection = self._userInterface.getGameModeFromUser()
@@ -42,6 +46,7 @@ class GameManager:
                 return
 
             self._userInterface.displayText("Invalid selection! Please try again!\n")
+        self._userInterface.finishedWithUserInput()        
 
     def selectDifficulty(self):
         self._gameMode.selectDifficulty()

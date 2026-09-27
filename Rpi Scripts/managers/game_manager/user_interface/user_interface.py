@@ -1,9 +1,19 @@
 from abc import ABC, abstractmethod
+from managers.game_manager.user_interface.stylus_triangulation.stylus_triangulator import *
+from managers.game_manager.user_interface.ui_canvas import *
+import statistics
+from statistics import mode
 import os
 class UserInterface(ABC):
     def __init__(self, boardManager):
         self._boardManager = boardManager
         self._chessColourAsText = ['Black', 'White']
+    
+    def prepareForUserInput():
+        pass
+    
+    def finishedWithUserInput():
+        pass
 
     @abstractmethod
     def getMoveFromUser(self):
@@ -29,7 +39,7 @@ class UserInterface(ABC):
     def getGameModeFromUser(self):
         pass
 
-class TextUserInterface(UserInterface):
+class TextUserInterface(UserInterface):    
     def getMoveFromUser(self):
         return input("Please enter your move!: ")
 
@@ -49,10 +59,74 @@ class TextUserInterface(UserInterface):
     def getGameModeFromUser(self):
         return input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
 
-class HandUserInterface(UserInterface):
-    def getMoveFromUser(self):
-        pass
+class StylusUserInterface(UserInterface):
+    def __init__(self, boardManager):
+        super().__init__(boardManager)
+        self.__gameBoardOriginPositionInRealWorld = np.array([-42, -85, 216])
+        self.__moveSelectCanvas = MoveSelectCanvas()
+        self.__gameEntryCanvas = GameEntryCanvas()
+        
+    def prepareForUserInput(self):
+        aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
+        bCam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
+        self.__triangulator = StylusTriangulator(aCamObj=aCam, bCamObj=bCam,resourcesPath="stylus_triangulation/resources", aCamType='usb', bCamType='csi')
+        self.__triangulator.setUp()
+    
+    def finishedWithUserInput(self):
+        self.__triangulator.tearDown()
+    
+    def __getStylusInfo(self):
+        stylusRealWorldLocation = self.__triangulator.run() 
+        if stylusRealWorldLocation is not None:
+            gameBoardLocation = self.__realWorldLocationToGameBoardLocation(stylusRealWorldLocation)
+            return gameBoardLocation
+    
+    def __realWorldLocationToGameBoardLocation(self, realWorldLocation):
+        gameBoardLocation = realWorldLocation - self.__gameBoardOriginPositionInRealWorld
+        return gameBoardLocation
 
+    def getMoveFromUser(self):
+        originSquare = None
+        destinationSquare = None
+        selectedSquareList = []
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+            if self.__moveSelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+                if originSquare is not None and destinationSquare is not None:
+                    return originSquare + destinationSquare
+                else:
+                    print("Please Select a destination and an origin!")
+                
+            if self.__moveSelectCanvas.resetButton.isClicked(stylusGameBoardLocation):
+                originSquare = None
+                destinationSquare = None
+                print("Selection Reset!")
+            
+            
+            candidateSquare = self.__moveSelectCanvas.findClickedSquare(stylusGameBoardLocation)
+            if candidateSquare is None and len(selectedSquareList) == 0:
+                continue
+            elif candidateSquare is not None:
+                selectedSquareList.append(candidateSquare)
+                continue
+            elif candidateSquare is None and len(selectedSquareList) > 0:
+                selectedSquare = mode(selectedSquareList)
+                selectedSquareList = []
+                
+                if originSquare is None:
+                    originSquare = selectedSquare
+                    print(f"origin is : {originSquare}")
+                elif originSquare is not None:
+                    destinationSquare = selectedSquare
+                    print(f"destination is : {destinationSquare}")
+                
+            
+                
+                
+            
+            
     def displayText(self, str):
         pass
 
@@ -63,7 +137,24 @@ class HandUserInterface(UserInterface):
         pass
 
     def gameEntryPrompt(self):
-        pass
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+
+            if self.__gameEntryCanvas.startButton.isClicked(stylusGameBoardLocation):
+                return 1
+            if self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
+                return 0
+            
+            
+        
 
     def getGameModeFromUser(self):
         pass
+    
+        
+test = StylusUserInterface(None)
+test.prepareForUserInput()
+print(test.getMoveFromUser())
+test.finishedWithUserInput()

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import math
-from managers.game_manager.user_interface.keypoint_triangulation.camera import *
+from managers.game_manager.user_interface.stylus_triangulation.camera import *
 
 
 def calculateDistanceToPoint(p1, p2, camera_matrix):
