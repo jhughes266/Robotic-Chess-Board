@@ -65,6 +65,9 @@ class StylusUserInterface(UserInterface):
         self.__gameBoardOriginPositionInRealWorld = np.array([-42, -85, 216])
         self.__moveSelectCanvas = MoveSelectCanvas()
         self.__gameEntryCanvas = GameEntryCanvas()
+        self.__yesNoCanvas = YesNoCanvas()
+        self.__difficultySelectCanvas = DifficultySelectCanvas()
+        self.__gameModeCanvas = GameModeCanvas()
         
     def prepareForUserInput(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
@@ -103,8 +106,7 @@ class StylusUserInterface(UserInterface):
                 originSquare = None
                 destinationSquare = None
                 print("Selection Reset!")
-            
-            
+
             candidateSquare = self.__moveSelectCanvas.findClickedSquare(stylusGameBoardLocation)
             if candidateSquare is None and len(selectedSquareList) == 0:
                 continue
@@ -121,22 +123,41 @@ class StylusUserInterface(UserInterface):
                 elif originSquare is not None:
                     destinationSquare = selectedSquare
                     print(f"destination is : {destinationSquare}")
-                
-            
-                
-                
-            
-            
+
     def displayText(self, str):
         pass
 
     def yesOrNoQuestion(self, str):
-        pass
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+
+            if self.__yesNoCanvas.yesButton.isClicked(stylusGameBoardLocation):
+                return "YES"
+            elif self.__yesNoCanvas.noButton.isClicked(stylusGameBoardLocation):
+                return "NO"
 
     def getDifficultyFromUser(self):
-        pass
+        modeSelected = '1'
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+
+            if self.__gameModeCanvas.mode1Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '1'
+            elif self.__gameModeCanvas.mode2Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '2'
+            elif self.__gameModeCanvas.mode3Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '3'
+            elif self.__gameModeCanvas.mode4Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '4'
+            elif self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+                return modeSelected
 
     def gameEntryPrompt(self):
+
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -144,15 +165,31 @@ class StylusUserInterface(UserInterface):
 
             if self.__gameEntryCanvas.startButton.isClicked(stylusGameBoardLocation):
                 return 1
-            if self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
+            elif self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
                 return 0
-            
-            
-        
 
     def getGameModeFromUser(self):
-        pass
-    
+
+        difficultySelected = ''
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+
+            if self.__difficultySelectCanvas.difficulty1Button.isClicked(stylusGameBoardLocation):
+                difficultySelected = '1'
+            elif self.__difficultySelectCanvas.difficulty2Button.isClicked(stylusGameBoardLocation):
+                difficultySelected = '2'
+            elif self.__difficultySelectCanvas.difficulty3Button.isClicked(stylusGameBoardLocation):
+                difficultySelected = '3'
+            elif self.__difficultySelectCanvas.difficulty4Button.isClicked(stylusGameBoardLocation):
+                difficultySelected = '4'
+            elif self.__difficultySelectCanvas.difficulty5Button.isClicked(stylusGameBoardLocation):
+                difficultySelected = '5'
+            elif self.__difficultySelectCanvas.difficulty6Button.isClicked(stylusGameBoardLocation):
+                difficultySelected = '6'
+            elif self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+                return difficultySelected
         
 test = StylusUserInterface(None)
 test.prepareForUserInput()

@@ -43,13 +43,10 @@ class Button(UiCanvasElement):
     def drawOnScreen(self):
         pass
 
-
-class ChessBoard(UiCanvasElement):
-    def __init__(self, gameBoardLocation, screenLocation, screen, realSquareSideDim, screenSquareSideDim):
-        super().__init__(gameBoardLocation, screenLocation, screen)
-
 class Text(UiCanvasElement):
     def __init__(self, gameBoardLocation, screenLocation, screen):
         super().__init__(gameBoardLocation, screenLocation, screen)
 
-    
+class Image(UiCanvasElement):
+    def __init__(self, gameBoardLocation, screenLocation, screen):
+        super().__init__(gameBoardLocation, screenLocation, screen)
