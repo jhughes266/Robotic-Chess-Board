@@ -9,10 +9,13 @@ class UserInterface(ABC):
         self._boardManager = boardManager
         self._chessColourAsText = ['Black', 'White']
     
-    def prepareForUserInput():
+    def prepareForUserInput(self):
         pass
     
-    def finishedWithUserInput():
+    def finishedWithUserInput(self):
+        pass
+
+    def tearDown(self):
         pass
 
     @abstractmethod
@@ -68,6 +71,7 @@ class StylusUserInterface(UserInterface):
         self.__yesNoCanvas = YesNoCanvas()
         self.__difficultySelectCanvas = DifficultySelectCanvas()
         self.__gameModeCanvas = GameModeCanvas()
+        self.__textMessageCanvas = TextMessageCanvas()
         
     def prepareForUserInput(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
@@ -87,6 +91,9 @@ class StylusUserInterface(UserInterface):
     def __realWorldLocationToGameBoardLocation(self, realWorldLocation):
         gameBoardLocation = realWorldLocation - self.__gameBoardOriginPositionInRealWorld
         return gameBoardLocation
+
+    def tearDown(self):
+        pass
 
     def getMoveFromUser(self):
         originSquare = None
@@ -125,7 +132,7 @@ class StylusUserInterface(UserInterface):
                     print(f"destination is : {destinationSquare}")
 
     def displayText(self, str):
-        pass
+        self.__textMessageCanvas.draw(text=str)
 
     def yesOrNoQuestion(self, str):
         while True:
@@ -190,8 +197,4 @@ class StylusUserInterface(UserInterface):
                 difficultySelected = '6'
             elif self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
                 return difficultySelected
-        
-test = StylusUserInterface(None)
-test.prepareForUserInput()
-print(test.getMoveFromUser())
-test.finishedWithUserInput()
+
