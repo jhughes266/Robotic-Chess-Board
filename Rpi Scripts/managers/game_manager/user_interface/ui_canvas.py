@@ -187,6 +187,7 @@ class DifficultySelectCanvas(UiCanvas):
                              self.difficulty6Button,
                              self.confirmButton]
 
+
     def draw(self, difficulty):
         for button in self.__buttonList:
             button.draw()
@@ -379,28 +380,28 @@ class GameModeCanvas(UiCanvas):
         self._screen.display()
 
 testScreen = PillowComputerScreen()
-print("Text Message Canvas")
-textMessageCanvas = TextMessageCanvas(screen=testScreen)
-textMessageCanvas.draw("Hello World!Hello World!\nHello World!Hello World!\nHello World!Hello World!")
-input()
-print("Yes No Canvas")
-yesNoCanvas = YesNoCanvas(screen=testScreen)
-yesNoCanvas.draw("Yes no question?")
-input()
-print("Game Entry Canvas")
-gameEntryCanvas = GameEntryCanvas(screen=testScreen)
-gameEntryCanvas.draw()
-input()
+#print("Text Message Canvas")
+#textMessageCanvas = TextMessageCanvas(screen=testScreen)
+#textMessageCanvas.draw("Hello World!Hello World!\nHello World!Hello World!\nHello World!Hello World!")
+#input()
+#print("Yes No Canvas")
+#yesNoCanvas = YesNoCanvas(screen=testScreen)
+#yesNoCanvas.draw("Yes no question?")
+#input()
+#print("Game Entry Canvas")
+#gameEntryCanvas = GameEntryCanvas(screen=testScreen)
+#gameEntryCanvas.draw()
+#input()
 print("Difficulty Select Canvas")
 difficultySelectCanvas = DifficultySelectCanvas(screen=testScreen)
 difficultySelectCanvas.draw("Very Easy")
 input()
-print("Move Select Canvas")
-moveSelectCanvas = MoveSelectCanvas(screen=testScreen)
-moveSelectCanvas.draw(info="Enter Start")
-input()
-print("Game Mode Canvas")
-gameModeCanvas = GameModeCanvas(screen=testScreen)
-gameModeCanvas.draw()
+#print("Move Select Canvas")
+#moveSelectCanvas = MoveSelectCanvas(screen=testScreen)
+#moveSelectCanvas.draw(info="Enter Start")
+#input()
+#print("Game Mode Canvas")
+#gameModeCanvas = GameModeCanvas(screen=testScreen)
+#gameModeCanvas.draw()
 
 
