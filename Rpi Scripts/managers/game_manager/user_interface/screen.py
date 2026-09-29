@@ -21,6 +21,10 @@ class Screen(ABC):
     @abstractmethod
     def drawRectangle(self, xy, fill=None, outline=None, width=1):
         pass
+    
+    @abstractmethod
+    def drawMouse(self, xy):
+        pass
 
     @abstractmethod
     def drawText(self,  xy, text, fill=1):
@@ -52,6 +56,19 @@ class PillowComputerScreen(Screen):
 
     def drawRectangle(self, xy, fill=None, outline=None, width=1):
         self.__draw.rectangle(xy, fill=fill, outline=outline, width=width)
+    
+    def drawMouse(self, xy):
+        centreX = xy[0]
+        centreY = xy[1]
+        self.__draw.point((centreX-1, centreY-1), fill=1)
+        self.__draw.point((centreX, centreY-1), fill=0)
+        self.__draw.point((centreX+1, centreY-1), fill=1)
+        self.__draw.point((centreX-1, centreY), fill=0)
+        self.__draw.point((centreX, centreY), fill=1)
+        self.__draw.point((centreX+1, centreY), fill=0)
+        self.__draw.point((centreX-1, centreY+1), fill=1)
+        self.__draw.point((centreX, centreY+1), fill=0)
+        self.__draw.point((centreX+1, centreY+1), fill=1)
 
     def drawText(self, xy, text, fill=1, fontSize=None, anchor=None):
         self.__draw.multiline_text(xy, text, fill=fill, font_size=fontSize, anchor=anchor)

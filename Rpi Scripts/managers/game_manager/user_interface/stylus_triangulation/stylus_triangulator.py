@@ -119,7 +119,7 @@ class StylusTriangulator:
             self.__vbMovingAverage = []
             self.__ubMovingAverage = []
             #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
-            cv2.imshow('test',combinedImage)
+            cv2.imshow('Stylus Tracking',combinedImage)
             return None, None, None, None
         # Get the median of all the returned pixel locations (median helps get rid of outliers)
         va = int(np.median(vaArray))
@@ -162,7 +162,7 @@ class StylusTriangulator:
         
         combinedImage = np.hstack((dispImageB, dispImageA))
         #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
-        cv2.imshow('test',combinedImage)
+        cv2.imshow('Stylus Tracking',combinedImage)
 
         return ua, va, ub, vb
     

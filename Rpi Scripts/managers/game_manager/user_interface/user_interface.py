@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from managers.game_manager.user_interface.stylus_triangulation.stylus_triangulator import *
 from managers.game_manager.user_interface.ui_canvas import *
+from screen import *
 import statistics
 from statistics import mode
 import os
@@ -63,15 +64,15 @@ class TextUserInterface(UserInterface):
         return input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
 
 class StylusUserInterface(UserInterface):
-    def __init__(self, boardManager):
+    def __init__(self, boardManager, screen):
         super().__init__(boardManager)
         self.__gameBoardOriginPositionInRealWorld = np.array([-42, -85, 216])
-        self.__moveSelectCanvas = MoveSelectCanvas()
-        self.__gameEntryCanvas = GameEntryCanvas()
-        self.__yesNoCanvas = YesNoCanvas()
-        self.__difficultySelectCanvas = DifficultySelectCanvas()
-        self.__gameModeCanvas = GameModeCanvas()
-        self.__textMessageCanvas = TextMessageCanvas()
+        self.__moveSelectCanvas = MoveSelectCanvas(screen=screen)
+        self.__gameEntryCanvas = GameEntryCanvas(screen=screen)
+        self.__yesNoCanvas = YesNoCanvas(screen=screen)
+        self.__difficultySelectCanvas = DifficultySelectCanvas(screen=screen)
+        self.__gameModeCanvas = GameModeCanvas(screen=screen)
+        self.__textMessageCanvas = TextMessageCanvas(screen=screen)
         
     def prepareForUserInput(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
@@ -115,11 +116,8 @@ class StylusUserInterface(UserInterface):
                 print("Selection Reset!")
 
             candidateSquare = self.__moveSelectCanvas.findClickedSquare(stylusGameBoardLocation)
-            if candidateSquare is None and len(selectedSquareList) == 0:
-                continue
-            elif candidateSquare is not None:
+            if candidateSquare is not None:
                 selectedSquareList.append(candidateSquare)
-                continue
             elif candidateSquare is None and len(selectedSquareList) > 0:
                 selectedSquare = mode(selectedSquareList)
                 selectedSquareList = []
@@ -130,54 +128,30 @@ class StylusUserInterface(UserInterface):
                 elif originSquare is not None:
                     destinationSquare = selectedSquare
                     print(f"destination is : {destinationSquare}")
+            
+            self.__moveSelectCanvas.draw()
+            if stylusGameBoardLocation is not None:
+                self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation)
+            self.__moveSelectCanvas.display()
 
-    def displayText(self, str):
-        self.__textMessageCanvas.draw(text=str)
+    def displayText(self, text):
+        self.__textMessageCanvas.draw(text=text)
 
-    def yesOrNoQuestion(self, str):
+    def yesOrNoQuestion(self, yesNoQuestion):
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
             stylusGameBoardLocation = self.__getStylusInfo()
 
             if self.__yesNoCanvas.yesButton.isClicked(stylusGameBoardLocation):
-                return "YES"
+                pass#return "YES"
             elif self.__yesNoCanvas.noButton.isClicked(stylusGameBoardLocation):
-                return "NO"
+                pass#return "NO"
+            self.__yesNoCanvas.draw(yesNoQuestion)
 
     def getDifficultyFromUser(self):
-        modeSelected = '1'
-        while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-            stylusGameBoardLocation = self.__getStylusInfo()
-
-            if self.__gameModeCanvas.mode1Button.isClicked(stylusGameBoardLocation):
-                modeSelected = '1'
-            elif self.__gameModeCanvas.mode2Button.isClicked(stylusGameBoardLocation):
-                modeSelected = '2'
-            elif self.__gameModeCanvas.mode3Button.isClicked(stylusGameBoardLocation):
-                modeSelected = '3'
-            elif self.__gameModeCanvas.mode4Button.isClicked(stylusGameBoardLocation):
-                modeSelected = '4'
-            elif self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
-                return modeSelected
-
-    def gameEntryPrompt(self):
-
-        while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-            stylusGameBoardLocation = self.__getStylusInfo()
-
-            if self.__gameEntryCanvas.startButton.isClicked(stylusGameBoardLocation):
-                return 1
-            elif self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
-                return 0
-
-    def getGameModeFromUser(self):
-
-        difficultySelected = ''
+        
+        difficultySelected = '1'
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -197,4 +171,47 @@ class StylusUserInterface(UserInterface):
                 difficultySelected = '6'
             elif self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
                 return difficultySelected
+            
+            self.__difficultySelectCanvas.draw(difficultySelected)
+        
+    
+    def gameEntryPrompt(self):
 
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+
+            if self.__gameEntryCanvas.startButton.isClicked(stylusGameBoardLocation):
+                return 1
+            elif self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
+                return 0
+
+    def getGameModeFromUser(self):
+        modeSelected = '1'
+        while True:
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            stylusGameBoardLocation = self.__getStylusInfo()
+
+            if self.__gameModeCanvas.mode1Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '1'
+            elif self.__gameModeCanvas.mode2Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '2'
+            elif self.__gameModeCanvas.mode3Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '3'
+            elif self.__gameModeCanvas.mode4Button.isClicked(stylusGameBoardLocation):
+                modeSelected = '4'
+            elif self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+                return modeSelected
+            self.__gameModeCanvas.draw()
+
+        
+
+screen = PillowComputerScreen()
+screen.setUp()
+stylusUserInterface = StylusUserInterface(boardManager=None, screen=screen)
+stylusUserInterface.prepareForUserInput()
+stylusUserInterface.getMoveFromUser()
+stylusUserInterface.finishedWithUserInput()
+screen.tearDown()

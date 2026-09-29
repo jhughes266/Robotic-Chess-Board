@@ -8,10 +8,17 @@ import numpy as np
 class UiCanvas(ABC):
     def __init__(self, screen):
         self._screen = screen
+        self.mouse = Mouse(elementId="Mouse", screen=screen)
 
     @abstractmethod
     def draw(self):
         pass
+    
+    def display(self):
+        self._screen.display()
+    
+    def drawMouse(self, stylusGameBoardLocation):
+        self.mouse.draw(stylusGameBoardLocation)
 
 class TextMessageCanvas(UiCanvas):
     def __init__(self, screen):
@@ -23,7 +30,6 @@ class TextMessageCanvas(UiCanvas):
 
     def draw(self, text=None):
         self.text.draw(text)
-        self._screen.display()
 
 class YesNoCanvas(UiCanvas):
     def __init__(self, screen):
@@ -56,7 +62,6 @@ class YesNoCanvas(UiCanvas):
         self.yesButton.draw()
         self.noButton.draw()
         self.text.draw(text=yesNoQuestion)
-        self._screen.display()
 
 class GameEntryCanvas(UiCanvas):
     def __init__(self, screen):
@@ -84,7 +89,6 @@ class GameEntryCanvas(UiCanvas):
     def draw(self):
         self.quitButton.draw()
         self.startButton.draw()
-        self._screen.display()
 
 class DifficultySelectCanvas(UiCanvas):
     def __init__(self, screen):
@@ -199,7 +203,6 @@ class DifficultySelectCanvas(UiCanvas):
             button.draw()
         self.currentDifficultyText.draw(difficulty)
         self.difficultyImage.draw(self.__difficultyImages[difficulty])
-        self._screen.display()
 
 class MoveSelectCanvas(UiCanvas):
     def __init__(self, screen):
@@ -315,7 +318,6 @@ class MoveSelectCanvas(UiCanvas):
         self.resetButton.draw()
         self.moveSelectInfoText.draw(move)
         self.generaInfoText.draw(info)
-        self._screen.display()
 
 class GameModeCanvas(UiCanvas):
     def __init__(self, screen):
@@ -382,8 +384,7 @@ class GameModeCanvas(UiCanvas):
         self.mode4Button.draw()
         self.confirmButton.draw()
         self.currentGameModeText.draw("White Human\nvs\nBlack Robot")
-        self._screen.display()
-
+"""
 difficulty = 1
 while True:
     testScreen = PillowComputerScreen()
@@ -417,5 +418,5 @@ while True:
     gameModeCanvas.draw()
     difficulty += 1
 testScreen.tearDown()
-
+"""
 

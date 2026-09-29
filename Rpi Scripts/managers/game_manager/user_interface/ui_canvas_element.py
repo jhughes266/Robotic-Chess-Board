@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from sympy.physics.units import current
 
 
 class UiCanvasElement(ABC):
@@ -10,10 +9,29 @@ class UiCanvasElement(ABC):
         #(x,y)
         self._screenLocation = screenLocation
         self._screen = screen
+        self._pixPerMm = 0.35625
     
     @abstractmethod
     def draw(self):
         pass
+    
+    def _gameBoardLocationToScreen(self, gameBoardLocation):
+        xReal, yReal, zReal = gameBoardLocation[0], gameBoardLocation[1], gameBoardLocation[2]
+        xScreen = zReal * self._pixPerMm
+        # The +63 is the height of the screen (would be 64 but have to -1 because of zero based indexing)
+        yScreen = -xReal * self._pixPerMm + 63
+        return xScreen, yScreen
+
+class Mouse(UiCanvasElement):
+    def __init__(self, elementId, screen):
+        super().__init__(elementId, gameBoardLocation=None, screenLocation=None, screen=screen)
+    
+    def draw(self, stylusGameBoardLocation):
+        xScreen, yScreen = self._gameBoardLocationToScreen(stylusGameBoardLocation)
+        self._screen.drawMouse((xScreen, yScreen))
+        
+        
+    
     
 
 class Button(UiCanvasElement):
