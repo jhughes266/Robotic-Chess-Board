@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from PIL import Image, ImageDraw, ImageFont
 import os
 import time
+import cv2
+import numpy as np
 
 class Screen(ABC):
     @abstractmethod
@@ -13,7 +15,7 @@ class Screen(ABC):
         pass
 
     @abstractmethod
-    def drawBitmap(self, xy, bitmap):
+    def pasteImage(self, xy, imageToPaste):
         pass
 
     @abstractmethod
@@ -43,10 +45,10 @@ class PillowComputerScreen(Screen):
         pass
 
     def tearDown(self):
-        pass
+        cv2.destroyAllWindows()
 
-    def drawBitmap(self, xy, bitmap):
-        pass
+    def pasteImage(self, xy, imageToPaste):
+        self.__image.paste(imageToPaste, xy)
 
     def drawRectangle(self, xy, fill=None, outline=None, width=1):
         self.__draw.rectangle(xy, fill=fill, outline=outline, width=width)
@@ -55,7 +57,10 @@ class PillowComputerScreen(Screen):
         self.__draw.multiline_text(xy, text, fill=fill, font_size=fontSize, anchor=anchor)
 
     def display(self):
-        self.__image.show()
+        npArray = np.array(self.__image, dtype=np.uint8)*255
+        scaleFactor = 6
+        scaledImage = cv2.resize(npArray, (self.__screenWidth*scaleFactor, self.__screenHeight*scaleFactor), interpolation=cv2.INTER_AREA)
+        cv2.imshow("screen", scaledImage)
         self.clearDisplay()
 
     def clearDisplay(self):

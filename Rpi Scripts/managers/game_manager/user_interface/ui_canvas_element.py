@@ -95,14 +95,13 @@ class Text(UiCanvasElement):
                               fontSize=self.__fontSize,
                               anchor=self.__anchor)
 
-class Bitmap(UiCanvasElement):
+class PastedImage(UiCanvasElement):
     def __init__(self, elementId, screenLocation, screen):
-
         super().__init__(elementId=elementId,
                          gameBoardLocation=None,
                          screenLocation=screenLocation,
                          screen=screen)
 
-    def draw(self, bitmap):
-        self._screen.drawBitmap(xy=self._screenLocation,
-                                bitmap=bitmap)
+    def draw(self, imageToPaste):
+        self._screen.pasteImage(xy=self._screenLocation,
+                                imageToPaste=imageToPaste)

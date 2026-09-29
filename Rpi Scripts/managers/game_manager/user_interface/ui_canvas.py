@@ -158,11 +158,11 @@ class DifficultySelectCanvas(UiCanvas):
 
         self.confirmButton = Button(elementId="confirm",
                                     gameBoardLocation=[0, 0, 120],
-                                    screenLocation=(64,45),
+                                    screenLocation=(64,46),
                                     screen=screen,
                                     realXLength=53.33,
                                     realZLength=120,
-                                    pixelHeight=18,
+                                    pixelHeight=17,
                                     pixelWidth=64,
                                     textElement="CONFIRM")
 
@@ -170,14 +170,6 @@ class DifficultySelectCanvas(UiCanvas):
                                           screenLocation=(96, 5),
                                           screen=self._screen,
                                           anchor="mm")
-
-        self.seperator = Bitmap(elementId="SeperatorImage",
-                                screenLocation=(43, 0),
-                                screen=self._screen)
-
-        self.difficultyBitmap = Bitmap(elementId="DifficultyImage",
-                             screenLocation=(64, 15),
-                             screen=self._screen)
 
         self.__buttonList = [self.difficulty1Button,
                              self.difficulty2Button,
@@ -187,13 +179,26 @@ class DifficultySelectCanvas(UiCanvas):
                              self.difficulty6Button,
                              self.confirmButton]
 
+        self.difficultyImage = PastedImage(elementId="DifficultyImage",
+                                           screenLocation=(64, 11),
+                                           screen=self._screen)
+
+        #load in all the difficulty images into an easy to access dictionary
+        self.__difficultyImages = {
+            '1':Image.open("ui_images/pawn.jpg"),
+            '2':Image.open("ui_images/knight.jpg"),
+            '3':Image.open("ui_images/bishop.jpg"),
+            '4':Image.open("ui_images/rook.jpg"),
+            '5':Image.open("ui_images/queen.jpg"),
+            '6':Image.open("ui_images/king.jpg"),
+        }
+
 
     def draw(self, difficulty):
         for button in self.__buttonList:
             button.draw()
         self.currentDifficultyText.draw(difficulty)
-        self.seperator.draw(list(np.ones((63,21))))
-        self.difficultyBitmap.draw(list(np.ones((30,64))))
+        self.difficultyImage.draw(self.__difficultyImages[difficulty])
         self._screen.display()
 
 class MoveSelectCanvas(UiCanvas):
@@ -379,29 +384,38 @@ class GameModeCanvas(UiCanvas):
         self.currentGameModeText.draw("White Human\nvs\nBlack Robot")
         self._screen.display()
 
-testScreen = PillowComputerScreen()
-#print("Text Message Canvas")
-#textMessageCanvas = TextMessageCanvas(screen=testScreen)
-#textMessageCanvas.draw("Hello World!Hello World!\nHello World!Hello World!\nHello World!Hello World!")
-#input()
-#print("Yes No Canvas")
-#yesNoCanvas = YesNoCanvas(screen=testScreen)
-#yesNoCanvas.draw("Yes no question?")
-#input()
-#print("Game Entry Canvas")
-#gameEntryCanvas = GameEntryCanvas(screen=testScreen)
-#gameEntryCanvas.draw()
-#input()
-print("Difficulty Select Canvas")
-difficultySelectCanvas = DifficultySelectCanvas(screen=testScreen)
-difficultySelectCanvas.draw("Very Easy")
-input()
-#print("Move Select Canvas")
-#moveSelectCanvas = MoveSelectCanvas(screen=testScreen)
-#moveSelectCanvas.draw(info="Enter Start")
-#input()
-#print("Game Mode Canvas")
-#gameModeCanvas = GameModeCanvas(screen=testScreen)
-#gameModeCanvas.draw()
+difficulty = 1
+while True:
+    testScreen = PillowComputerScreen()
+    print("Text Message Canvas")
+    textMessageCanvas = TextMessageCanvas(screen=testScreen)
+    textMessageCanvas.draw("Hello World!Hello World!\nHello World!Hello World!\nHello World!Hello World!")
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+        break
+    print("Yes No Canvas")
+    yesNoCanvas = YesNoCanvas(screen=testScreen)
+    yesNoCanvas.draw("Yes no question?")
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+        break
+    print("Game Entry Canvas")
+    gameEntryCanvas = GameEntryCanvas(screen=testScreen)
+    gameEntryCanvas.draw()
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+        break
+    print("Difficulty Select Canvas")
+    difficultySelectCanvas = DifficultySelectCanvas(screen=testScreen)
+    difficultySelectCanvas.draw(str(difficulty))
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+        break
+    print("Move Select Canvas")
+    moveSelectCanvas = MoveSelectCanvas(screen=testScreen)
+    moveSelectCanvas.draw(info="Enter Start")
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+        break
+    print("Game Mode Canvas")
+    gameModeCanvas = GameModeCanvas(screen=testScreen)
+    gameModeCanvas.draw()
+    difficulty += 1
+testScreen.tearDown()
 
 
