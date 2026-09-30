@@ -3,13 +3,14 @@ from abc import ABC, abstractmethod
 
 
 class UiCanvasElement(ABC):
-    def __init__(self, elementId, gameBoardLocation, screenLocation, screen):
+    def __init__(self, elementId, screenLocation, screen):
         self.elementId = elementId
-        self._gameBoardLocation = gameBoardLocation
+        self._gameBoardLocation = None
         #(x,y)
         self._screenLocation = screenLocation
         self._screen = screen
         self._pixPerMm = 0.35625
+        self._screenHeightPix = 64 
     
     @abstractmethod
     def draw(self):
@@ -19,35 +20,42 @@ class UiCanvasElement(ABC):
         xReal, yReal, zReal = gameBoardLocation[0], gameBoardLocation[1], gameBoardLocation[2]
         xScreen = zReal * self._pixPerMm
         # The +63 is the height of the screen (would be 64 but have to -1 because of zero based indexing)
-        yScreen = -xReal * self._pixPerMm + 63
+        yScreen = -xReal * self._pixPerMm + (self._screenHeightPix - 1)
         return xScreen, yScreen
+    
+    def _screenToGameBoardLocation(self, screenLocation):
+        xScreen, yScreen = screenLocation[0], screenLocation[1]
+        zReal = xScreen/self._pixPerMm
+        xReal =  (self._screenHeightPix - yScreen) / self._pixPerMm
+        return (xReal, 0, zReal)
+    
+    def _pixelLengthToRealLength(self, pixelLength):
+        return pixelLength * (1/self._pixPerMm)
 
 class Mouse(UiCanvasElement):
     def __init__(self, elementId, screen):
-        super().__init__(elementId, gameBoardLocation=None, screenLocation=None, screen=screen)
+        super().__init__(elementId, screenLocation=None, screen=screen)
     
     def draw(self, stylusGameBoardLocation):
         xScreen, yScreen = self._gameBoardLocationToScreen(stylusGameBoardLocation)
         self._screen.drawMouse((xScreen, yScreen))
         
         
-    
-    
-
 class Button(UiCanvasElement):
     __clickHeight = 60
     __clickResetHeight = 70
-    def __init__(self, elementId, gameBoardLocation, screenLocation, screen, realXLength, realZLength, pixelHeight, pixelWidth, textElement, fontSize=None, fill=0):
-        super().__init__(elementId, gameBoardLocation, screenLocation, screen)
+    def __init__(self, elementId, screen, screenLocation, pixelHeight, pixelWidth, textElement, fontSize=None, fill=0):
+        super().__init__(elementId, screenLocation, screen)
         self.__clicked = False
-        self.__realXLength = realXLength
-        self.__realZLength = realZLength
+        self.__realXLength = self._pixelLengthToRealLength(pixelHeight)
+        self.__realZLength = self._pixelLengthToRealLength(pixelWidth)
         self.__pixelHeight = pixelHeight
         self.__pixelWidth = pixelWidth
         self.__textElement = textElement
         self.__fontSize = fontSize
         self.__fill = fill
         self.__clickedFill = fill
+        self._gameBoardLocation = self._screenToGameBoardLocation(screenLocation)
     
     def isClicked(self, stylusGameBoardLocation):
         if stylusGameBoardLocation is None:
@@ -67,7 +75,7 @@ class Button(UiCanvasElement):
     def __stylusInBounds(self, stylusX, stylusZ):
         gameBoardLocationX = self._gameBoardLocation[0]
         gameBoardLocationZ = self._gameBoardLocation[2]
-        return (stylusX > gameBoardLocationX) and (stylusZ > gameBoardLocationZ) and (stylusX < (gameBoardLocationX + self.__realXLength)) and((stylusZ < (gameBoardLocationZ + self.__realZLength)))
+        return (stylusX < gameBoardLocationX) and (stylusZ > gameBoardLocationZ) and (stylusX > (gameBoardLocationX - self.__realXLength)) and((stylusZ < (gameBoardLocationZ + self.__realZLength)))
 
     def draw(self):
         x0 = self._screenLocation[0]
@@ -99,7 +107,6 @@ class Button(UiCanvasElement):
 class Text(UiCanvasElement):
     def __init__(self, elementId, screenLocation, screen, fontSize=None, anchor=None):
         super().__init__(elementId=elementId,
-                         gameBoardLocation=None,
                          screenLocation=screenLocation,
                          screen=screen)
         self.__fontSize = fontSize
@@ -116,7 +123,6 @@ class Text(UiCanvasElement):
 class PastedImage(UiCanvasElement):
     def __init__(self, elementId, screenLocation, screen):
         super().__init__(elementId=elementId,
-                         gameBoardLocation=None,
                          screenLocation=screenLocation,
                          screen=screen)
 

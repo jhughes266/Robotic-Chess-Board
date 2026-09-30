@@ -35,21 +35,15 @@ class YesNoCanvas(UiCanvas):
     def __init__(self, screen):
         super().__init__(screen)
         self.yesButton = Button(elementId="yesButton",
-                                gameBoardLocation=[0, 0, 0],
                                 screenLocation=(0, 51),
                                 screen=screen,
-                                realXLength=80,
-                                realZLength=160,
                                 pixelHeight=13,
                                 pixelWidth=64,
                                 textElement="YES")
 
         self.noButton = Button(elementId="noButton",
-                               gameBoardLocation=[80, 0, 0],
                                screenLocation=(64, 51),
                                screen=screen,
-                               realXLength=80,
-                               realZLength=160,
                                pixelHeight=13,
                                pixelWidth=64,
                                textElement="NO")
@@ -67,21 +61,15 @@ class GameEntryCanvas(UiCanvas):
     def __init__(self, screen):
         super().__init__(screen)
         self.quitButton = Button(elementId="quitButton",
-                                 gameBoardLocation=[0,0,0],
                                  screenLocation=(0,32),
                                  screen=screen,
-                                 realXLength=80,
-                                 realZLength=240,
                                  pixelHeight=32,
                                  pixelWidth=128,
                                  textElement="QUIT")
         
         self.startButton = Button(elementId="startButton",
-                                  gameBoardLocation=[80,0,0],
                                   screenLocation=(0,0),
                                   screen=screen,
-                                  realXLength=80,
-                                  realZLength=240,
                                   pixelHeight=32,
                                   pixelWidth=128,
                                   textElement="START")
@@ -95,77 +83,56 @@ class DifficultySelectCanvas(UiCanvas):
         super().__init__(screen)
         difficultyButtonFontSize = 14
         self.difficulty1Button = Button(elementId="difficulty1",
-                                        gameBoardLocation=[106.66, 0, 0],
                                         screenLocation=(0,0),
                                         screen=screen,
-                                        realXLength=53.33,
-                                        realZLength=53.33,
                                         pixelHeight=21,
                                         pixelWidth=21,
                                         textElement="1",
                                         fontSize=difficultyButtonFontSize)
 
         self.difficulty2Button = Button(elementId="difficulty2",
-                                        gameBoardLocation=[106.66, 0, 53.33],
                                         screenLocation=(21,0),
                                         screen=screen,
-                                        realXLength=53.33,
-                                        realZLength=53.33,
                                         pixelHeight=21,
                                         pixelWidth=21,
                                         textElement="2",
                                         fontSize=difficultyButtonFontSize)
 
         self.difficulty3Button = Button(elementId="difficulty3",
-                                        gameBoardLocation=[53.33, 0, 0],
                                         screenLocation=(0,21),
                                         screen=screen,
-                                        realXLength=53.33,
-                                        realZLength=53.33,
                                         pixelHeight=21,
                                         pixelWidth=21,
                                         textElement="3",
                                         fontSize=difficultyButtonFontSize)
 
         self.difficulty4Button = Button(elementId="difficulty4",
-                                        gameBoardLocation=[53.33, 0, 53.33],
                                         screenLocation=(21,21),
                                         screen=screen,
-                                        realXLength=53.33,
-                                        realZLength=53.33,
                                         pixelHeight=21,
                                         pixelWidth=21,
                                         textElement="4",
                                         fontSize=difficultyButtonFontSize)
 
         self.difficulty5Button = Button(elementId="difficulty5",
-                                        gameBoardLocation=[0, 0, 0],
                                         screenLocation=(0,42),
                                         screen=screen,
-                                        realXLength=53.33,
-                                        realZLength=53.33,
                                         pixelHeight=21,
                                         pixelWidth=21,
                                         textElement="5",
                                         fontSize=difficultyButtonFontSize)
 
         self.difficulty6Button = Button(elementId="difficulty6",
-                                        gameBoardLocation=[0, 0, 53.33],
                                         screenLocation=(21,42),
                                         screen=screen,
-                                        realXLength=53.33,
-                                        realZLength=53.33,
                                         pixelHeight=21,
                                         pixelWidth=21,
                                         textElement="6",
                                         fontSize=difficultyButtonFontSize)
 
         self.confirmButton = Button(elementId="confirm",
-                                    gameBoardLocation=[0, 0, 120],
                                     screenLocation=(64,46),
                                     screen=screen,
-                                    realXLength=53.33,
-                                    realZLength=120,
                                     pixelHeight=17,
                                     pixelWidth=64,
                                     textElement="CONFIRM")
@@ -212,21 +179,15 @@ class MoveSelectCanvas(UiCanvas):
         self.__chessBoardButtonArray = self.__constructChessBoardButtonArray()
         self.__fileAndRankTextArray = self.__constructFileAndRankTextArray()
         self.confirmButton = Button(elementId="confirmButton",
-                                    gameBoardLocation=[120,0,180],
                                     screenLocation=(77,5),
                                     screen=screen,
-                                    realXLength=40,
-                                    realZLength=70,
                                     pixelHeight=15,
                                     pixelWidth=50,
                                     textElement="Confirm")
         
         self.resetButton = Button(elementId="resetButton",
-                                  gameBoardLocation=[0,0,180],
                                   screenLocation=(77,48),
                                   screen=screen,
-                                  realXLength=40,
-                                  realZLength=70,
                                   pixelHeight=15,
                                   pixelWidth=50,
                                   textElement="Reset")
@@ -245,29 +206,28 @@ class MoveSelectCanvas(UiCanvas):
     def __constructChessBoardButtonArray(self):
         chessBoardButtonArray = []
 
-        realSideLength = 20
         pixelSideLength = 8
+        lengthAfterOverLap = pixelSideLength - 1
+
         screenPixelHeight = 64
         xPixelOffsetFromBottomLeft = 0
         yPixelOffsetFromBottomLeft = 0
         fill = 0
-        for zIdx, file in enumerate(self.__files):
-            for xIdx, rank in enumerate(self.__ranks):
-                lengthAfterOverLap = pixelSideLength - 1
-                xScreenLocation = zIdx * (lengthAfterOverLap)
-                yScreenLocatioj = (screenPixelHeight - pixelSideLength) - (xIdx * lengthAfterOverLap)
+        for xIdx, file in enumerate(self.__files):
+            for yIdx, rank in enumerate(self.__ranks):
+                xScreenLocation = xIdx * (lengthAfterOverLap)
+                yScreenLocation = (screenPixelHeight - pixelSideLength) - (yIdx * lengthAfterOverLap)
                 xScreenLocation += xPixelOffsetFromBottomLeft
-                yScreenLocatioj += yPixelOffsetFromBottomLeft
+                yScreenLocation += yPixelOffsetFromBottomLeft
+                
                 button = Button(elementId=file+rank,
-                                gameBoardLocation=[0+xIdx*realSideLength, 0, 0+zIdx*realSideLength],
-                                screenLocation=(xScreenLocation, yScreenLocatioj),
+                                screenLocation=(xScreenLocation, yScreenLocation),
                                 screen=self._screen,
-                                realXLength=realSideLength,
-                                realZLength=realSideLength,
                                 pixelHeight=pixelSideLength,
                                 pixelWidth=pixelSideLength,
                                 textElement="",
                                 fill=fill)
+                
                 chessBoardButtonArray.append(button)
                 #alternate the fill each time to get the checkerboard pattern
                 fill = int(not(fill))
@@ -301,10 +261,11 @@ class MoveSelectCanvas(UiCanvas):
 
 
     def findClickedSquare(self, stylusGameBoardLocation):
+        clickedSquare = None
         for button in self.__chessBoardButtonArray:
             if button.isClicked(stylusGameBoardLocation):
-                return button.elementId
-        return None
+                clickedSquare = button.elementId
+        return clickedSquare
 
     def draw(self, move="  ->  ", info=""):
         for button in self.__chessBoardButtonArray:
@@ -323,51 +284,36 @@ class GameModeCanvas(UiCanvas):
     def __init__(self, screen):
         super().__init__(screen)
         self.mode1Button = Button(elementId="mode1",
-                                  gameBoardLocation=[80, 0, 0],
                                   screenLocation=(0,0),
                                   screen=screen,
-                                  realXLength=80,
-                                  realZLength=80,
                                   pixelHeight=32,
                                   pixelWidth=32,
                                   textElement="1")
 
         self.mode2Button = Button(elementId="mode2",
-                                  gameBoardLocation=[80, 0, 80],
                                   screenLocation=(32,0),
                                   screen=screen,
-                                  realXLength=80,
-                                  realZLength=80,
                                   pixelHeight=32,
                                   pixelWidth=32,
                                   textElement="2")
 
         self.mode3Button = Button(elementId="mode3",
-                                  gameBoardLocation=[0, 0, 0],
                                   screenLocation=(0,32),
                                   screen=screen,
-                                  realXLength=80,
-                                  realZLength=80,
                                   pixelHeight=32,
                                   pixelWidth=32,
                                   textElement="3")
 
         self.mode4Button = Button(elementId="mode4",
-                                  gameBoardLocation=[0, 0, 0],
                                   screenLocation=(32,32),
                                   screen=screen,
-                                  realXLength=80,
-                                  realZLength=80,
                                   pixelHeight=32,
                                   pixelWidth=32,
                                   textElement="4")
 
         self.confirmButton = Button(elementId="confirm",
-                                    gameBoardLocation=[0, 0, 170],
                                     screenLocation=(65,40),
                                     screen=screen,
-                                    realXLength=53.33,
-                                    realZLength=70,
                                     pixelHeight=19,
                                     pixelWidth=62,
                                     textElement="Confirm")

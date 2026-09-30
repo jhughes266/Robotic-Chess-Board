@@ -145,7 +145,7 @@ class StylusUserInterface(UserInterface):
 
             if self.__yesNoCanvas.yesButton.isClicked(stylusGameBoardLocation):
                 pass#return "YES"
-            elif self.__yesNoCanvas.noButton.isClicked(stylusGameBoardLocation):
+            if self.__yesNoCanvas.noButton.isClicked(stylusGameBoardLocation):
                 pass#return "NO"
             self.__yesNoCanvas.draw(yesNoQuestion)
 
@@ -159,19 +159,21 @@ class StylusUserInterface(UserInterface):
 
             if self.__difficultySelectCanvas.difficulty1Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '1'
-            elif self.__difficultySelectCanvas.difficulty2Button.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.difficulty2Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '2'
-            elif self.__difficultySelectCanvas.difficulty3Button.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.difficulty3Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '3'
-            elif self.__difficultySelectCanvas.difficulty4Button.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.difficulty4Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '4'
-            elif self.__difficultySelectCanvas.difficulty5Button.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.difficulty5Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '5'
-            elif self.__difficultySelectCanvas.difficulty6Button.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.difficulty6Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '6'
-            elif self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
                 return difficultySelected
             
+            if stylusGameBoardLocation is not None:
+                self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation)
             self.__difficultySelectCanvas.draw(difficultySelected)
         
     
@@ -196,15 +198,19 @@ class StylusUserInterface(UserInterface):
 
             if self.__gameModeCanvas.mode1Button.isClicked(stylusGameBoardLocation):
                 modeSelected = '1'
-            elif self.__gameModeCanvas.mode2Button.isClicked(stylusGameBoardLocation):
+            if self.__gameModeCanvas.mode2Button.isClicked(stylusGameBoardLocation):
                 modeSelected = '2'
-            elif self.__gameModeCanvas.mode3Button.isClicked(stylusGameBoardLocation):
+            if self.__gameModeCanvas.mode3Button.isClicked(stylusGameBoardLocation):
                 modeSelected = '3'
-            elif self.__gameModeCanvas.mode4Button.isClicked(stylusGameBoardLocation):
+            if self.__gameModeCanvas.mode4Button.isClicked(stylusGameBoardLocation):
                 modeSelected = '4'
-            elif self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+            if self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
                 return modeSelected
+            
             self.__gameModeCanvas.draw()
+            if stylusGameBoardLocation is not None:
+                self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation)
+            self.__gameModeCanvas.display()
 
         
 
