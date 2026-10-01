@@ -99,37 +99,53 @@ class StylusUserInterface(UserInterface):
     def getMoveFromUser(self):
         originSquare = None
         destinationSquare = None
+        selectedSquare = None
         selectedSquareList = []
+        confirmButtonText = "Confirm\nOrigin"
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+            
             stylusGameBoardLocation = self.__getStylusInfo()
-            if self.__moveSelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
-                if originSquare is not None and destinationSquare is not None:
-                    return originSquare + destinationSquare
-                else:
-                    print("Please Select a destination and an origin!")
-                
+            
             if self.__moveSelectCanvas.resetButton.isClicked(stylusGameBoardLocation):
                 originSquare = None
                 destinationSquare = None
-                print("Selection Reset!")
-
+                selectedSquare = None
+                selectedSquareList = []
+                confirmButtonText = "Confirm\nOrigin"
+                
+                
             candidateSquare = self.__moveSelectCanvas.findClickedSquare(stylusGameBoardLocation)
             if candidateSquare is not None:
-                selectedSquareList.append(candidateSquare)
-            elif candidateSquare is None and len(selectedSquareList) > 0:
+                if len(selectedSquareList) < 5:
+                    selectedSquareList.append(candidateSquare)
+                else:
+                    selectedSquareList.pop(0)
+                    selectedSquareList.append(candidateSquare)
+                    
                 selectedSquare = mode(selectedSquareList)
+            else:
                 selectedSquareList = []
+
+ 
+                    
+            if self.__moveSelectCanvas.confirmButton.isClicked(stylusGameBoardLocation) and selectedSquare is not None:
                 
                 if originSquare is None:
                     originSquare = selectedSquare
-                    print(f"origin is : {originSquare}")
-                elif originSquare is not None:
+                    selectedSquareList = []
+                    selectedSquare = None
+                    confirmButtonText = "Confirm\nMove"
+                else:
                     destinationSquare = selectedSquare
-                    print(f"destination is : {destinationSquare}")
+                    return originSquare + destinationSquare
+                    
             
-            self.__moveSelectCanvas.draw()
+            self.__moveSelectCanvas.draw(confirmButtonOverideText=confirmButtonText,
+                                         selectedSquare=selectedSquare,
+                                         originSquare=originSquare,
+                                         destinationSquare=destinationSquare)
             if stylusGameBoardLocation is not None:
                 self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation)
             self.__moveSelectCanvas.display()
@@ -218,6 +234,6 @@ screen = PillowComputerScreen()
 screen.setUp()
 stylusUserInterface = StylusUserInterface(boardManager=None, screen=screen)
 stylusUserInterface.prepareForUserInput()
-stylusUserInterface.getMoveFromUser()
+print(stylusUserInterface.getMoveFromUser())
 stylusUserInterface.finishedWithUserInput()
 screen.tearDown()

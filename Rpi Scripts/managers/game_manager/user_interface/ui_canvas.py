@@ -179,29 +179,35 @@ class MoveSelectCanvas(UiCanvas):
         self.__chessBoardButtonArray = self.__constructChessBoardButtonArray()
         self.__fileAndRankTextArray = self.__constructFileAndRankTextArray()
         self.confirmButton = Button(elementId="confirmButton",
-                                    screenLocation=(77,5),
+                                    screenLocation=(77,1),
                                     screen=screen,
-                                    pixelHeight=15,
+                                    pixelHeight=29,
                                     pixelWidth=50,
                                     textElement="Confirm")
         
         self.resetButton = Button(elementId="resetButton",
-                                  screenLocation=(77,48),
+                                  screenLocation=(77,49),
                                   screen=screen,
                                   pixelHeight=15,
                                   pixelWidth=50,
                                   textElement="Reset")
 
         self.moveSelectInfoText = Text(elementId="Move Selection Info",
-                                       screenLocation=(100, 28),
+                                       screenLocation=(100, 39),
                                        screen=screen,
                                        anchor="mm")
-
-        self.generaInfoText = Text(elementId="General Info",
-                                   screenLocation=(100, 41),
-                                   screen=screen,
-                                   fontSize=9,
-                                   anchor="mm")
+        
+        self.originFlashingRectangle = FlashingRectangle(elementId="Origin Select",
+                                                         screen=screen,
+                                                         screenLocation=(82, 31),
+                                                         pixelHeight=17,
+                                                         pixelWidth=17)
+        
+        self.destinationFlashingRectangle = FlashingRectangle(elementId="Destination Select",
+                                                              screen=screen,
+                                                              screenLocation=(105, 31),
+                                                              pixelHeight=17,
+                                                              pixelWidth=17)
         
     def __constructChessBoardButtonArray(self):
         chessBoardButtonArray = []
@@ -267,7 +273,7 @@ class MoveSelectCanvas(UiCanvas):
                 clickedSquare = button.elementId
         return clickedSquare
 
-    def draw(self, move="  ->  ", info=""):
+    def draw(self, confirmButtonOverideText, selectedSquare, originSquare, destinationSquare, info=""):
         for button in self.__chessBoardButtonArray:
             button.draw()
 
@@ -275,10 +281,26 @@ class MoveSelectCanvas(UiCanvas):
             text.draw()
 
 
-        self.confirmButton.draw()
+        self.confirmButton.draw(textOveride=confirmButtonOverideText)
         self.resetButton.draw()
+        
+        move = "         ->   "
+        if selectedSquare is not None:
+            if originSquare is None:
+                move = selectedSquare + "   ->  "
+            else:
+                move = originSquare + " -> " + selectedSquare
+        elif originSquare is not None:
+             move = originSquare + " ->        "
+            
+            
+        if originSquare is None:
+            self.originFlashingRectangle.draw()
+        else:
+            self.destinationFlashingRectangle.draw()
+        
         self.moveSelectInfoText.draw(move)
-        self.generaInfoText.draw(info)
+
 
 class GameModeCanvas(UiCanvas):
     def __init__(self, screen):
