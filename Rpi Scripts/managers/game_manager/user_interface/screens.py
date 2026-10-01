@@ -54,10 +54,12 @@ class PillowComputerScreens(Screens):
         if len(displayScreen) == 2:
             drawList.append(self.__drawWhite)
             drawList.append(self.__drawBlack)
-        elif displayScreen[0] == "White":
+        elif displayScreen[0] == "white":
             drawList.append(self.__drawWhite)
-        elif displayScreen[0] == "Black":
+        elif displayScreen[0] == "black":
             drawList.append(self.__drawBlack)
+        else:
+            assert True, "THERE IS SOMETHING WRONG WITH THE SCREEN NAMING! IT MUST BE IN LIST FORM AND EITHER 'white' or 'black' or both in seperate elements!"
         
         
         return drawList
@@ -67,10 +69,12 @@ class PillowComputerScreens(Screens):
         if len(displayScreen) == 2:
             imageList.append(self.__imageWhite)
             imageList.append(self.__imageBlack)
-        elif displayScreen[0] == "White":
+        elif displayScreen[0] == "white":
             imageList.append(self.__imageWhite)
-        elif displayScreen[0] == "Black":
+        elif displayScreen[0] == "black":
             imageList.append(self.__imageBlack)
+        else:
+            assert True, "THERE IS SOMETHING WRONG WITH THE SCREEN NAMING! IT MUST BE IN LIST FORM AND EITHER 'white' or 'black' or both in seperate elements!"
         
         return imageList
     

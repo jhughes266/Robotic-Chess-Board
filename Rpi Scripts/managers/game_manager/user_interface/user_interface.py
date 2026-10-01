@@ -9,7 +9,7 @@ import os
 class UserInterface(ABC):
     def __init__(self, boardManager):
         self._boardManager = boardManager
-        self._chessColourAsText = ['Black', 'White']
+        #self._chessColourAsText = ['Black', 'White']
     
     def prepareForUserInput(self):
         pass
@@ -248,22 +248,22 @@ screens.setUp()
 stylusUserInterface = StylusUserInterface(boardManager=None, screens=screens)
 stylusUserInterface.prepareForUserInput()
 print("Get move from user")
-stylusUserInterface.getMoveFromUser(displayScreen=["Black"])
+stylusUserInterface.getMoveFromUser(displayScreen=["black"])
 time.sleep(5)
 print("Display text")
-stylusUserInterface.displayText(displayScreen=["White", "Black"], text="Hello\nWorld")
+stylusUserInterface.displayText(displayScreen=["white", "black"], text="Hello\nWorld")
 time.sleep(5)
 print("Yes no question")
-stylusUserInterface.yesOrNoQuestion(displayScreen=[ "Black"], question="Test\nquestion?")
+stylusUserInterface.yesOrNoQuestion(displayScreen=[ "black"], question="Test\nquestion?")
 time.sleep(5)
 print("Get difficulty")
-stylusUserInterface.getDifficultyFromUser(displayScreen=["Black"])
+stylusUserInterface.getDifficultyFromUser(displayScreen=["black"])
 time.sleep(5)
 print("Game entry")
-stylusUserInterface.gameEntryPrompt(displayScreen=["Black"])
+stylusUserInterface.gameEntryPrompt(displayScreen=["black"])
 time.sleep(5)
 print("Game mode from user")
-stylusUserInterface.getGameModeFromUser(displayScreen=["Black"])
+stylusUserInterface.getGameModeFromUser(displayScreen=["black"])
 
 stylusUserInterface.finishedWithUserInput()
 screens.tearDown()
