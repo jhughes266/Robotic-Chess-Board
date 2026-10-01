@@ -334,57 +334,28 @@ class GameModeCanvas(UiCanvas):
                                   textElement="4")
 
         self.confirmButton = Button(elementId="confirm",
-                                    screenLocation=(65,40),
+                                    screenLocation=(70,40),
                                     screen=screen,
                                     pixelHeight=19,
-                                    pixelWidth=62,
+                                    pixelWidth=52,
                                     textElement="Confirm")
 
         self.currentGameModeText = Text(elementId="currentGameMode",
                                         screenLocation=(65, 0),
                                         screen=self._screen,
                                         fontSize=9)
+        self.__gameModeNumberToText = {
+            "1" : "White human\nvs\nBlack robot",
+            "2" : "Black human\nvs\nWhite robot",
+            "3" : "Human\nvs\nHuman",
+            "4" : "Robot\nvs\nRobot" 
+            }
 
-    def draw(self):
+    def draw(self, mode):
         self.mode1Button.draw()
         self.mode2Button.draw()
         self.mode3Button.draw()
         self.mode4Button.draw()
         self.confirmButton.draw()
-        self.currentGameModeText.draw("White Human\nvs\nBlack Robot")
-"""
-difficulty = 1
-while True:
-    testScreen = PillowComputerScreen()
-    print("Text Message Canvas")
-    textMessageCanvas = TextMessageCanvas(screen=testScreen)
-    textMessageCanvas.draw("Hello World!Hello World!\nHello World!Hello World!\nHello World!Hello World!")
-    if cv2.waitKey(0) & 0xFF == ord('q'):
-        break
-    print("Yes No Canvas")
-    yesNoCanvas = YesNoCanvas(screen=testScreen)
-    yesNoCanvas.draw("Yes no question?")
-    if cv2.waitKey(0) & 0xFF == ord('q'):
-        break
-    print("Game Entry Canvas")
-    gameEntryCanvas = GameEntryCanvas(screen=testScreen)
-    gameEntryCanvas.draw()
-    if cv2.waitKey(0) & 0xFF == ord('q'):
-        break
-    print("Difficulty Select Canvas")
-    difficultySelectCanvas = DifficultySelectCanvas(screen=testScreen)
-    difficultySelectCanvas.draw(str(difficulty))
-    if cv2.waitKey(0) & 0xFF == ord('q'):
-        break
-    print("Move Select Canvas")
-    moveSelectCanvas = MoveSelectCanvas(screen=testScreen)
-    moveSelectCanvas.draw(info="Enter Start")
-    if cv2.waitKey(0) & 0xFF == ord('q'):
-        break
-    print("Game Mode Canvas")
-    gameModeCanvas = GameModeCanvas(screen=testScreen)
-    gameModeCanvas.draw()
-    difficulty += 1
-testScreen.tearDown()
-"""
+        self.currentGameModeText.draw(self.__gameModeNumberToText[mode])
 

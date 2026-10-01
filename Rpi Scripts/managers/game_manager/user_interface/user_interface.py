@@ -152,6 +152,7 @@ class StylusUserInterface(UserInterface):
 
     def displayText(self, text):
         self.__textMessageCanvas.draw(text=text)
+        self.__textMessageCanvas.display()
 
     def yesOrNoQuestion(self, yesNoQuestion):
         while True:
@@ -160,10 +161,14 @@ class StylusUserInterface(UserInterface):
             stylusGameBoardLocation = self.__getStylusInfo()
 
             if self.__yesNoCanvas.yesButton.isClicked(stylusGameBoardLocation):
-                pass#return "YES"
+                return "YES"
             if self.__yesNoCanvas.noButton.isClicked(stylusGameBoardLocation):
-                pass#return "NO"
+                return "NO"
+            
             self.__yesNoCanvas.draw(yesNoQuestion)
+            if stylusGameBoardLocation is not None:
+                self.__yesNoCanvas.drawMouse(stylusGameBoardLocation)
+            self.__yesNoCanvas.display()
 
     def getDifficultyFromUser(self):
         
@@ -188,10 +193,11 @@ class StylusUserInterface(UserInterface):
             if self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
                 return difficultySelected
             
-            if stylusGameBoardLocation is not None:
-                self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation)
+            
             self.__difficultySelectCanvas.draw(difficultySelected)
-        
+            if stylusGameBoardLocation is not None:
+                self.__difficultySelectCanvas.drawMouse(stylusGameBoardLocation)
+            self.__difficultySelectCanvas.display()
     
     def gameEntryPrompt(self):
 
@@ -204,6 +210,11 @@ class StylusUserInterface(UserInterface):
                 return 1
             elif self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
                 return 0
+            
+            self.__gameEntryCanvas.draw()
+            if stylusGameBoardLocation is not None:
+                self.__gameEntryCanvas.drawMouse(stylusGameBoardLocation)
+            self.__gameEntryCanvas.display()
 
     def getGameModeFromUser(self):
         modeSelected = '1'
@@ -223,7 +234,7 @@ class StylusUserInterface(UserInterface):
             if self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
                 return modeSelected
             
-            self.__gameModeCanvas.draw()
+            self.__gameModeCanvas.draw(mode=modeSelected)
             if stylusGameBoardLocation is not None:
                 self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation)
             self.__gameModeCanvas.display()
@@ -234,6 +245,6 @@ screen = PillowComputerScreen()
 screen.setUp()
 stylusUserInterface = StylusUserInterface(boardManager=None, screen=screen)
 stylusUserInterface.prepareForUserInput()
-print(stylusUserInterface.getMoveFromUser())
+stylusUserInterface.getGameModeFromUser()
 stylusUserInterface.finishedWithUserInput()
 screen.tearDown()
