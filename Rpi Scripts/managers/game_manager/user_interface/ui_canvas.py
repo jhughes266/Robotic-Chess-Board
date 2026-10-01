@@ -14,11 +14,11 @@ class UiCanvas(ABC):
     def draw(self):
         pass
     
-    def display(self):
-        self._screens.display()
+    def display(self,displayScreen):
+        self._screens.display(displayScreen=displayScreen)
     
-    def drawMouse(self, stylusGameBoardLocation):
-        self.mouse.draw(stylusGameBoardLocation)
+    def drawMouse(self, stylusGameBoardLocation, displayScreen):
+        self.mouse.draw(stylusGameBoardLocation, displayScreen=displayScreen)
 
 class TextMessageCanvas(UiCanvas):
     def __init__(self, screens):
@@ -28,8 +28,8 @@ class TextMessageCanvas(UiCanvas):
                          screens=self._screens,
                          fontSize=10)
 
-    def draw(self, text=None):
-        self.text.draw(text)
+    def draw(self, displayScreen, text=None):
+        self.text.draw(displayScreen=displayScreen, text=text)
 
 class YesNoCanvas(UiCanvas):
     def __init__(self, screens):
@@ -52,10 +52,10 @@ class YesNoCanvas(UiCanvas):
                          screenLocation=(0, 0),
                          screens=self._screens)
 
-    def draw(self, yesNoQuestion=None):
-        self.yesButton.draw()
-        self.noButton.draw()
-        self.text.draw(text=yesNoQuestion)
+    def draw(self, displayScreen, yesNoQuestion=None):
+        self.yesButton.draw(displayScreen=displayScreen)
+        self.noButton.draw(displayScreen=displayScreen)
+        self.text.draw(displayScreen=displayScreen, text=yesNoQuestion)
 
 class GameEntryCanvas(UiCanvas):
     def __init__(self, screens):
@@ -74,9 +74,9 @@ class GameEntryCanvas(UiCanvas):
                                   pixelWidth=128,
                                   textElement="START")
 
-    def draw(self):
-        self.quitButton.draw()
-        self.startButton.draw()
+    def draw(self, displayScreen):
+        self.quitButton.draw(displayScreen=displayScreen)
+        self.startButton.draw(displayScreen=displayScreen)
 
 class DifficultySelectCanvas(UiCanvas):
     def __init__(self, screens):
@@ -165,11 +165,11 @@ class DifficultySelectCanvas(UiCanvas):
         }
 
 
-    def draw(self, difficulty):
+    def draw(self, difficulty, displayScreen):
         for button in self.__buttonList:
-            button.draw()
-        self.currentDifficultyText.draw(difficulty)
-        self.difficultyImage.draw(self.__difficultyImages[difficulty])
+            button.draw(displayScreen=displayScreen)
+        self.currentDifficultyText.draw(displayScreen=displayScreen, text=difficulty)
+        self.difficultyImage.draw(self.__difficultyImages[difficulty], displayScreen=displayScreen)
 
 class MoveSelectCanvas(UiCanvas):
     def __init__(self, screens):
@@ -273,16 +273,16 @@ class MoveSelectCanvas(UiCanvas):
                 clickedSquare = button.elementId
         return clickedSquare
 
-    def draw(self, confirmButtonOverideText, selectedSquare, originSquare, destinationSquare, info=""):
+    def draw(self, confirmButtonOverideText, selectedSquare, originSquare, destinationSquare, displayScreen, info=""):
         for button in self.__chessBoardButtonArray:
-            button.draw()
+            button.draw(displayScreen=displayScreen)
 
         for text in self.__fileAndRankTextArray:
-            text.draw()
+            text.draw(displayScreen=displayScreen)
 
 
-        self.confirmButton.draw(textOveride=confirmButtonOverideText)
-        self.resetButton.draw()
+        self.confirmButton.draw(textOveride=confirmButtonOverideText, displayScreen=displayScreen)
+        self.resetButton.draw(displayScreen=displayScreen)
         
         move = "         ->   "
         if selectedSquare is not None:
@@ -295,11 +295,11 @@ class MoveSelectCanvas(UiCanvas):
             
             
         if originSquare is None:
-            self.originFlashingRectangle.draw()
+            self.originFlashingRectangle.draw(displayScreen=displayScreen)
         else:
-            self.destinationFlashingRectangle.draw()
+            self.destinationFlashingRectangle.draw(displayScreen=displayScreen)
         
-        self.moveSelectInfoText.draw(move)
+        self.moveSelectInfoText.draw(displayScreen=displayScreen, text=move)
 
 
 class GameModeCanvas(UiCanvas):
@@ -351,11 +351,11 @@ class GameModeCanvas(UiCanvas):
             "4" : "Robot\nvs\nRobot" 
             }
 
-    def draw(self, mode):
-        self.mode1Button.draw()
-        self.mode2Button.draw()
-        self.mode3Button.draw()
-        self.mode4Button.draw()
-        self.confirmButton.draw()
-        self.currentGameModeText.draw(self.__gameModeNumberToText[mode])
+    def draw(self, mode, displayScreen):
+        self.mode1Button.draw(displayScreen=displayScreen)
+        self.mode2Button.draw(displayScreen=displayScreen)
+        self.mode3Button.draw(displayScreen=displayScreen)
+        self.mode4Button.draw(displayScreen=displayScreen)
+        self.confirmButton.draw(displayScreen=displayScreen)
+        self.currentGameModeText.draw(displayScreen=displayScreen, text=self.__gameModeNumberToText[mode])
 

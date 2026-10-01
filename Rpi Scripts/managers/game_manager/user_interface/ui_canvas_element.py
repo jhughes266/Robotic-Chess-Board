@@ -36,9 +36,10 @@ class Mouse(UiCanvasElement):
     def __init__(self, elementId, screens):
         super().__init__(elementId, screenLocation=None, screens=screens)
     
-    def draw(self, stylusGameBoardLocation):
+    def draw(self, stylusGameBoardLocation, displayScreen):
         xScreen, yScreen = self._gameBoardLocationToScreen(stylusGameBoardLocation)
-        self._screens.drawMouse((xScreen, yScreen))
+        self._screens.drawMouse((xScreen, yScreen),
+                                displayScreen=displayScreen)
         
         
 class Button(UiCanvasElement):
@@ -77,7 +78,7 @@ class Button(UiCanvasElement):
         gameBoardLocationZ = self._gameBoardLocation[2]
         return (stylusX < gameBoardLocationX) and (stylusZ > gameBoardLocationZ) and (stylusX > (gameBoardLocationX - self.__realXLength)) and((stylusZ < (gameBoardLocationZ + self.__realZLength)))
 
-    def draw(self, textOveride=None):
+    def draw(self, displayScreen, textOveride=None):
         x0 = self._screenLocation[0]
         y0 = self._screenLocation[1]
         # Minus one takes into account that the x0 square is included
@@ -96,7 +97,8 @@ class Button(UiCanvasElement):
         self._screens.drawRectangle(xy=(x0, y0, x1, y1),
                                    fill=currentFill,
                                    outline=1,
-                                   width=1)
+                                   width=1,
+                                   displayScreen=displayScreen)
         buttonText = None
         if textOveride is not None:
             buttonText = textOveride
@@ -107,7 +109,8 @@ class Button(UiCanvasElement):
                               text=buttonText,
                               fill=int(not(currentFill)),
                               fontSize=self.__fontSize,
-                              anchor="mm")
+                              anchor="mm",
+                              displayScreen=displayScreen)
 
 class Text(UiCanvasElement):
     def __init__(self, elementId, screenLocation, screens, fontSize=None, anchor=None):
@@ -118,13 +121,14 @@ class Text(UiCanvasElement):
         self.__fontSize = fontSize
         self.__anchor = anchor
 
-    def draw(self, text=None):
+    def draw(self, displayScreen, text=None):
         if text is None:
             text = self.elementId
         self._screens.drawText(xy=self._screenLocation,
                               text=text,
                               fontSize=self.__fontSize,
-                              anchor=self.__anchor)
+                              anchor=self.__anchor,
+                              displayScreen=displayScreen)
         
 class FlashingRectangle(UiCanvasElement):
     def __init__(self, elementId, screens, screenLocation, pixelHeight, pixelWidth):
@@ -137,7 +141,7 @@ class FlashingRectangle(UiCanvasElement):
         self.__pixelWidth = pixelWidth
         self.__switchedOn = False
     
-    def draw(self):
+    def draw(self, displayScreen):
         x0 = self._screenLocation[0]
         y0 = self._screenLocation[1]
         # Minus one takes into account that the x0 square is included
@@ -147,7 +151,8 @@ class FlashingRectangle(UiCanvasElement):
         self._screens.drawRectangle(xy=(x0, y0, x1, y1),
                                    fill=0,
                                    outline=self.__switchedOn,
-                                   width=1)
+                                   width=1,
+                                   displayScreen=displayScreen)
         
         self.__switchedOn = not(self.__switchedOn)
         
@@ -159,6 +164,7 @@ class PastedImage(UiCanvasElement):
                          screenLocation=screenLocation,
                          screens=screens)
 
-    def draw(self, imageToPaste):
+    def draw(self, imageToPaste, displayScreen):
         self._screens.pasteImage(xy=self._screenLocation,
-                                imageToPaste=imageToPaste)
+                                imageToPaste=imageToPaste,
+                                displayScreen=displayScreen)
