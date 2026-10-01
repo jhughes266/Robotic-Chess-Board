@@ -3,12 +3,12 @@ from abc import ABC, abstractmethod
 
 
 class UiCanvasElement(ABC):
-    def __init__(self, elementId, screenLocation, screen):
+    def __init__(self, elementId, screenLocation, screens):
         self.elementId = elementId
         self._gameBoardLocation = None
         #(x,y)
         self._screenLocation = screenLocation
-        self._screen = screen
+        self._screens = screens
         self._pixPerMm = 0.35625
         # The +63 is the height of the screen (would be 64 but have to -1 because of zero based indexing)
         self._screenHeightPix = 63
@@ -33,19 +33,19 @@ class UiCanvasElement(ABC):
         return pixelLength * (1/self._pixPerMm)
 
 class Mouse(UiCanvasElement):
-    def __init__(self, elementId, screen):
-        super().__init__(elementId, screenLocation=None, screen=screen)
+    def __init__(self, elementId, screens):
+        super().__init__(elementId, screenLocation=None, screens=screens)
     
     def draw(self, stylusGameBoardLocation):
         xScreen, yScreen = self._gameBoardLocationToScreen(stylusGameBoardLocation)
-        self._screen.drawMouse((xScreen, yScreen))
+        self._screens.drawMouse((xScreen, yScreen))
         
         
 class Button(UiCanvasElement):
     __clickHeight = 60
     __clickResetHeight = 70
-    def __init__(self, elementId, screen, screenLocation, pixelHeight, pixelWidth, textElement, fontSize=None, fill=0):
-        super().__init__(elementId, screenLocation, screen)
+    def __init__(self, elementId, screens, screenLocation, pixelHeight, pixelWidth, textElement, fontSize=None, fill=0):
+        super().__init__(elementId, screenLocation, screens)
         self.__clicked = False
         self.__realXLength = self._pixelLengthToRealLength(pixelHeight)
         self.__realZLength = self._pixelLengthToRealLength(pixelWidth)
@@ -93,7 +93,7 @@ class Button(UiCanvasElement):
             self.__clickedFill = int(not(self.__clickedFill))
             currentFill = self.__clickedFill
 
-        self._screen.drawRectangle(xy=(x0, y0, x1, y1),
+        self._screens.drawRectangle(xy=(x0, y0, x1, y1),
                                    fill=currentFill,
                                    outline=1,
                                    width=1)
@@ -103,16 +103,16 @@ class Button(UiCanvasElement):
         else:
             buttonText = self.__textElement
 
-        self._screen.drawText(xy=(int((x0 + x1) / 2), int((y0 + y1) / 2)),
+        self._screens.drawText(xy=(int((x0 + x1) / 2), int((y0 + y1) / 2)),
                               text=buttonText,
                               fill=int(not(currentFill)),
                               fontSize=self.__fontSize,
                               anchor="mm")
 
 class Text(UiCanvasElement):
-    def __init__(self, elementId, screenLocation, screen, fontSize=None, anchor=None):
+    def __init__(self, elementId, screenLocation, screens, fontSize=None, anchor=None):
         super().__init__(elementId=elementId,
-                         screen=screen,
+                         screens=screens,
                          screenLocation=screenLocation,
                         )
         self.__fontSize = fontSize
@@ -121,15 +121,15 @@ class Text(UiCanvasElement):
     def draw(self, text=None):
         if text is None:
             text = self.elementId
-        self._screen.drawText(xy=self._screenLocation,
+        self._screens.drawText(xy=self._screenLocation,
                               text=text,
                               fontSize=self.__fontSize,
                               anchor=self.__anchor)
         
 class FlashingRectangle(UiCanvasElement):
-    def __init__(self, elementId, screen, screenLocation, pixelHeight, pixelWidth):
+    def __init__(self, elementId, screens, screenLocation, pixelHeight, pixelWidth):
         super().__init__(elementId=elementId,
-                         screen=screen,
+                         screens=screens,
                          screenLocation=screenLocation,
                          )
         
@@ -144,7 +144,7 @@ class FlashingRectangle(UiCanvasElement):
         x1 = x0 + self.__pixelWidth - 1
         y1 = y0 + self.__pixelHeight - 1
         
-        self._screen.drawRectangle(xy=(x0, y0, x1, y1),
+        self._screens.drawRectangle(xy=(x0, y0, x1, y1),
                                    fill=0,
                                    outline=self.__switchedOn,
                                    width=1)
@@ -154,11 +154,11 @@ class FlashingRectangle(UiCanvasElement):
 
 
 class PastedImage(UiCanvasElement):
-    def __init__(self, elementId, screenLocation, screen):
+    def __init__(self, elementId, screenLocation, screens):
         super().__init__(elementId=elementId,
                          screenLocation=screenLocation,
-                         screen=screen)
+                         screens=screens)
 
     def draw(self, imageToPaste):
-        self._screen.pasteImage(xy=self._screenLocation,
+        self._screens.pasteImage(xy=self._screenLocation,
                                 imageToPaste=imageToPaste)

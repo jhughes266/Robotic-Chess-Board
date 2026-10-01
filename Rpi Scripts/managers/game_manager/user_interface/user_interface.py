@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from managers.game_manager.user_interface.stylus_triangulation.stylus_triangulator import *
 from managers.game_manager.user_interface.ui_canvas import *
-from screen import *
+from screens import *
 import statistics
 from statistics import mode
+import time
 import os
 class UserInterface(ABC):
     def __init__(self, boardManager):
@@ -47,12 +48,12 @@ class TextUserInterface(UserInterface):
     def getMoveFromUser(self):
         return input("Please enter your move!: ")
 
-    def displayText(self, str):
-        print(str)
+    def displayText(self, text):
+        print(text)
 
-    def yesOrNoQuestion(self, str):
-        str += "\nEnter NO or YES:\nSelection: "
-        return input(str)
+    def yesOrNoQuestion(self, question):
+        question += "\nEnter NO or YES:\nSelection: "
+        return input(question)
 
     def getDifficultyFromUser(self):
         return input(f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within maximum search time!)\n(Please note that irrespective of the difficulty the game will search for at most the maximum search time.)\nSelection: ")
@@ -64,15 +65,15 @@ class TextUserInterface(UserInterface):
         return input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
 
 class StylusUserInterface(UserInterface):
-    def __init__(self, boardManager, screen):
+    def __init__(self, boardManager, screens):
         super().__init__(boardManager)
         self.__gameBoardOriginPositionInRealWorld = np.array([-42, -85, 216])
-        self.__moveSelectCanvas = MoveSelectCanvas(screen=screen)
-        self.__gameEntryCanvas = GameEntryCanvas(screen=screen)
-        self.__yesNoCanvas = YesNoCanvas(screen=screen)
-        self.__difficultySelectCanvas = DifficultySelectCanvas(screen=screen)
-        self.__gameModeCanvas = GameModeCanvas(screen=screen)
-        self.__textMessageCanvas = TextMessageCanvas(screen=screen)
+        self.__moveSelectCanvas = MoveSelectCanvas(screens=screens)
+        self.__gameEntryCanvas = GameEntryCanvas(screens=screens)
+        self.__yesNoCanvas = YesNoCanvas(screens=screens)
+        self.__difficultySelectCanvas = DifficultySelectCanvas(screens=screens)
+        self.__gameModeCanvas = GameModeCanvas(screens=screens)
+        self.__textMessageCanvas = TextMessageCanvas(screens=screens)
         
     def prepareForUserInput(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
@@ -154,7 +155,7 @@ class StylusUserInterface(UserInterface):
         self.__textMessageCanvas.draw(text=text)
         self.__textMessageCanvas.display()
 
-    def yesOrNoQuestion(self, yesNoQuestion):
+    def yesOrNoQuestion(self, question):
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -165,7 +166,7 @@ class StylusUserInterface(UserInterface):
             if self.__yesNoCanvas.noButton.isClicked(stylusGameBoardLocation):
                 return "NO"
             
-            self.__yesNoCanvas.draw(yesNoQuestion)
+            self.__yesNoCanvas.draw(question)
             if stylusGameBoardLocation is not None:
                 self.__yesNoCanvas.drawMouse(stylusGameBoardLocation)
             self.__yesNoCanvas.display()
@@ -241,10 +242,27 @@ class StylusUserInterface(UserInterface):
 
         
 
-screen = PillowComputerScreen()
-screen.setUp()
-stylusUserInterface = StylusUserInterface(boardManager=None, screen=screen)
+screens = PillowComputerScreens()
+screens.setUp()
+stylusUserInterface = StylusUserInterface(boardManager=None, screens=screens)
 stylusUserInterface.prepareForUserInput()
+print("Get move from user")
+stylusUserInterface.getMoveFromUser()
+time.sleep(5)
+print("Display text")
+stylusUserInterface.displayText(text="Hello\nWorld")
+time.sleep(5)
+print("Yes no question")
+stylusUserInterface.yesOrNoQuestion(question="Test\nquestion?")
+time.sleep(5)
+print("Get difficulty")
+stylusUserInterface.getDifficultyFromUser()
+time.sleep(5)
+print("Game entry")
+stylusUserInterface.gameEntryPrompt()
+time.sleep(5)
+print("Game mode from user")
 stylusUserInterface.getGameModeFromUser()
+
 stylusUserInterface.finishedWithUserInput()
-screen.tearDown()
+screens.tearDown()

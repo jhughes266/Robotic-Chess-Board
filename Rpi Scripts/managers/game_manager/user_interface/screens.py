@@ -5,7 +5,7 @@ import time
 import cv2
 import numpy as np
 
-class Screen(ABC):
+class Screens(ABC):
     @abstractmethod
     def setUp(self):
         pass
@@ -38,7 +38,7 @@ class Screen(ABC):
     def clearDisplay(self):
         pass
 
-class PillowComputerScreen(Screen):
+class PillowComputerScreens(Screens):
     def __init__(self):
         self.__screenWidth = 128
         self.__screenHeight = 64
