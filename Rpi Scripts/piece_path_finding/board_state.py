@@ -2,7 +2,6 @@ import copy
 import chess
 from piece_path_finding.action import Action
 
-
 class BoardState:
     """
     Stores the state of the board and all related functions for the board state that is stored inside the problem abstraction and used in the best first search algorithm. Furthermore, the board state is also utilized by the board manager classes.

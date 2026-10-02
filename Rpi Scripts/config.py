@@ -1,4 +1,4 @@
-# Can either be 'default' or 'console'
+# Can either be 'default' or 'board'
 GAME_LOCATION = "default"
 # Can either be 'default' or 'stylus'  
 USER_INTERFACE_TYPE = "stylus"

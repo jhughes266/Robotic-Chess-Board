@@ -1,9 +1,9 @@
+from config import *
 from abc import ABC, abstractmethod
-from PIL import Image, ImageDraw, ImageFont
-import os
-import time
-import cv2
 import numpy as np
+if USER_INTERFACE_TYPE == "stylus":
+    import cv2
+    from PIL import Image, ImageDraw
 
 class Screens(ABC):
     @abstractmethod

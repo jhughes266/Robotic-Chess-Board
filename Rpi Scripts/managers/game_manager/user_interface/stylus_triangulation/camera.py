@@ -1,6 +1,8 @@
+from config import *
 from abc import ABC, abstractmethod
-from picamera2 import Picamera2
-import cv2
+if USER_INTERFACE_TYPE == "stylus":
+    import cv2
+    from picamera2 import Picamera2
 
 
 class camera(ABC):

@@ -1,6 +1,8 @@
-import cv2
+from config import *
 import glob
 import numpy as np
+if USER_INTERFACE_TYPE == "stylus":
+    import cv2
 
 def calibrateCamera(cameraName,
                     chessBoardSize,

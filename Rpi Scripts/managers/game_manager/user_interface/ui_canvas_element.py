@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-
-
 class UiCanvasElement(ABC):
     def __init__(self, elementId, screenLocation, screens):
         self.elementId = elementId

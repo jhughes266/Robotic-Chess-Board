@@ -1,6 +1,5 @@
 from cmath import inf
 
-
 class SearchProgress:
     """
     This class is not essential but is used to track the progress of the search and determine the progress of the search.

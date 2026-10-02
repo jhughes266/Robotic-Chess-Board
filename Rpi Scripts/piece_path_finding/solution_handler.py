@@ -1,8 +1,3 @@
-import copy
-
-from piece_path_finding import action
-
-
 class SolutionHandler:
     """
     This class is responsible for handling the solution node.

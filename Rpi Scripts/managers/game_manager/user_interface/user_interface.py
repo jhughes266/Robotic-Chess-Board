@@ -2,10 +2,9 @@ from abc import ABC, abstractmethod
 from managers.game_manager.user_interface.stylus_triangulation.stylus_triangulator import *
 from managers.game_manager.user_interface.ui_canvas import *
 from screens import *
-import statistics
 from statistics import mode
 import time
-import os
+
 class UserInterface(ABC):
     def __init__(self):
         pass

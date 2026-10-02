@@ -1,8 +1,5 @@
-from unittest import result
-import math
-import random
 import chess
-import copy
+
 
 class Game:
     """

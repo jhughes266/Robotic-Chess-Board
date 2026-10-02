@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from PIL import Image, ImageDraw, ImageFont
 from managers.game_manager.user_interface.screens import *
 from managers.game_manager.user_interface.ui_canvas_element import *
-import numpy as np
 
 
 class UiCanvas(ABC):
