@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from managers.game_manager.user_interface.stylus_triangulation.stylus_triangulator import *
 from managers.game_manager.user_interface.ui_canvas import *
-from screens import *
+from managers.game_manager.user_interface.screens import *
 from statistics import mode
 import time
 
@@ -9,10 +9,10 @@ class UserInterface(ABC):
     def __init__(self):
         pass
     
-    def prepareForUserInput(self):
+    def finishedWithUserInput(self):
         pass
     
-    def finishedWithUserInput(self):
+    def setUp(self):
         pass
 
     def tearDown(self):
@@ -43,23 +43,23 @@ class UserInterface(ABC):
         pass
 
 class TextUserInterface(UserInterface):    
-    def getMoveFromUser(self):
+    def getMoveFromUser(self, displayScreen):
         return input("Please enter your move!: ")
 
-    def displayText(self, text):
+    def displayText(self, displayScreen, text):
         print(text)
 
-    def yesOrNoQuestion(self, question):
+    def yesOrNoQuestion(self, displayScreen, question):
         question += "\nEnter NO or YES:\nSelection: "
         return input(question)
 
-    def getDifficultyFromUser(self):
+    def getDifficultyFromUser(self, displayScreen):
         return input(f"Please select a difficulty from the following list:\n1: Very Easy (2 ply depth)\n2: Easy(3 ply depth)\n3: Medium (4 ply depth)\n4: Hard (5 ply depth)\n5: Very Hard (6 ply depth)\n6: Extreme (Will search to whatever depth it can within maximum search time!)\n(Please note that irrespective of the difficulty the game will search for at most the maximum search time.)\nSelection: ")
 
-    def gameEntryPrompt(self):
+    def gameEntryPrompt(self, displayScreen):
         return input("Enter 0 to quit the game or 1 to start the game!\nSelection: ")
 
-    def getGameModeFromUser(self):
+    def getGameModeFromUser(self, displayScreen):
         return input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
 
 class StylusUserInterface(UserInterface):
@@ -73,14 +73,11 @@ class StylusUserInterface(UserInterface):
         self.__gameModeCanvas = GameModeCanvas(screens=screens)
         self.__textMessageCanvas = TextMessageCanvas(screens=screens)
         
-    def prepareForUserInput(self):
+    def setUp(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
         bCam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
-        self.__triangulator = StylusTriangulator(aCamObj=aCam, bCamObj=bCam,resourcesPath="stylus_triangulation/resources", aCamType='usb', bCamType='csi')
+        self.__triangulator = StylusTriangulator(aCamObj=aCam, bCamObj=bCam,resourcesPath="managers/game_manager/user_interface/stylus_triangulation/resources", aCamType='usb', bCamType='csi')
         self.__triangulator.setUp()
-    
-    def finishedWithUserInput(self):
-        self.__triangulator.tearDown()
     
     def __getStylusInfo(self):
         stylusRealWorldLocation = self.__triangulator.run() 
@@ -93,7 +90,7 @@ class StylusUserInterface(UserInterface):
         return gameBoardLocation
 
     def tearDown(self):
-        pass
+        self.__triangulator.tearDown()
 
     def getMoveFromUser(self, displayScreen):
         originSquare = None
@@ -172,7 +169,7 @@ class StylusUserInterface(UserInterface):
 
     def getDifficultyFromUser(self, displayScreen):
         
-        difficultySelected = '1'
+        difficultySelected = None
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -190,7 +187,7 @@ class StylusUserInterface(UserInterface):
                 difficultySelected = '5'
             if self.__difficultySelectCanvas.difficulty6Button.isClicked(stylusGameBoardLocation):
                 difficultySelected = '6'
-            if self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+            if self.__difficultySelectCanvas.confirmButton.isClicked(stylusGameBoardLocation) and difficultySelected is not None:
                 return difficultySelected
             
             
@@ -207,9 +204,9 @@ class StylusUserInterface(UserInterface):
             stylusGameBoardLocation = self.__getStylusInfo()
 
             if self.__gameEntryCanvas.startButton.isClicked(stylusGameBoardLocation):
-                return 1
+                return '1'
             elif self.__gameEntryCanvas.quitButton.isClicked(stylusGameBoardLocation):
-                return 0
+                return '0'
             
             self.__gameEntryCanvas.draw(displayScreen=displayScreen)
             if stylusGameBoardLocation is not None:
@@ -217,12 +214,12 @@ class StylusUserInterface(UserInterface):
             self.__gameEntryCanvas.display(displayScreen=displayScreen)
 
     def getGameModeFromUser(self, displayScreen):
-        modeSelected = '1'
+        modeSelected = None
         while True:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
             stylusGameBoardLocation = self.__getStylusInfo()
-
+            
             if self.__gameModeCanvas.mode1Button.isClicked(stylusGameBoardLocation):
                 modeSelected = '1'
             if self.__gameModeCanvas.mode2Button.isClicked(stylusGameBoardLocation):
@@ -231,7 +228,7 @@ class StylusUserInterface(UserInterface):
                 modeSelected = '3'
             if self.__gameModeCanvas.mode4Button.isClicked(stylusGameBoardLocation):
                 modeSelected = '4'
-            if self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation):
+            if self.__gameModeCanvas.confirmButton.isClicked(stylusGameBoardLocation) and modeSelected is not None:
                 return modeSelected
             
             self.__gameModeCanvas.draw(mode=modeSelected, displayScreen=displayScreen)
@@ -240,7 +237,7 @@ class StylusUserInterface(UserInterface):
             self.__gameModeCanvas.display(displayScreen=displayScreen)
 
         
-
+"""
 screens = PillowComputerScreens()
 screens.setUp()
 stylusUserInterface = StylusUserInterface(boardManager=None, screens=screens)
@@ -265,3 +262,4 @@ stylusUserInterface.getGameModeFromUser(displayScreen=["white"])
 
 stylusUserInterface.finishedWithUserInput()
 screens.tearDown()
+"""

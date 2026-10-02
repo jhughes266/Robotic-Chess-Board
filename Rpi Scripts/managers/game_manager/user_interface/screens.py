@@ -1,5 +1,6 @@
 from config import *
 from abc import ABC, abstractmethod
+import chess
 import numpy as np
 if USER_INTERFACE_TYPE == "stylus":
     import cv2
@@ -48,18 +49,23 @@ class PillowComputerScreens(Screens):
         
         self.__imageBlack = Image.new("1", (self.__screenWidth, self.__screenHeight), (0))
         self.__drawBlack = ImageDraw.Draw(self.__imageBlack)
+        
+        self._chessColourAsString = {
+            1:"white",
+            0:"black"
+            }
     
     def __getDrawList(self, displayScreen):
         drawList = []
         if len(displayScreen) == 2:
             drawList.append(self.__drawWhite)
             drawList.append(self.__drawBlack)
-        elif displayScreen[0] == "white":
+        elif displayScreen[0] == chess.WHITE:
             drawList.append(self.__drawWhite)
-        elif displayScreen[0] == "black":
+        elif displayScreen[0] == chess.BLACK:
             drawList.append(self.__drawBlack)
         else:
-            assert True, "THERE IS SOMETHING WRONG WITH THE SCREEN NAMING! IT MUST BE IN LIST FORM AND EITHER 'white' or 'black' or both in seperate elements!"
+            assert True, "THERE IS SOMETHING WRONG WITH THE SCREEN NAMING! IT MUST BE IN LIST FORM AND EITHER chess.WHITE or chess.BLACK or both in seperate elements!"
         
         
         return drawList
@@ -69,12 +75,12 @@ class PillowComputerScreens(Screens):
         if len(displayScreen) == 2:
             imageList.append(self.__imageWhite)
             imageList.append(self.__imageBlack)
-        elif displayScreen[0] == "white":
+        elif displayScreen[0] == chess.WHITE:
             imageList.append(self.__imageWhite)
-        elif displayScreen[0] == "black":
+        elif displayScreen[0] == chess.BLACK:
             imageList.append(self.__imageBlack)
         else:
-            assert True, "THERE IS SOMETHING WRONG WITH THE SCREEN NAMING! IT MUST BE IN LIST FORM AND EITHER 'white' or 'black' or both in seperate elements!"
+            assert True, "THERE IS SOMETHING WRONG WITH THE SCREEN NAMING! IT MUST BE IN LIST FORM AND EITHER chess.WHITE or chess.BLACK or both in seperate elements!"
         
         return imageList
     
@@ -116,7 +122,7 @@ class PillowComputerScreens(Screens):
         for screen, image in zip(displayScreen, self.__getImageList(displayScreen=displayScreen)):
             npArray = np.array(image, dtype=np.uint8)*255
             scaledImage = cv2.resize(npArray, (self.__screenWidth*scaleFactor, self.__screenHeight*scaleFactor), interpolation=cv2.INTER_AREA)
-            cv2.imshow(screen, scaledImage)
+            cv2.imshow(self._chessColourAsString[screen], scaledImage)
         self.clearDisplay(displayScreen=displayScreen)
 
     def clearDisplay(self, displayScreen):

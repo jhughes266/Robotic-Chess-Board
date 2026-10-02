@@ -154,20 +154,23 @@ class DifficultySelectCanvas(UiCanvas):
 
         #load in all the difficulty images into an easy to access dictionary
         self.__difficultyImages = {
-            '1':Image.open("ui_images/pawn.jpg"),
-            '2':Image.open("ui_images/knight.jpg"),
-            '3':Image.open("ui_images/bishop.jpg"),
-            '4':Image.open("ui_images/rook.jpg"),
-            '5':Image.open("ui_images/queen.jpg"),
-            '6':Image.open("ui_images/king.jpg"),
+            '1':Image.open("managers/game_manager/user_interface/ui_images/pawn.jpg"),
+            '2':Image.open("managers/game_manager/user_interface/ui_images/knight.jpg"),
+            '3':Image.open("managers/game_manager/user_interface/ui_images/bishop.jpg"),
+            '4':Image.open("managers/game_manager/user_interface/ui_images/rook.jpg"),
+            '5':Image.open("managers/game_manager/user_interface/ui_images/queen.jpg"),
+            '6':Image.open("managers/game_manager/user_interface/ui_images/king.jpg"),
         }
 
 
     def draw(self, difficulty, displayScreen):
         for button in self.__buttonList:
             button.draw(displayScreen=displayScreen)
-        self.currentDifficultyText.draw(displayScreen=displayScreen, text=difficulty)
-        self.difficultyImage.draw(self.__difficultyImages[difficulty], displayScreen=displayScreen)
+        if difficulty is not None:
+            self.currentDifficultyText.draw(displayScreen=displayScreen, text="Difficulty: " + difficulty)
+            self.difficultyImage.draw(self.__difficultyImages[difficulty], displayScreen=displayScreen)
+        else:
+            self.currentDifficultyText.draw(displayScreen=displayScreen, text="Not selected!")
 
 class MoveSelectCanvas(UiCanvas):
     def __init__(self, screens):
@@ -355,5 +358,9 @@ class GameModeCanvas(UiCanvas):
         self.mode3Button.draw(displayScreen=displayScreen)
         self.mode4Button.draw(displayScreen=displayScreen)
         self.confirmButton.draw(displayScreen=displayScreen)
-        self.currentGameModeText.draw(displayScreen=displayScreen, text=self.__gameModeNumberToText[mode])
+        if mode is not None:
+            self.currentGameModeText.draw(displayScreen=displayScreen, text=self.__gameModeNumberToText[mode])
+        else:
+            self.currentGameModeText.draw(displayScreen=displayScreen, text="No mode\nselected!")
+        
 

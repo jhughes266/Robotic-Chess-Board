@@ -25,7 +25,7 @@ if __name__ == '__main__':
         userInterface = StylusUserInterface(screens=screens)
     
     
-
+    userInterface.setUp()
     communicationManager.connectToPico()
     boardManager = BoardManager(communicationManager=communicationManager)
     gameManager = GameManager(boardManager=boardManager, userInterface=userInterface, maxSearchTimeSeconds=15)
@@ -35,6 +35,9 @@ if __name__ == '__main__':
         gameManager.playGame()
 
     communicationManager.disconnectFromPico()
+    userInterface.tearDown()
+    if USER_INTERFACE_TYPE == "stylus":
+        screens.tearDown()
 
     print("Thanks for playing!")
 

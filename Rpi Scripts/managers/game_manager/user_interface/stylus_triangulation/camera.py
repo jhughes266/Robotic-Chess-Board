@@ -1,5 +1,6 @@
 from config import *
 from abc import ABC, abstractmethod
+import time
 if USER_INTERFACE_TYPE == "stylus":
     import cv2
     from picamera2 import Picamera2

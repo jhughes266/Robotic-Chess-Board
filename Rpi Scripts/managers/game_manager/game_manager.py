@@ -1,5 +1,6 @@
 from chess_adversarial_search.game import Game
 from managers.game_manager.game_mode.game_mode import *
+import chess
 
 class GameManager:
     def __init__(self, boardManager, userInterface, maxSearchTimeSeconds):
@@ -9,10 +10,9 @@ class GameManager:
         self._gameMode = None
 
     def startOrQuit(self):
-        self._userInterface.prepareForUserInput()
         acceptableSelection = {'0', '1'}
         while True:
-            selection = self._userInterface.gameEntryPrompt()
+            selection = self._userInterface.gameEntryPrompt(displayScreen=[chess.WHITE,chess.BLACK])
 
             if selection in acceptableSelection:
                 if selection == '0':
@@ -21,30 +21,28 @@ class GameManager:
                     return True
 
             self._userInterface.displayText("Invalid selection! Please try again!\n")
-        self._userInterface.finishedWithUserInput()
 
     def selectMode(self):
-        self._userInterface.prepareForUserInput()
 
         while True:
 
-            selection = self._userInterface.getGameModeFromUser()
-
+            selection = self._userInterface.getGameModeFromUser(displayScreen=[chess.WHITE,chess.BLACK])
+            
             if selection == '1':
                 self._gameMode = WhitePlayerBlackRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
-                return
+                break
             elif selection == '2':
                 self._gameMode = BlackPlayerWhiteRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
-                return
+                break
             elif selection == '3':
                 self._gameMode = PlayerPlayer(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
-                return
+                break
             elif selection == '4':
                 self._gameMode = RobotRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
-                return
-
-            self._userInterface.displayText("Invalid selection! Please try again!\n")
-        self._userInterface.finishedWithUserInput()        
+                break
+            else:
+                self._userInterface.displayText("Invalid selection! Please try again!\n")
+        return
 
     def selectDifficulty(self):
         self._gameMode.selectDifficulty()

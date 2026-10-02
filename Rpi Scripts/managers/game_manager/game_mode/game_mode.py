@@ -8,7 +8,7 @@ class GameMode(ABC):
         self._userInterface = userInterface
         self._maxSearchTimeSeconds = maxSearchTimeSeconds
         self._maxSearchPlyDepth = 1000
-        self._chessColourAsText = ['Black', 'White']
+        self._chessColourAsText = ['black', 'white']
 
 
     @abstractmethod
@@ -16,19 +16,17 @@ class GameMode(ABC):
         pass
 
     def selectDifficulty(self):
-        self._userInterface.prepareForUserInput()
         acceptableDifficulties = {'1', '2', '3', '4', '5', '6'}
         while True:
-            difficulty = self._userInterface.getDifficultyFromUser()
-
+            difficulty = self._userInterface.getDifficultyFromUser(displayScreen=[chess.WHITE, chess.BLACK])
+            
             if difficulty not in acceptableDifficulties:
-                self._userInterface.displayText("You have selected an invalid difficulty level! Please Reselect!\n")
+                self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK], text="You have selected an invalid difficulty level! Please Reselect!\n")
                 continue
 
             if int(difficulty) >= 1 and int(difficulty) <= 5:
                 self._maxSearchPlyDepth = int(difficulty) + 1
             break
-        self._userInterface.finishedWithUserInput()
 
     def endOfGame(self, chessBoard):
         self.__gameResultInfo(chessBoard)
@@ -64,11 +62,10 @@ class GameMode(ABC):
         return False
 
     def __playerSelectMove(self, chessBoard):
-        self._userInterface.prepareForUserInput()
         selectedMove = None
         legalMoveMade = False
         while not legalMoveMade:
-            candidateMove = self._userInterface.getMoveFromUser()
+            candidateMove = self._userInterface.getMoveFromUser(displayScreen=[chessBoard.turn])
             availableMoves = list(chessBoard.legal_moves)
             legalMoves = []
 
@@ -85,43 +82,40 @@ class GameMode(ABC):
                     break
 
             if not legalMoveMade:
-                self._userInterface.displayText("The move that you have selected is illegal OR there is not enough material for the promotion requested! Please re-enter your move!")
-        self._userInterface.finishedWithUserInput()
+                self._userInterface.displayText(displayScreen=[chessBoard.turn],text="The move that you have selected is illegal OR there is not enough material for the promotion requested! Please re-enter your move!")
         return selectedMove
 
     def __claimDraw(self, chessBoard):
-        self._userInterface.prepareForUserInput()
         while chessBoard.can_claim_draw():
             if chessBoard.can_claim_fifty_moves():
-                selection = self._userInterface.yesOrNoQuestion("It has been 50 consecutive moves without a capture or pawn move would you like to claim a draw?")
+                selection = self._userInterface.yesOrNoQuestion(displayScreen=[chessBoard.turn], question="It has been 50 consecutive moves without a capture or pawn move would you like to claim a draw?")
             else:
-                selection = self._userInterface.yesOrNoQuestion("The exact same three positions have occurred during the game! Would you like to claim a draw?")
+                selection = self._userInterface.yesOrNoQuestion(displayScreen=[chessBoard.turn], question="The exact same three positions have occurred during the game! Would you like to claim a draw?")
 
             if selection == "NO":
                 return False
             elif selection == "YES":
                 return True
             else:
-                self._userInterface.displayText("The selection was not recognized. Please re-enter your selection!")
-        self._userInterface.finishedWithUserInput()
+                self._userInterface.displayText(displayScreen=[chessBoard.turn], text="The selection was not recognized. Please re-enter your selection!")
         return False
 
     def __moveInfo(self, chessBoard):
-        self._userInterface.displayText(f"%%%%%%%%%%%%%%%%%%%%%%%\nIt is {self._chessColourAsText[chessBoard.turn]} turn to move.The state of the board is:\n{chessBoard}")
+        self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK], text=f"%%%%%%%%%%%%%%%%%%%%%%%\nIt is {self._chessColourAsText[chessBoard.turn]} turn to move.The state of the board is:\n{chessBoard}")
 
     def __resultingMoveInfo(self, chessBoard, move):
-        self._userInterface.displayText(f"The move made was {move}.\nThe state of the board after this move is:\n{str(chessBoard)}\n%%%%%%%%%%%%%%%%%%%%%%%")
+        self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK], text=f"The move made was {move}.\nThe state of the board after this move is:\n{str(chessBoard)}\n%%%%%%%%%%%%%%%%%%%%%%%")
 
     def __gameResultInfo(self, chessBoard):
         resultStr = chessBoard.result()
         if resultStr == '1-0':
             # White wins
-            self._userInterface.displayText("White Wins!\n\n\n")
+            self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK], text="White Wins!\n\n\n")
         elif resultStr == '0-1':
             # Black wins
-            self._userInterface.displayText("Black Wins!\n\n\n")
+            self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK], text="Black Wins!\n\n\n")
         else:
-            self._userInterface.displayText("The game is drawn!\n\n\n")
+            self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK], text="The game is drawn!\n\n\n")
 
 class WhitePlayerBlackRobot(GameMode):
     def playGameMode(self, chessBoard, game):
