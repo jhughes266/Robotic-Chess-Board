@@ -1,5 +1,3 @@
-import sys
-
 from piece_path_finding.board_state import BoardState
 from piece_path_finding.piece_path_finding_config import initialBoardStartStateDictionary, intermediateBoardEndStateDictionary
 from piece_path_finding.action import Action

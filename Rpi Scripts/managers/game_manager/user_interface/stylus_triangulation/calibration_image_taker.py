@@ -1,7 +1,5 @@
 import copy
-import cv2
 from managers.game_manager.user_interface.stylus_triangulation.camera import *
-import time
 
 def showChessBoardDetection(image):
     # Deepcopy the image so that when drawing on this one it doesnt effect the original

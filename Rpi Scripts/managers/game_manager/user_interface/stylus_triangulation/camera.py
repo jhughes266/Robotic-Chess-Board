@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from picamera2 import Picamera2
-from console_debug_info import ConsoleDebugInfo
 import cv2
 
 
@@ -29,7 +28,7 @@ class OpenCvDevice(camera):
         self.__cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._captureWidth)
         self.__cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._captureHeight)
         if not self.__cap.isOpened():
-            ConsoleDebugInfo.printToConsole("Could not open camera")
+            print("Could not open camera")
             exit(0)
 
     def tearDown(self):
@@ -42,7 +41,7 @@ class OpenCvDevice(camera):
         if ret:
             return frame
 
-        ConsoleDebugInfo.printToConsole("Could not capture image with the OPENCV device!")
+        print("Could not capture image with the OPENCV device!")
         return None
 
 class PiCameraDevice(camera):
@@ -65,7 +64,7 @@ class PiCameraDevice(camera):
         try:
             array = self.__piCamera.capture_array()
         except Exception as e:
-            ConsoleDebugInfo.printToConsole(e)
-            ConsoleDebugInfo.printToConsole("Could not capture image with the PICAMERA device!")
+            print(e)
+            print("Could not capture image with the PICAMERA device!")
 
         return array

@@ -1,6 +1,4 @@
 from config import *
-import chess
-from console_debug_info import ConsoleDebugInfo
 from managers.game_manager.game_manager import GameManager
 from managers.board_manager.board_manager import BoardManager
 from managers.wifi_communication.communication_manager import PicoCommunicationManager, CommunicationManager
@@ -27,8 +25,7 @@ if __name__ == '__main__':
         userInterface = StylusUserInterface(screens=screens)
     
     
-    ConsoleDebugInfo.consoleOutputEnabled(enable=True)
-    
+
     communicationManager.connectToPico()
     boardManager = BoardManager(communicationManager=communicationManager)
     gameManager = GameManager(boardManager=boardManager, userInterface=userInterface, maxSearchTimeSeconds=15)

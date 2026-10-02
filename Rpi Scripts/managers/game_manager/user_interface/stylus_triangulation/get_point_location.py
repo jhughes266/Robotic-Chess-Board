@@ -1,6 +1,4 @@
-import cv2
 import numpy as np
-import math
 from managers.game_manager.user_interface.stylus_triangulation.camera import *
 
 

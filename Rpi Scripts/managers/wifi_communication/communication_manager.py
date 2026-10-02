@@ -1,5 +1,4 @@
 import socket
-from console_debug_info import ConsoleDebugInfo
 from secrets import HOST, PORT
 
 
@@ -8,19 +7,19 @@ class CommunicationManager:
         pass
 
     def connectToPico(self):
-        ConsoleDebugInfo.printToConsole("Connected to the Pico!")
+        print("Connected to the Pico!")
 
     def sendDataToPico(self, data):
-        ConsoleDebugInfo.printToConsole("Data sent to the Pico!")
-        ConsoleDebugInfo.printToConsole(f"The Data is:\n {data}")
+        print("Data sent to the Pico!")
+        print(f"The Data is:\n {data}")
 
     def recieveDataFromPico(self):
         data = '1'
-        ConsoleDebugInfo.printToConsole("Data received from Pico!")
+        print("Data received from Pico!")
         return data
 
     def disconnectFromPico(self):
-        ConsoleDebugInfo.printToConsole("Disconnected from Pico!")
+        print("Disconnected from Pico!")
 
     def executeCommand(self, command, maxCommandSize):
         self.sendDataToPico(command)
@@ -31,9 +30,9 @@ class PicoCommunicationManager(CommunicationManager):
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connectToPico(self):
-        ConsoleDebugInfo.printToConsole("Attempting to connect to Pico!")
+        print("Attempting to connect to Pico!")
         self.__socket.connect((HOST, PORT))
-        ConsoleDebugInfo.printToConsole("Connected to the Pico!")
+        print("Connected to the Pico!")
 
     def executeCommand(self, command, maxCommandSize):
         subCommand = ''
@@ -51,14 +50,14 @@ class PicoCommunicationManager(CommunicationManager):
 
     def sendDataToPico(self, data):
         self.__socket.send(data.encode('utf-8'))
-        ConsoleDebugInfo.printToConsole("Data sent to the Pico!")
-        ConsoleDebugInfo.printToConsole(f"The Data is:\n {data}")
+        print("Data sent to the Pico!")
+        print(f"The Data is:\n {data}")
 
     def recieveDataFromPico(self):
         incoming = self.__socket.recv(1024).decode('utf-8')
-        ConsoleDebugInfo.printToConsole("Data received from Pico!")
+        print("Data received from Pico!")
 
     def disconnectFromPico(self):
         self.__socket.send("END".encode('utf-8'))
         self.__socket.close()
-        ConsoleDebugInfo.printToConsole("Disconnected from Pico!")
+        print("Disconnected from Pico!")

@@ -1,7 +1,5 @@
-import chess
 from chess_adversarial_search.game import Game
 from managers.game_manager.game_mode.game_mode import *
-
 
 class GameManager:
     def __init__(self, boardManager, userInterface, maxSearchTimeSeconds):
