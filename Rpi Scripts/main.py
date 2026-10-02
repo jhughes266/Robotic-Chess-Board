@@ -28,7 +28,7 @@ if __name__ == '__main__':
     userInterface.setUp()
     communicationManager.connectToPico()
     boardManager = BoardManager(communicationManager=communicationManager)
-    gameManager = GameManager(boardManager=boardManager, userInterface=userInterface, maxSearchTimeSeconds=15)
+    gameManager = GameManager(boardManager=boardManager, userInterface=userInterface, maxSearchTimeSeconds=MAX_SEARCH_TIME_SECONDS)
     while gameManager.startOrQuit():
         gameManager.selectMode()
         gameManager.selectDifficulty()
