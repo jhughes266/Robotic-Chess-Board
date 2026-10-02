@@ -7,9 +7,8 @@ from statistics import mode
 import time
 import os
 class UserInterface(ABC):
-    def __init__(self, boardManager):
-        self._boardManager = boardManager
-        #self._chessColourAsText = ['Black', 'White']
+    def __init__(self):
+        pass
     
     def prepareForUserInput(self):
         pass
@@ -65,8 +64,8 @@ class TextUserInterface(UserInterface):
         return input("Select game mode!\n1: White human player vs black robot\n2: Black human player vs white robot\n3: Human vs human\n4: Robot vs Robot \nSelection : ")
 
 class StylusUserInterface(UserInterface):
-    def __init__(self, boardManager, screens):
-        super().__init__(boardManager)
+    def __init__(self, screens):
+        super().__init__()
         self.__gameBoardOriginPositionInRealWorld = np.array([-42, -85, 216])
         self.__moveSelectCanvas = MoveSelectCanvas(screens=screens)
         self.__gameEntryCanvas = GameEntryCanvas(screens=screens)
@@ -251,19 +250,19 @@ print("Get move from user")
 stylusUserInterface.getMoveFromUser(displayScreen=["black"])
 time.sleep(5)
 print("Display text")
-stylusUserInterface.displayText(displayScreen=["white", "black"], text="Hello\nWorld")
+stylusUserInterface.displayText(displayScreen=["white"], text="Hello\nWorld")
 time.sleep(5)
 print("Yes no question")
 stylusUserInterface.yesOrNoQuestion(displayScreen=[ "black"], question="Test\nquestion?")
 time.sleep(5)
 print("Get difficulty")
-stylusUserInterface.getDifficultyFromUser(displayScreen=["black"])
+stylusUserInterface.getDifficultyFromUser(displayScreen=["white"])
 time.sleep(5)
 print("Game entry")
 stylusUserInterface.gameEntryPrompt(displayScreen=["black"])
 time.sleep(5)
 print("Game mode from user")
-stylusUserInterface.getGameModeFromUser(displayScreen=["black"])
+stylusUserInterface.getGameModeFromUser(displayScreen=["white"])
 
 stylusUserInterface.finishedWithUserInput()
 screens.tearDown()
