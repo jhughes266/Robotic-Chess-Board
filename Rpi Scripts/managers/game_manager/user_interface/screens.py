@@ -123,6 +123,7 @@ class PillowComputerScreens(Screens):
             npArray = np.array(image, dtype=np.uint8)*255
             scaledImage = cv2.resize(npArray, (self.__screenWidth*scaleFactor, self.__screenHeight*scaleFactor), interpolation=cv2.INTER_AREA)
             cv2.imshow(self._chessColourAsString[screen], scaledImage)
+        cv2.waitKey(1)
         self.clearDisplay(displayScreen=displayScreen)
 
     def clearDisplay(self, displayScreen):

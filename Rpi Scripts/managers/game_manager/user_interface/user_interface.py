@@ -99,9 +99,6 @@ class StylusUserInterface(UserInterface):
         selectedSquareList = []
         confirmButtonText = "Confirm\nOrigin"
         while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-            
             stylusGameBoardLocation = self.__getStylusInfo()
             
             if self.__moveSelectCanvas.resetButton.isClicked(stylusGameBoardLocation):
@@ -150,11 +147,12 @@ class StylusUserInterface(UserInterface):
     def displayText(self, displayScreen, text):
         self.__textMessageCanvas.draw(text=text, displayScreen=displayScreen)
         self.__textMessageCanvas.display(displayScreen=displayScreen)
+        time.sleep(5)
+        
+            
 
     def yesOrNoQuestion(self, displayScreen, question):
         while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
             stylusGameBoardLocation = self.__getStylusInfo()
 
             if self.__yesNoCanvas.yesButton.isClicked(stylusGameBoardLocation):
@@ -171,8 +169,6 @@ class StylusUserInterface(UserInterface):
         
         difficultySelected = None
         while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
             stylusGameBoardLocation = self.__getStylusInfo()
 
             if self.__difficultySelectCanvas.difficulty1Button.isClicked(stylusGameBoardLocation):
@@ -199,8 +195,6 @@ class StylusUserInterface(UserInterface):
     def gameEntryPrompt(self, displayScreen):
 
         while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
             stylusGameBoardLocation = self.__getStylusInfo()
 
             if self.__gameEntryCanvas.startButton.isClicked(stylusGameBoardLocation):
@@ -216,8 +210,6 @@ class StylusUserInterface(UserInterface):
     def getGameModeFromUser(self, displayScreen):
         modeSelected = None
         while True:
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
             stylusGameBoardLocation = self.__getStylusInfo()
             
             if self.__gameModeCanvas.mode1Button.isClicked(stylusGameBoardLocation):
