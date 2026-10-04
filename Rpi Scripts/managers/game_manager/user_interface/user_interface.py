@@ -66,7 +66,7 @@ class TextUserInterface(UserInterface):
 class StylusUserInterface(UserInterface):
     def __init__(self, screens):
         super().__init__()
-        self.__gameBoardOriginPositionInRealWorld = np.array([-42, -85, 216])
+        self.__gameBoardOriginPositionInRealWorld = np.array([-39.5, -80, 216])#np.array([-42, -85, 216]) <- original in case of need to revert
         self.__moveSelectCanvas = MoveSelectCanvas(screens=screens)
         self.__gameEntryCanvas = GameEntryCanvas(screens=screens)
         self.__yesNoCanvas = YesNoCanvas(screens=screens)
@@ -86,7 +86,7 @@ class StylusUserInterface(UserInterface):
         self.__triangulator.setUp()
     
     def __getStylusInfo(self):
-        stylusRealWorldLocation = self.__triangulator.run() 
+        stylusRealWorldLocation = self.__triangulator.run()
         if stylusRealWorldLocation is not None:
             gameBoardLocation = self.__realWorldLocationToGameBoardLocation(stylusRealWorldLocation)
             return gameBoardLocation
