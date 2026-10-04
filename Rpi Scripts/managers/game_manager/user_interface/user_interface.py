@@ -23,11 +23,11 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def displayText(self, str):
+    def displayText(self):
         pass
 
     @abstractmethod
-    def yesOrNoQuestion(self, str):
+    def yesOrNoQuestion(self):
         pass
 
     @abstractmethod
@@ -46,7 +46,8 @@ class TextUserInterface(UserInterface):
     def getMoveFromUser(self, displayScreen):
         return input("Please enter your move!: ")
 
-    def displayText(self, displayScreen, text):
+    def displayText(self, displayScreen, text, screenTextOveride=None, delaySeconds=0):
+        text = text.replace("\n", " ")
         print(text)
 
     def yesOrNoQuestion(self, displayScreen, question):
@@ -144,10 +145,16 @@ class StylusUserInterface(UserInterface):
                 self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation, displayScreen=displayScreen)
             self.__moveSelectCanvas.display(displayScreen=displayScreen)
 
-    def displayText(self, displayScreen, text):
-        self.__textMessageCanvas.draw(text=text, displayScreen=displayScreen)
-        self.__textMessageCanvas.display(displayScreen=displayScreen)
-        time.sleep(5)
+    def displayText(self, displayScreen, text, screenTextOveride=None, delaySeconds=0):
+        if screenTextOveride is None:
+            self.__textMessageCanvas.draw(text=text, displayScreen=displayScreen)
+            self.__textMessageCanvas.display(displayScreen=displayScreen)
+        else:
+            print(text)
+            self.__textMessageCanvas.draw(text=screenTextOveride, displayScreen=displayScreen)
+            self.__textMessageCanvas.display(displayScreen=displayScreen)
+            
+        time.sleep(delaySeconds)
         
             
 

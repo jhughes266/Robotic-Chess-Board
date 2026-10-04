@@ -13,14 +13,15 @@ class GameManager:
         acceptableSelection = {'0', '1'}
         while True:
             selection = self._userInterface.gameEntryPrompt(displayScreen=[chess.WHITE,chess.BLACK])
-
+            
             if selection in acceptableSelection:
                 if selection == '0':
                     return False
                 else:
                     return True
 
-            self._userInterface.displayText("Invalid selection! Please try again!\n")
+            self._userInterface.displayText(displayScreen=[chess.WHITE,chess.BLACK],
+                                            text="Invalid selection! Please try again!")
 
     def selectMode(self):
 
@@ -41,7 +42,8 @@ class GameManager:
                 self._gameMode = RobotRobot(boardManager=self._boardManager, userInterface=self._userInterface, maxSearchTimeSeconds=self._maxSearchTimeSeconds)
                 break
             else:
-                self._userInterface.displayText("Invalid selection! Please try again!\n")
+                self._userInterface.displayText(displayScreen=[chess.WHITE,chess.BLACK],
+                                                text="Invalid selection! Please try again!")
         return
 
     def selectDifficulty(self):
