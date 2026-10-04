@@ -230,6 +230,13 @@ class Game:
         return estimatedUtility
 
     def __evaluateGamePhase(self, chessBoard):
+        """
+            Determines the game phase
+            Args:
+                 chessBoard: A python chess board object.
+            Returns:
+                A integer number representing the game phase. With 0 representing early middle game and 1 end game.
+        """
         # Get the amount of each white piece on the board
         whiteQueens = chessBoard.pieces_mask(chess.QUEEN, chess.WHITE).bit_count()
         whiteRooks = chessBoard.pieces_mask(chess.ROOK, chess.WHITE).bit_count()
