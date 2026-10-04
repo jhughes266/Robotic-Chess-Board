@@ -55,7 +55,7 @@ class Button(UiCanvasElement):
         self.__fill = fill
         self.__clickedFill = fill
         self._gameBoardLocation = self._screenToGameBoardLocation(screenLocation)
-    
+        
     def isClicked(self, stylusGameBoardLocation):
         if stylusGameBoardLocation is None:
             self.__clicked = False
