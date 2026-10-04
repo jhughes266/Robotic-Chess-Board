@@ -7,37 +7,40 @@ from managers.game_manager.user_interface.user_interface import *
 
 
 if __name__ == '__main__':
-    
-    # Initiating objects depending on setting that were entered in the config
-    if GAME_LOCATION == "default":
-        communicationManager = CommunicationManager()
-    elif GAME_LOCATION == "board":
-        communicationManager = PicoCommunicationManager()
+    try:
+        userInterface = None
+        communicationManager = None
+        screens = None
+        # Initiating objects depending on setting that were entered in the config
+        if GAME_LOCATION == "default":
+            communicationManager = CommunicationManager()
+        elif GAME_LOCATION == "board":
+            communicationManager = PicoCommunicationManager()
 
-    if USER_INTERFACE_TYPE == "default":
-        userInterface = TextUserInterface()
-    elif USER_INTERFACE_TYPE == "stylus":
-        if SCREEN_TYPE == "default":
-            screens = PillowComputerScreens()
-        elif SCREEN_TYPE == "oled":
-            pass
-        
-        userInterface = StylusUserInterface(screens=screens)
-    
-    
-    userInterface.setUp()
-    communicationManager.connectToPico()
-    boardManager = BoardManager(communicationManager=communicationManager)
-    gameManager = GameManager(boardManager=boardManager, userInterface=userInterface, maxSearchTimeSeconds=MAX_SEARCH_TIME_SECONDS)
-    while gameManager.startOrQuit():
-        gameManager.selectMode()
-        gameManager.selectDifficulty()
-        gameManager.playGame()
+        if USER_INTERFACE_TYPE == "default":
+            userInterface = TextUserInterface()
+        elif USER_INTERFACE_TYPE == "stylus":
+            if SCREEN_TYPE == "default":
+                screens = PillowComputerScreens()
+            elif SCREEN_TYPE == "oled":
+                pass
 
-    communicationManager.disconnectFromPico()
-    userInterface.tearDown()
-    if USER_INTERFACE_TYPE == "stylus":
-        screens.tearDown()
+            userInterface = StylusUserInterface(screens=screens)
 
-    print("Thanks for playing!")
+
+        userInterface.setUp()
+        communicationManager.connectToPico()
+        boardManager = BoardManager(communicationManager=communicationManager)
+        gameManager = GameManager(boardManager=boardManager, userInterface=userInterface, maxSearchTimeSeconds=MAX_SEARCH_TIME_SECONDS)
+        while gameManager.startOrQuit():
+            gameManager.selectMode()
+            gameManager.selectDifficulty()
+            gameManager.playGame()
+    finally:
+        communicationManager.disconnectFromPico()
+        userInterface.tearDown()
+        if USER_INTERFACE_TYPE == "stylus":
+            screens.tearDown()
+
+        print("Thanks for playing!")
 

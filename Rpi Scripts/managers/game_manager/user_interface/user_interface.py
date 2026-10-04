@@ -47,7 +47,6 @@ class TextUserInterface(UserInterface):
         return input("Please enter your move!: ")
 
     def displayText(self, displayScreen, text, screenTextOveride=None, delaySeconds=0):
-        text = text.replace("\n", " ")
         print(text)
 
     def yesOrNoQuestion(self, displayScreen, question):

@@ -134,7 +134,7 @@ class GameMode(ABC):
 
     def __resultingMoveInfo(self, chessBoard, move):
         self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK],
-                                        text=f"The move made was {move}.\nThe state of the board after this move is:\n{str(chessBoard)}\n%%%%%%%%%%%%%%%%%%%%%%%",
+                                        text=f"The move made was: {move}.",
                                         screenTextOveride=f"The move made was:\n{move}",
                                         delaySeconds=2)
 
