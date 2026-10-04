@@ -7,10 +7,10 @@ from managers.game_manager.user_interface.user_interface import *
 
 
 if __name__ == '__main__':
+    userInterface = None
+    communicationManager = None
+    screens = None
     try:
-        userInterface = None
-        communicationManager = None
-        screens = None
         # Initiating objects depending on setting that were entered in the config
         if GAME_LOCATION == "default":
             communicationManager = CommunicationManager()
@@ -36,6 +36,8 @@ if __name__ == '__main__':
             gameManager.selectMode()
             gameManager.selectDifficulty()
             gameManager.playGame()
+    except Exception as e:
+        print("AN ERROR OCCURED:\n" + str(e))
     finally:
         communicationManager.disconnectFromPico()
         userInterface.tearDown()

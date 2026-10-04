@@ -36,19 +36,26 @@ class PieceMover:
         self.__calibrationX = 11
         self.__calibrationY = 11
     
-    def moveToGridXY(self, gridX, gridY):
+    def moveToGridXY(self, gridX, gridY, xBaseOffset, yBaseOffset):
         """
         Moves the carriage to a specified X,Y location within the grid.
         
         Args:
             gridX: The x location in the grid where the carriage is to be
             moved
-            gridY:The y location in the grid where the carriage is to be
+            gridY: The y location in the grid where the carriage is to be
             moved
+            xBaseOffset: A offset in the x base coordinate system that is added
+            to the base position retrieved from the dictionary that maps between
+            the base and grid coordinate systems. This has been added due to the
+            strength of the magnets being used which mean the piece is dragged
+            behind the carriage when it moves. The offset allows correction of
+            this.
+            yBaseOffset: Refer to xBaseOffset
         """
         self.__pidXY.moveTo(
-            self.__xGridCordinateToBaseCordinates[gridX],
-            self.__yGridCordinateToBaseCordinates[gridY]
+            self.__xGridCordinateToBaseCordinates[gridX] + xBaseOffset,
+            self.__yGridCordinateToBaseCordinates[gridY] + yBaseOffset
             )
     
     def engageGripper(self):
