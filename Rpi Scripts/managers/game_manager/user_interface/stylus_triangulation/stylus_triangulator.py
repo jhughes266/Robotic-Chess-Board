@@ -3,7 +3,7 @@ import copy
 from managers.game_manager.user_interface.stylus_triangulation.camera import *
 
 class StylusTriangulator:
-    def __init__(self, aCamObj, bCamObj, resourcesPath, aCamType, bCamType):
+    def __init__(self, aCamObj, bCamObj, resourcesPath, aCamType, bCamType, displayTracking=False):
         # store the camera objects as private attributes
         self.__aCamObj = aCamObj
         self.__bCamObj = bCamObj
@@ -16,10 +16,12 @@ class StylusTriangulator:
         # offset with a as the origin
         self.__offset = np.loadtxt(resourcesPath + '/calibration_results/offset.txt')
         
-        self.__vaMovingAverage = []
-        self.__uaMovingAverage = []
-        self.__vbMovingAverage = []
-        self.__ubMovingAverage = []
+        self.__vaMovingCentralTendancy = []
+        self.__uaMovingCentralTendancy = []
+        self.__vbMovingCentralTendancy = []
+        self.__ubMovingCentralTendancy = []
+        
+        self.__displayTracking = displayTracking
 
     def setUp(self):
         # Camera object setup
@@ -108,12 +110,13 @@ class StylusTriangulator:
         # If there is nothing above the threshold then the stylus is not in the image
         if len(vaArray) < aActivePixelThreshold or len(vbArray) < bActivePixelThreshold:
             combinedImage = np.hstack((dispImageB, dispImageA))
-            self.__vaMovingAverage = []
-            self.__uaMovingAverage = []
-            self.__vbMovingAverage = []
-            self.__ubMovingAverage = []
-            #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
-            cv2.imshow('Stylus Tracking',combinedImage)
+            self.__vaMovingCentralTendancy = []
+            self.__uaMovingCentralTendancy = []
+            self.__vbMovingCentralTendancy = []
+            self.__ubMovingCentralTendancy = []
+            if self.__displayTracking:
+                #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
+                cv2.imshow('Stylus Tracking',combinedImage)
             return None, None, None, None
         # Get the median of all the returned pixel locations (median helps get rid of outliers)
         va = int(np.median(vaArray))
@@ -121,42 +124,38 @@ class StylusTriangulator:
         vb = int(np.median(vbArray))
         ub = int(np.median(ubArray))
         
-        if len(self.__vaMovingAverage) < 5:
-            self.__vaMovingAverage.append(va)
-            self.__uaMovingAverage.append(ua)
-            self.__vbMovingAverage.append(vb)
-            self.__ubMovingAverage.append(ub)
+        # If the length of the moving central tendancy list is greater than 5 we pop off an element
+        # (the least recent element). To keep the list same size.
+        if len(self.__vaMovingCentralTendancy) > 3:
+            self.__vaMovingCentralTendancy.pop(0)
+            self.__uaMovingCentralTendancy.pop(0)
+            self.__vbMovingCentralTendancy.pop(0)
+            self.__ubMovingCentralTendancy.pop(0)
+        # Apend measures of central tendancy
+        self.__vaMovingCentralTendancy.append(va)
+        self.__uaMovingCentralTendancy.append(ua)
+        self.__vbMovingCentralTendancy.append(vb)
+        self.__ubMovingCentralTendancy.append(ub)
             
-            va = sum(self.__vaMovingAverage)/len(self.__vaMovingAverage)
-            ua = sum(self.__uaMovingAverage)/len(self.__uaMovingAverage)
-            vb = sum(self.__vbMovingAverage)/len(self.__vbMovingAverage)
-            ub = sum(self.__ubMovingAverage)/len(self.__ubMovingAverage)
-        else:
-            self.__vaMovingAverage.pop(0)
-            self.__uaMovingAverage.pop(0)
-            self.__vbMovingAverage.pop(0)
-            self.__ubMovingAverage.pop(0)
-            
-            self.__vaMovingAverage.append(va)
-            self.__uaMovingAverage.append(ua)
-            self.__vbMovingAverage.append(vb)
-            self.__ubMovingAverage.append(ub)
-            
-            va = sum(self.__vaMovingAverage)/len(self.__vaMovingAverage)
-            ua = sum(self.__uaMovingAverage)/len(self.__uaMovingAverage)
-            vb = sum(self.__vbMovingAverage)/len(self.__vbMovingAverage)
-            ub = sum(self.__ubMovingAverage)/len(self.__ubMovingAverage)
+        # Get the average of each of the central tendenacy lists
+        va = sum(self.__vaMovingCentralTendancy)/len(self.__vaMovingCentralTendancy)
+        ua = sum(self.__uaMovingCentralTendancy)/len(self.__uaMovingCentralTendancy)
+        vb = sum(self.__vbMovingCentralTendancy)/len(self.__vbMovingCentralTendancy)
+        ub = sum(self.__ubMovingCentralTendancy)/len(self.__ubMovingCentralTendancy)
         
+        # Convert results to integers
         va = int(va)
         ua = int(ua)
         vb = int(vb)
         ub = int(ub)
-        cv2.circle(dispImageA, (ua, va), radius=3, color=(0,0,255), thickness=-1)
-        cv2.circle(dispImageB, (ub, vb), radius=3, color=(0,0,255), thickness=-1)
         
-        combinedImage = np.hstack((dispImageB, dispImageA))
-        #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
-        cv2.imshow('Stylus Tracking',combinedImage)
+        if self.__displayTracking:
+            cv2.circle(dispImageA, (ua, va), radius=3, color=(0,0,255), thickness=-1)
+            cv2.circle(dispImageB, (ub, vb), radius=3, color=(0,0,255), thickness=-1)
+        
+            combinedImage = np.hstack((dispImageB, dispImageA))
+            #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
+            cv2.imshow('Stylus Tracking',combinedImage)
 
         return ua, va, ub, vb
     

@@ -77,7 +77,12 @@ class StylusUserInterface(UserInterface):
     def setUp(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
         bCam = PiCameraDevice(captureWidth=640, captureHeight=480, deviceIndex = 0)
-        self.__triangulator = StylusTriangulator(aCamObj=aCam, bCamObj=bCam,resourcesPath="managers/game_manager/user_interface/stylus_triangulation/resources", aCamType='usb', bCamType='csi')
+        self.__triangulator = StylusTriangulator(aCamObj=aCam,
+                                                 bCamObj=bCam,
+                                                 resourcesPath="managers/game_manager/user_interface/stylus_triangulation/resources",
+                                                 aCamType='usb',
+                                                 bCamType='csi',
+                                                 displayTracking=True)
         self.__triangulator.setUp()
     
     def __getStylusInfo(self):
@@ -234,31 +239,3 @@ class StylusUserInterface(UserInterface):
             if stylusGameBoardLocation is not None:
                 self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation, displayScreen=displayScreen)
             self.__gameModeCanvas.display(displayScreen=displayScreen)
-
-        
-"""
-screens = PillowComputerScreens()
-screens.setUp()
-stylusUserInterface = StylusUserInterface(boardManager=None, screens=screens)
-stylusUserInterface.prepareForUserInput()
-print("Get move from user")
-stylusUserInterface.getMoveFromUser(displayScreen=["black"])
-time.sleep(5)
-print("Display text")
-stylusUserInterface.displayText(displayScreen=["white"], text="Hello\nWorld")
-time.sleep(5)
-print("Yes no question")
-stylusUserInterface.yesOrNoQuestion(displayScreen=[ "black"], question="Test\nquestion?")
-time.sleep(5)
-print("Get difficulty")
-stylusUserInterface.getDifficultyFromUser(displayScreen=["white"])
-time.sleep(5)
-print("Game entry")
-stylusUserInterface.gameEntryPrompt(displayScreen=["black"])
-time.sleep(5)
-print("Game mode from user")
-stylusUserInterface.getGameModeFromUser(displayScreen=["white"])
-
-stylusUserInterface.finishedWithUserInput()
-screens.tearDown()
-"""
