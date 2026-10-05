@@ -1,8 +1,23 @@
 import numpy as np
 from managers.game_manager.user_interface.stylus_triangulation.camera import *
 
+"""
+For triangulation I need to be able to reconstruct the equation of the lines the light rays form between the camera and 
+the point. To do this I need to determine the position of the cameras relative to one and other. This file and the scripts
+within it calculate this offset! 
+"""
 
 def calculateDistanceToPoint(p1, p2, camera_matrix):
+    """
+    This function calculates a distance to a point in an image. It does this by utilizing the cameras intrinsic properties
+    and two points in the image that are a known distance apart. It then saves the distance to this point. The idea is that
+    you take two images of the same scene you can then figure out the distance to that point and thus the displacement
+    between the cameras.
+    Args:
+        p1: A tuple representing the image coordinates of the first point.
+        p2: A tuple representing the image coordinates of the second point.
+        camera_matrix: The camera matrix with the intrinsic properties of the camera.
+    """
     # The actual distance between the selected points in mm
     realDistBetweenPoints = 10
     # Extracting the u and v coordinates from the selected points
@@ -34,6 +49,15 @@ def calculateDistanceToPoint(p1, p2, camera_matrix):
 
 
 def getCameraCordinate(event, x, y, flags, params):
+    """
+    Records the location of a click within the captured image. This allows the user to select the same real world points
+    in the two distinct images from the separate cameras. These two points and the known real world distance can then
+    be used to calculate the distance between the cameras.
+    Args:
+        event: The event with the image (eg: mouse click)
+        x: The x coordinate of the event
+        y: The y coordinate of the event
+    """
     # Triggers when the left button has been clicked
     if event == cv2.EVENT_LBUTTONDOWN:
         # Append a tupple with the x y location of the click
