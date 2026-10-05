@@ -173,7 +173,6 @@ class PillowOledScreens(PillowComputerScreens):
 
         return deviceList
 
-
     def tearDown(self):
         self.__deviceWhite.clear()
         self.__deviceWhite.cleanup()
@@ -188,6 +187,7 @@ class PillowOledScreens(PillowComputerScreens):
             device.display(image)
         self._clearDisplay(displayScreen=displayScreen)
 
+"""
 # Test script for the OLED screens
 testScreens = PillowComputerScreens()
 testScreens.pasteImage(xy=(10, 20),
@@ -214,4 +214,4 @@ testScreens.drawRectangle(xy=(70, 40, 75, 60),
 testScreens.display(displayScreen=[chess.WHITE, chess.BLACK])
 input()
 testScreens.tearDown()
-
+"""
