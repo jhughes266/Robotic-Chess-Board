@@ -10,6 +10,16 @@ def calibrateCamera(cameraName,
                     calibrationPatternsDirectory,
                     testUndistortPath,
                     patternFileExtension = '.jpg'):
+    """
+    Uses the openCV to perform camera calibration and calculate the camera matrix and the distortion coefficients.
+    Args:
+        cameraName: String name given to the camera that is used in file naming in generated outputs
+        chessBoardSize: The number of inner corners of the chessboard pattern
+        chessBoardSquareSideLength: The side length of one of the chessboard squares in real world units
+        calibrationPatternsDirectory: The directory where the calibration photos are stored
+        testUndistortPath: The path to the undistorted image that is used for testing
+        patternFileExtension: The file extension of the photos that are used for calibration
+    """
     # Get all the images
     images = glob.glob(calibrationPatternsDirectory + '*' + patternFileExtension)
 
@@ -65,7 +75,7 @@ def calibrateCamera(cameraName,
         error = cv2.norm(imgPoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
         meanError += error
     print(f"The total error is: {meanError/len(objPoints)}")
-    
+# Calibrate the USB and the CSI camera
 calibrateCamera(cameraName='csi_cam',
                 chessBoardSize=(7,6),
                 chessBoardSquareSideLength=28.5,
