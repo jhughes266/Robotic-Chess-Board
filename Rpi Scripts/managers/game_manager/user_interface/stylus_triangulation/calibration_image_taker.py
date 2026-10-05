@@ -1,7 +1,19 @@
 import copy
 from managers.game_manager.user_interface.stylus_triangulation.camera import *
-
+"""
+The purpose of this script and all the code bellow is to allow images to be taken that are going to be used to calibrate
+the image. This script allows the user to inspect the chess board pattern detection on the image and then decide whether
+to keep or discard the image. It helps in two main ways: 1. It cuts down on the amount of saved images because you simply
+dont select images that dont have detections, 2. By allowing the user to inspect the pattern they can see whether the detection
+has worked properly or if it has not been detected properly and they can then discard that detection.
+"""
 def showChessBoardDetection(image):
+    """
+    Shows the chessboard detection on the provided image to let the user decided whether to keep the image or to discard it.
+    Args:
+        image: Numpy array representing the image.
+    Returns:
+    """
     # Deepcopy the image so that when drawing on this one it doesnt effect the original
     imageCopy = copy.deepcopy(image)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
