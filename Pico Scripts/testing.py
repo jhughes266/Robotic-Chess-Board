@@ -117,7 +117,7 @@ def test(mode=None):
         pieceMover.engageGripper()
         for x in range(12):
             for y in range(12):
-                pieceMover.moveToGridXY(gridX=x, gridY=y)
+                pieceMover.moveToGridXY(gridX=x, gridY=y, xBaseOffset=0, yBaseOffset=0)
 
                 
     print("End of Test!")

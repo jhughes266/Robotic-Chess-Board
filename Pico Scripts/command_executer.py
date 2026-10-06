@@ -32,45 +32,45 @@ def excuteCommand(command, pieceMover, mode="real", baseOffset=2):
     
     # Initiating all the grid and previous grid positions with Nones
     gridX, gridY, prevGridX, prevGridY = None, None, None, None
-    # The initial base offsets are 0's because no pieces are being dragged
-    # initially the carriage is simply moving to a different location
-    xbaseOffset, ybaseOffset = 0, 0
-    i = 0
-    while i < len(command):
+    # Initiating the posStr to an empty string. This string is responsible for storing the postions within the
+    # commands.
+    posStr = ""
+    for i in range(len(command)):
         # Extract the character from the given command
         character = command[i]
-        # An open square bracket indicates the start of a position to be moved
-        # to
+        # An open square bracket indicates the start of a position to be moved to
         if character == "[":
-            # j is a secondary variable that is used to traverse through the
-            # command portion of the string. Looking at the code now I cant
-            # remember why I included it earlier it may be uncessary.
-            j = i
             # Stores the position of the command.
             posStr = ""
-            # Extract the x and y grid positions of the command.
-            while True:
-                j += 1
-                # The ',' indicates that the X grid position has been found.
-                if command[j] == ",":
-                    gridX = int(posStr)
-                    posStr = ""
-                    continue
-                # The ']' indicates that the Y grid position has been found.
-                elif command[j] == "]":
-                    gridY = int(posStr)
-                    break
-                posStr += command[j]
-            
-            # We only calculate the respective base offsets when the the
+            # Continue so that the '[' is not added to the posStr var
+            continue
+        # The ',' indicates that the X grid position has been found.
+        elif character == ",":
+            gridX = int(posStr)
+            posStr = ""
+            # Continue so that the ',' is not added to the posStr var
+            continue
+        # The ']' indicates that the Y grid position has been found.
+        elif character == "]":
+            gridY = int(posStr)
+            # The offsets both start as 0 and then are altered below if required.
+            xbaseOffset, ybaseOffset = 0, 0
+            # We only calculate the respective base offsets when the
             # previous grid positions have been calculated
             if prevGridX is not None and prevGridY is not None:
                 difX = gridX - prevGridX
                 difY = gridY - prevGridY
-                xbaseOffset = (difX/abs(difX)) * baseOffset
-                ybaseOffset = (difY/abs(difY)) * baseOffset
+                # The offsets are in the direction of movement as the piece is being
+                # dragged behind so we calculate the sign of the movement of direction
+                # and then multiply it by the baseoffset
+                if difX != 0:
+                    xbaseOffset = (difX/abs(difX)) * baseOffset
+                    
+                if difY != 0:
+                    ybaseOffset = (difY/abs(difY)) * baseOffset
             # Move the pieces to the grid location taking the base offsets
             # into account.
+            print(f"Moving to gridX: {gridX}, gridY: {gridY}, xbaseOffset: {xbaseOffset}, ybaseOffset: {ybaseOffset}")
             pieceMover.moveToGridXY(gridX, gridY, xbaseOffset, ybaseOffset)
             # Update the previous grid locations
             prevGridX = gridX
@@ -86,8 +86,9 @@ def excuteCommand(command, pieceMover, mode="real", baseOffset=2):
             # pick up the next piece we therefore dont want any offset during
             # this move.
             prevGridX, prevGridY = None, None
-            xbaseOffset, ybaseOffset = 0, 0
+        
+        posStr += character
     
-        i += 1
+        
 
 
