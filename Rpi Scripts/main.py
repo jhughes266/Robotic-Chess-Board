@@ -23,7 +23,7 @@ if __name__ == '__main__':
             if SCREEN_TYPE == "default":
                 screens = PillowComputerScreens()
             elif SCREEN_TYPE == "oled":
-                screens = PillowComputerScreens()
+                screens = PillowOledScreens()
 
             userInterface = StylusUserInterface(screens=screens)
 

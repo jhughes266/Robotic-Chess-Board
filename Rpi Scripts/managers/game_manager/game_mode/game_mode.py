@@ -94,6 +94,10 @@ class GameMode(ABC):
             return True
         # Gets the move off the player (through the UI) and converts it to a python chess.MOVE object
         playerMove = chess.Move.from_uci(self.__playerSelectMove(chessBoard))
+        #Inform that move execution is starting
+        self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK],
+                                        text=f"Executing player move!",
+                                        delaySeconds=2)
         # Executes the move on the board with the robotic assembly
         self._boardManager.executeMove(playerMove, chessBoard)
         # Execute the move on the python chessboard
@@ -184,13 +188,10 @@ class GameMode(ABC):
             chessBoard: A python chess board object.
             maxSearchTimeSeconds: Maximum search time of the alphabeta minimax search in seconds.
         """
-        self._userInterface.displayText(displayScreen=[not(chessBoard.turn)],
-                                        text=f"Robot oponent\ncalculating move!\nThis will take at\nmost {maxSearchTimeSeconds} seconds!",
-                                        delaySeconds=0)
-
-        self._userInterface.displayText(displayScreen=[chessBoard.turn],
-                                        text=f"Calculating my move!",
+        self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK],
+                                        text=f"Robot calculating move!\nThis will take at most\n{maxSearchTimeSeconds} seconds!",
                                         delaySeconds=2)
+
         
     def __informEngineMoveCalculationEnd(self, chessBoard):
         """
@@ -198,11 +199,8 @@ class GameMode(ABC):
         Args:
             chessBoard: A python chess board object.
         """
-        self._userInterface.displayText(displayScreen=[not(chessBoard.turn)],
-                                        text=f"Opponent has\ncalculated move!\nExecuting move!",
-                                        delaySeconds=0)
-        self._userInterface.displayText(displayScreen=[chessBoard.turn],
-                                        text=f"I've calculated my move!\nExcuting move!",
+        self._userInterface.displayText(displayScreen=[chess.WHITE, chess.BLACK],
+                                        text=f"Robot has\ncalculated move!\nExecuting move!",
                                         delaySeconds=2)
         
     def __claimDraw(self, chessBoard):

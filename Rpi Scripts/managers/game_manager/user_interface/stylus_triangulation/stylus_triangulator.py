@@ -117,6 +117,7 @@ class StylusTriangulator:
             if self.__displayTracking:
                 #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
                 cv2.imshow('Stylus Tracking',combinedImage)
+                cv2.waitKey(1)
             return None, None, None, None
         # Get the median of all the returned pixel locations (median helps get rid of outliers)
         va = int(np.median(vaArray))
@@ -156,7 +157,7 @@ class StylusTriangulator:
             combinedImage = np.hstack((dispImageB, dispImageA))
             #combinedImage = np.hstack((bGreenAmount, aGreenAmount))
             cv2.imshow('Stylus Tracking',combinedImage)
-
+            cv2.waitKey(1)
         return ua, va, ub, vb
     
     def __triangulePoints(self, ua, va, ub, vb, aNewCamMatrix, bNewCamMatrix, offset):
