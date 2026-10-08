@@ -1,6 +1,7 @@
 import network
 import usocket as socket
 import time
+import machine
 from secrets import SSID, PASSWORD, STATIC_IP, SUBNET, GATEWAY, DNS, PORT
 # This import calls a config script which inits all the objects responsible for
 # moving the robotic assembly and then provides us with PieceMover object stored
@@ -66,8 +67,10 @@ while True:
         print("confirmation sent")    
     
     # Handle any exceptions
-    except Exception as e:
-        print(f"Exception {e} occured!")
+    except:
+        # If an exception occurs we need to reset the microcontroller. This
+        # means that no pins will remain on and means the motors wont crash
+        machine.reset()
         break
 
 connection.close()
