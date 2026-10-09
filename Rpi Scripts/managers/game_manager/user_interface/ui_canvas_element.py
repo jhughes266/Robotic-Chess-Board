@@ -41,8 +41,8 @@ class Mouse(UiCanvasElement):
         
         
 class Button(UiCanvasElement):
-    __clickHeight = 60
-    __clickResetHeight = 70
+    __clickHeight = 55
+    __clickResetHeight = 65
     def __init__(self, elementId, screens, screenLocation, pixelHeight, pixelWidth, textElement, fontSize=None, fill=0):
         super().__init__(elementId, screenLocation, screens)
         self.__clicked = False
