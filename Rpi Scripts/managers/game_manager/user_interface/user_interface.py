@@ -4,6 +4,7 @@ from managers.game_manager.user_interface.ui_canvas import *
 from managers.game_manager.user_interface.screens import *
 from statistics import mode
 import time
+import math
 
 class UserInterface(ABC):
     def __init__(self):
@@ -73,7 +74,7 @@ class TextUserInterface(UserInterface):
 class StylusUserInterface(UserInterface):
     def __init__(self, screens):
         super().__init__()
-        self.__gameBoardOriginPositionInRealWorld = np.array([-39.5, -80, 212])#np.array([-42, -85, 216]) <- original in case of need to revert
+        self.__gameBoardOriginPositionInRealWorld = np.array([-37, -80, 208])#np.array([-42, -85, 216]) <- original in case of need to revert
         self.__moveSelectCanvas = MoveSelectCanvas(screens=screens)
         self.__gameEntryCanvas = GameEntryCanvas(screens=screens)
         self.__yesNoCanvas = YesNoCanvas(screens=screens)
@@ -95,12 +96,19 @@ class StylusUserInterface(UserInterface):
     
     def __getStylusInfo(self):
         stylusRealWorldLocation = self.__triangulator.run()
+        
         if stylusRealWorldLocation is not None:
             gameBoardLocation = self.__realWorldLocationToGameBoardLocation(stylusRealWorldLocation)
             return gameBoardLocation
     
     def __realWorldLocationToGameBoardLocation(self, realWorldLocation):
         gameBoardLocation = realWorldLocation - self.__gameBoardOriginPositionInRealWorld
+        X, Y, Z = gameBoardLocation[0], gameBoardLocation[1], gameBoardLocation[2]
+        X = X
+        Y = Y
+        #12/160 comes from physical measurements
+        Z = Z - (8 / 160) * X
+        gameBoardLocation[0], gameBoardLocation[1], gameBoardLocation[2] = X, Y, Z
         return gameBoardLocation
 
     def tearDown(self):
