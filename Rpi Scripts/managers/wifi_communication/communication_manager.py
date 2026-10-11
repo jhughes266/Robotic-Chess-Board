@@ -1,7 +1,8 @@
 from config import *
 import socket
 if GAME_LOCATION == "board":
-    from secrets import HOST, PORT
+    HOST=
+    PORT=
 
 class CommunicationManager:
     def __init__(self):

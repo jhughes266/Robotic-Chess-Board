@@ -23,6 +23,7 @@ class BoardManager:
         # Loads the default initial position if no board state was loaded
         if self._boardState is None:
             self._boardState = BoardState(boardStateDictionary=initialBoardStartStateDictionary)
+            print(f"Initial board state is:\n{self._boardState}")
 
     def _chessSquareToBoardGridXY(self, square):
         """
