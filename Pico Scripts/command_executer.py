@@ -70,7 +70,7 @@ def excuteCommand(command, pieceMover, mode="real", baseOffset=2):
                     ybaseOffset = (difY/abs(difY)) * baseOffset
             # Move the pieces to the grid location taking the base offsets
             # into account.
-            print(f"Moving to gridX: {gridX}, gridY: {gridY}, xbaseOffset: {xbaseOffset}, ybaseOffset: {ybaseOffset}")
+            #print(f"Moving to gridX: {gridX}, gridY: {gridY}, xbaseOffset: {xbaseOffset}, ybaseOffset: {ybaseOffset}")
             pieceMover.moveToGridXY(gridX, gridY, xbaseOffset, ybaseOffset)
             # Update the previous grid locations
             prevGridX = gridX
