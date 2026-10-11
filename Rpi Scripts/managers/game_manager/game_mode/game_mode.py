@@ -157,8 +157,12 @@ class GameMode(ABC):
             # Gets a move from the user (the user can enter illegal moves but they will be detected and checked)
             candidateMove = self._userInterface.getMoveFromUser(displayScreen=[chessBoard.turn])
             # We have to have a way for the user to select a promotion when they arnt using the keyboard as the input
-            if True:#(userAttempting a promotion):
-                candidateMove += self._serInterface.getPromotionFromUser(displayScreen=[chessBoard.turn])
+            if (self.__userAttmeptingAPromotion(chessBoard, candidateMove)):
+                self._userInterface.displayText(displayScreen=[chessBoard.turn],
+                                        text=f"Promotion detected!\nPlease select a\npiece to\npromote to!",
+                                        delaySeconds=5)
+                candidateMove += self._userInterface.getPromotionFromUser(displayScreen=[chessBoard.turn])
+            print(candidateMove)
             # Get a list of the available moves
             availableMoves = list(chessBoard.legal_moves)
             # The legal moves are a subset of the available moves. This is due to promotions because it is possible that
@@ -184,6 +188,15 @@ class GameMode(ABC):
         # Return the selected move
         return selectedMove
     
+    def __userAttmeptingAPromotion(self, chessBoard, candidateMove):
+        origin = candidateMove[0:2]
+        pieceType = str(chessBoard.piece_at(chess.parse_square(origin)))
+        originRank = origin[1]
+        if pieceType == 'P' or pieceType == 'p':
+            if (originRank == '7' and chessBoard.turn == chess.WHITE) or (originRank == '2' and chessBoard.turn == chess.BLACK):
+                return True
+        return False
+                
     def __informEngineMoveCalculationStart(self, chessBoard, maxSearchTimeSeconds):
         """
         Inform the user that the engine is going to start calculating its move. Also display a message on the robots screens.

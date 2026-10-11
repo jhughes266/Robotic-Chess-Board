@@ -7,13 +7,6 @@ from managers.game_manager.user_interface.user_interface import *
 
 
 if __name__ == '__main__':
-    screens = PillowOledScreens()
-    testUi = StylusUserInterface(screens=screens)
-    testUi.setUp()
-    print(testUi.getPromotionFromUser(displayScreen=[1]))
-    screens.tearDown()
-    testUi.tearDown()
-    """
     userInterface = None
     communicationManager = None
     screens = None
@@ -52,5 +45,3 @@ if __name__ == '__main__':
             screens.tearDown()
 
         print("Thanks for playing!")
-    """
-

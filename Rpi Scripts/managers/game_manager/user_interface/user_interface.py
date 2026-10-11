@@ -90,7 +90,7 @@ class StylusUserInterface(UserInterface):
                                                  resourcesPath="managers/game_manager/user_interface/stylus_triangulation/resources",
                                                  aCamType='usb',
                                                  bCamType='csi',
-                                                 displayTracking=True)
+                                                 displayTracking=False)
         self.__triangulator.setUp()
     
     def __getStylusInfo(self):
@@ -167,7 +167,7 @@ class StylusUserInterface(UserInterface):
             if self.__promotionSelectCanvas.bishopButton.isClicked(stylusGameBoardLocation):
                 promotionSelected = 'b'
             if self.__promotionSelectCanvas.knightButton.isClicked(stylusGameBoardLocation):
-                promotionSelected = 'k'
+                promotionSelected = 'n'
             if self.__promotionSelectCanvas.rookButton.isClicked(stylusGameBoardLocation):
                 promotionSelected = 'r'
             if self.__promotionSelectCanvas.queenButton.isClicked(stylusGameBoardLocation):

@@ -351,14 +351,14 @@ class PromotionSelectCanvas(UiCanvas):
 
         #load in all the difficulty images into an easy to access dictionary
         self.__promotionImages = {
-            'k':Image.open("managers/game_manager/user_interface/ui_images/knight.jpg"),
+            'n':Image.open("managers/game_manager/user_interface/ui_images/knight.jpg"),
             'b':Image.open("managers/game_manager/user_interface/ui_images/bishop.jpg"),
             'r':Image.open("managers/game_manager/user_interface/ui_images/rook.jpg"),
             'q':Image.open("managers/game_manager/user_interface/ui_images/queen.jpg")
         }
         
         self.__promotionSymbolToText = {
-            'k':"Knight",
+            'n':"Knight",
             'b':"Bishop",
             'r':"Rook",
             'q':"Queen"
