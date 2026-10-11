@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from managers.game_manager.user_interface.screens import *
 from managers.game_manager.user_interface.ui_canvas_element import *
-
+import time
 
 class UiCanvas(ABC):
     def __init__(self, screens):
@@ -301,7 +301,91 @@ class MoveSelectCanvas(UiCanvas):
             self.destinationFlashingRectangle.draw(displayScreen=displayScreen)
         
         self.moveSelectInfoText.draw(displayScreen=displayScreen, text=move)
+        
+class PromotionSelectCanvas(UiCanvas):
+    def __init__(self, screens):
+        super().__init__(screens)
+        self.knightButton = Button(elementId="Knight",
+                                  screenLocation=(0,0),
+                                  screens=screens,
+                                  pixelHeight=32,
+                                  pixelWidth=42,
+                                  textElement="Knight",
+                                  fontSize=10)
+        
+        self.bishopButton = Button(elementId="Bishop",
+                                  screenLocation=(42,0),
+                                  screens=screens,
+                                  pixelHeight=32,
+                                  pixelWidth=42,
+                                  textElement="Bishop",
+                                  fontSize=10)
+        
+        self.rookButton = Button(elementId="Rook",
+                                  screenLocation=(0,32),
+                                  screens=screens,
+                                  pixelHeight=32,
+                                  pixelWidth=42,
+                                  textElement="Rook",
+                                  fontSize=10)
+        
+        self.queenButton = Button(elementId="Queen",
+                                  screenLocation=(42,32),
+                                  screens=screens,
+                                  pixelHeight=32,
+                                  pixelWidth=42,
+                                  textElement="Queen",
+                                  fontSize=10)
+        
+        self.confirmButton = Button(elementId="Confirm",
+                                  screenLocation=(85,49),
+                                  screens=screens,
+                                  pixelHeight=15,
+                                  pixelWidth=43,
+                                  fontSize=8,
+                                  textElement="CONFIRM")
+        
+        self.promotionImage = PastedImage(elementId="PieceImage",
+                                           screenLocation=(76, 11),
+                                           screens=screens)
 
+        #load in all the difficulty images into an easy to access dictionary
+        self.__promotionImages = {
+            'k':Image.open("managers/game_manager/user_interface/ui_images/knight.jpg"),
+            'b':Image.open("managers/game_manager/user_interface/ui_images/bishop.jpg"),
+            'r':Image.open("managers/game_manager/user_interface/ui_images/rook.jpg"),
+            'q':Image.open("managers/game_manager/user_interface/ui_images/queen.jpg")
+        }
+        
+        self.__promotionSymbolToText = {
+            'k':"Knight",
+            'b':"Bishop",
+            'r':"Rook",
+            'q':"Queen"
+            }
+        
+        self.promotionSelectText = Text(elementId="Promtoion Select Text",
+                                       screenLocation=(108, 7),
+                                       screens=screens,
+                                       anchor="mm")
+        
+    def draw(self, displayScreen, promotionSelected):
+        if promotionSelected is not None:
+            self.promotionImage.draw(self.__promotionImages[promotionSelected], displayScreen=displayScreen)
+            self.promotionSelectText.draw(displayScreen=displayScreen, text=self.__promotionSymbolToText[promotionSelected])
+        else:
+            self.promotionSelectText.draw(displayScreen=displayScreen, text="None")
+        self.knightButton.draw(displayScreen=displayScreen)
+        self.bishopButton.draw(displayScreen=displayScreen)
+        self.rookButton.draw(displayScreen=displayScreen)
+        self.queenButton.draw(displayScreen=displayScreen)
+        self.confirmButton.draw(displayScreen=displayScreen)
+        
+        
+    
+    
+       
+        
 
 class GameModeCanvas(UiCanvas):
     def __init__(self, screens):
@@ -362,5 +446,3 @@ class GameModeCanvas(UiCanvas):
             self.currentGameModeText.draw(displayScreen=displayScreen, text=self.__gameModeNumberToText[mode])
         else:
             self.currentGameModeText.draw(displayScreen=displayScreen, text="No mode\nselected!")
-        
-

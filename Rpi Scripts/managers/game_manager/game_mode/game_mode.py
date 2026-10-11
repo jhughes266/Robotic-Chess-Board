@@ -156,6 +156,9 @@ class GameMode(ABC):
         while not legalMoveMade:
             # Gets a move from the user (the user can enter illegal moves but they will be detected and checked)
             candidateMove = self._userInterface.getMoveFromUser(displayScreen=[chessBoard.turn])
+            # We have to have a way for the user to select a promotion when they arnt using the keyboard as the input
+            if True:#(userAttempting a promotion):
+                candidateMove += self._serInterface.getPromotionFromUser(displayScreen=[chessBoard.turn])
             # Get a list of the available moves
             availableMoves = list(chessBoard.legal_moves)
             # The legal moves are a subset of the available moves. This is due to promotions because it is possible that

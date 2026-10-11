@@ -21,7 +21,11 @@ class UserInterface(ABC):
     @abstractmethod
     def getMoveFromUser(self):
         pass
-
+    
+    @abstractmethod
+    def getPromotionFromUser(self):
+        pass
+    
     @abstractmethod
     def displayText(self):
         pass
@@ -41,10 +45,14 @@ class UserInterface(ABC):
     @abstractmethod
     def getGameModeFromUser(self):
         pass
+    
 
 class TextUserInterface(UserInterface):    
     def getMoveFromUser(self, displayScreen):
         return input("Please enter your move!: ")
+    
+    def getPromotionFromUser(self, displayScreen):
+        return ""
 
     def displayText(self, displayScreen, text, screenTextOveride=None, delaySeconds=0):
         print(text)
@@ -72,6 +80,7 @@ class StylusUserInterface(UserInterface):
         self.__difficultySelectCanvas = DifficultySelectCanvas(screens=screens)
         self.__gameModeCanvas = GameModeCanvas(screens=screens)
         self.__textMessageCanvas = TextMessageCanvas(screens=screens)
+        self.__promotionSelectCanvas = PromotionSelectCanvas(screens=screens) 
         
     def setUp(self):
         aCam = OpenCvDevice(captureWidth=640, captureHeight=480, deviceIndex=0)
@@ -148,6 +157,30 @@ class StylusUserInterface(UserInterface):
             if stylusGameBoardLocation is not None:
                 self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation, displayScreen=displayScreen)
             self.__moveSelectCanvas.display(displayScreen=displayScreen)
+    
+    def getPromotionFromUser(self, displayScreen):
+        promotionSelected = None
+        while True:
+            stylusGameBoardLocation = self.__getStylusInfo()
+            
+            
+            if self.__promotionSelectCanvas.bishopButton.isClicked(stylusGameBoardLocation):
+                promotionSelected = 'b'
+            if self.__promotionSelectCanvas.knightButton.isClicked(stylusGameBoardLocation):
+                promotionSelected = 'k'
+            if self.__promotionSelectCanvas.rookButton.isClicked(stylusGameBoardLocation):
+                promotionSelected = 'r'
+            if self.__promotionSelectCanvas.queenButton.isClicked(stylusGameBoardLocation):
+                promotionSelected = 'q'
+            if self.__promotionSelectCanvas.confirmButton.isClicked(stylusGameBoardLocation) and promotionSelected is not None:
+                return promotionSelected
+            self.__promotionSelectCanvas.draw(displayScreen=displayScreen, promotionSelected=promotionSelected)
+            
+            if stylusGameBoardLocation is not None:
+                self.__promotionSelectCanvas.drawMouse(stylusGameBoardLocation, displayScreen=displayScreen)
+            self.__promotionSelectCanvas.display(displayScreen=displayScreen)
+        
+        
 
     def displayText(self, displayScreen, text, screenTextOveride=None, delaySeconds=0):
         if screenTextOveride is None:
@@ -238,3 +271,5 @@ class StylusUserInterface(UserInterface):
             if stylusGameBoardLocation is not None:
                 self.__moveSelectCanvas.drawMouse(stylusGameBoardLocation, displayScreen=displayScreen)
             self.__gameModeCanvas.display(displayScreen=displayScreen)
+
+
