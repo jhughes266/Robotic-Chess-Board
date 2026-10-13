@@ -102,7 +102,7 @@ class BoardManager:
 
         actionString = self.__findActionString(initialState=self._boardState, goalState=goalBoardState)
         self._boardState = goalBoardState
-        self.__communicationManager.executeCommand(actionString, maxCommandSize=20)
+        self.__communicationManager.executeCommand(actionString, maxCommandSize=100)
     # PLEASE NOTE IN THE BELOW FUNCTIONS WHEN I SAY 'MOVE' I MEAN GET THE BOARD STATE THAT RESULTS FROM THE MOVE
     def __promotionAndCapture(self, move, chessBoard, initialPosition, destinationPosition):
         """

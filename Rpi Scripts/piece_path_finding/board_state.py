@@ -271,6 +271,7 @@ class BoardState:
                 continue
             pieceAtLocationSuffix = pieceAtLocation[0]
             # If the piece has been found return its location.
+            print(f"Python Chess: {promotedPiecePrefix} Board: {pieceAtLocationSuffix}")
             if pieceAtLocationSuffix == promotedPiecePrefix:
                 return [x, y]
         # Piece was not found return none.
