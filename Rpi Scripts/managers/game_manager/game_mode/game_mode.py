@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from chess_adversarial_search.minimax_alpha_beta import timeBoundedMinimaxAlphaBetaSearch
 import chess
+from config import *
 
 class GameMode(ABC):
     """
@@ -157,7 +158,8 @@ class GameMode(ABC):
             # Gets a move from the user (the user can enter illegal moves but they will be detected and checked)
             candidateMove = self._userInterface.getMoveFromUser(displayScreen=[chessBoard.turn])
             # We have to have a way for the user to select a promotion when they arnt using the keyboard as the input
-            if (self.__userAttmeptingAPromotion(chessBoard, candidateMove)):
+            print(candidateMove)
+            if USER_INTERFACE_TYPE == "stylus" and (self.__userAttmeptingAPromotion(chessBoard, candidateMove)):
                 self._userInterface.displayText(displayScreen=[chessBoard.turn],
                                         text=f"Promotion detected!\nPlease select a\npiece to\npromote to!",
                                         delaySeconds=5)
