@@ -170,7 +170,7 @@ class GameMode(ABC):
             legalMoves = []
             # Checks if the player selected promotion is supported
             for move in availableMoves:
-                if (move.promotion) and (self._boardManager.promotionIsIllegal(move)):
+                if (move.promotion) and (self._boardManager.promotionIsIllegal(move=move, turn=chessBoard.turn)):
                     continue
                 legalMoves.append(move)
             # Confirms if the player has selected a legal move

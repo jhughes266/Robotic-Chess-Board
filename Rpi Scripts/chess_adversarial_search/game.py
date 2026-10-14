@@ -31,20 +31,21 @@ class Game:
         """
         return chessBoard.turn
 
-    def promotionIsIllegal(self, move):
+    def promotionIsIllegal(self, move, turn):
         """
         Determines if a promotion is legal. Legal in this sense means if it can be supported by the board. For example
         the player may want a bishop but there may not be any in the piece grave yard. In this case the function would
         return True because the promotion is legal.
         Args:
              move: A python chess move object.
+             turn: Either chess.WHITE or chess.BLACK
         Returns:
             A boolean indicating if the promotion is ILLEGAL. True means that the promotion is illegal and False means
             that the promotion is legal.
         """
         # Only need to call the board managers method if a promotion is actually taking place.
         if move.promotion is not None:
-            return self.__boardManager.promotionIsIllegal(move)
+            return self.__boardManager.promotionIsIllegal(move=move, turn=turn)
         return False
 
     def actions(self, chessBoard):
@@ -70,7 +71,7 @@ class Game:
             for move in unorderedLegalMoves:
                 # Checks if the move is a promotion and if its illegal (The piece that is being promoted isnt in the
                 # graveyard). Then we dont add it to the list and just continue and move onto the next move.
-                if self.promotionIsIllegal(move):
+                if self.promotionIsIllegal(move=move, turn=chess.WHITE):
                     continue
                 # The square the move is coming from
                 originSquare = move.from_square
@@ -108,7 +109,7 @@ class Game:
         elif chessBoard.turn == chess.BLACK:
             for move in unorderedLegalMoves:
 
-                if self.promotionIsIllegal(move):
+                if self.promotionIsIllegal(move=move, turn=chess.BLACK):
                     continue
                 originSquare = move.from_square
                 destinationSquare = move.to_square

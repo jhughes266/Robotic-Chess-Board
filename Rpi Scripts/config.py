@@ -3,7 +3,7 @@ GAME_LOCATION = "default"
 # Can either be 'default' or 'stylus'  
 USER_INTERFACE_TYPE = "default"
 # Can either be 'default' or 'oled'
-SCREEN_TYPE = 'oled'
+SCREEN_TYPE = 'default'
 # The maximum time spent searching each move
 MAX_SEARCH_TIME_SECONDS = 45
 

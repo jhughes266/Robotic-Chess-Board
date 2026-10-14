@@ -46,18 +46,23 @@ class BoardManager:
         """
         return None
 
-    def promotionIsIllegal(self, move):
+    def promotionIsIllegal(self, move, turn):
         """
         Checks if a promotion is illegal in terms of material in the graveyard. For example a promotion may be
         theoretically legal but if the piece is not in the graveyard it cant be allowed to occur (this wont happen
         often)
         Args:
             move: The move in uci form to be tested
+            turn: Either chess.WHITE or chess.BLACK
         Returns:
             A boolean indicating if the promotion is illegal or not
         """
         # Gets the prefix of the piece that is to be promoted.
         promotedPiecePrefix = move.uci()[4]
+        # In uci notation the promotion is always in lower but the dead piece finder uses the case to distinguish between
+        # white and black pieces. We therefore need to convert the piece symbol to the appropritate case
+        if turn == chess.WHITE:
+            promotedPiecePrefix = promotedPiecePrefix.upper()
         # If the piece can be found in the graveyard then the promotion is not illegal.
         if self._boardState.findDeadPieceLocation(promotedPiecePrefix) is not None:
             return False
